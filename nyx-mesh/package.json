@@ -13,9 +13,13 @@
     "check": "node --check src/index.js && node --check src/agent.js"
   },
   "dependencies": {
+    "@solana/spl-token": "^0.4.15",
+    "@solana/web3.js": "^1.98.4",
     "@tetherto/wdk": "^1.0.0-beta.14",
     "@tetherto/wdk-wallet-solana": "^1.0.0-beta.11",
     "b4a": "^1.6.7",
+    "bip39": "^3.1.0",
+    "ed25519-hd-key": "^2.0.0",
     "hyperswarm": "^4.8.4"
   },
   "optionalDependencies": {
