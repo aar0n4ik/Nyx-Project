@@ -32,3 +32,17 @@ cd nyx-mesh && npm install && npm run demo
 - **Wallet** — Tether WDK USD₮ wallet for on-device settlement (set `WDK_MODULE`).
 - By default the oracle reads live scores through this project's `/api/txline` proxy, so the
   desktop works with zero secrets. Set `NYX_SNAPSHOT_BASE` to go direct to TxLINE.
+
+## Live on Solana devnet
+
+Real, verifiable on-chain deployment (no mocks) — full ledger in [DEPLOYMENTS.md](./DEPLOYMENTS.md).
+
+| Item | Value |
+|---|---|
+| Network | Solana devnet |
+| Nyx settlement wallet | `8AV3c2YE4XnUDXSBVkGtzgvQXNhbHLQL9FwyKFYviftF` |
+| Test USD₮ mint (6 dec) | `5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS` |
+| First on-chain USD₮ payout | [`2xXK…soga`](https://explorer.solana.com/tx/2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA?cluster=devnet) |
+| `nyx_settlement` program | _pending devnet deploy_ |
+
+**Auto-settlement:** the moment a market is decided by the score, `NyxAgent.autoSettle()` sends the winnings in real USD₮ via the Tether WDK — no human in the loop. Run: `NYX_AUTOPAY_DEMO=1 node nyx-mesh/src/index.js`.

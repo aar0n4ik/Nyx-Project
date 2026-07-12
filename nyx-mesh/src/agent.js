@@ -66,7 +66,7 @@ export class NyxAgent extends EventEmitter {
     this._isSource = opts.source !== false;
   }
   async start() {
-    this.mesh.on("ready", (i) => this.emit("log", `mesh ready on "${i.topic}" as ${i.nodeId}`));
+    this.mesh.on("ready", (i) => this.emit("log", `mesh ready on \"${i.topic}\" as ${i.nodeId}`));
     this.mesh.on("peer", (p) => this.emit("log", `peers: ${p.count}`));
     this.mesh.on("warn", (w) => this.emit("log", `mesh: ${w}`));
     this.mesh.on("snapshot", ({ snapshot, from }) => {
@@ -89,6 +89,13 @@ export class NyxAgent extends EventEmitter {
       } catch (e) { this.emit("log", `oracle ${id}: ${e.message}`); }
     }
   }
+  // Seed/replace a snapshot (mesh ingest or deterministic demo replay).
+  setSnapshot(fixtureId, snap) {
+    const s = { fixtureId, ...snap };
+    this.snapshots.set(fixtureId, s);
+    this.emit("snapshot", { snapshot: s, source: "manual" });
+    return s;
+  }
   model(st) {
     const minute = Math.min(90, st.minute || 0), rem = Math.max(0.001, (90 - minute) / 90);
     const gc = (st.g1 || 0) + (st.g2 || 0), lamRem = 2.7 * rem;
@@ -110,7 +117,7 @@ export class NyxAgent extends EventEmitter {
     const edge = +(bookOdds * p - 1).toFixed(3);
     const b = bookOdds - 1, kelly = b > 0 ? Math.max(0, (bookOdds * p - 1) / b) : 0;
     const stakePct = Math.min(kelly * 0.5, 0.02);
-    const ctx = { match: "fixture " + fixtureId, score: `${st.g1}-${st.g2}`, minute: st.minute,
+    const ctx = { fixtureId, match: "fixture " + fixtureId, score: `${st.g1}-${st.g2}`, minute: st.minute,
       market, fairProb: p, fairOdds, bookOdds, edge, suggestedStakePct: stakePct,
       guaranteed, guaranteedReason: reason, lang };
     const verdict = await this.brain.analyzeMatch(ctx);
@@ -118,6 +125,22 @@ export class NyxAgent extends EventEmitter {
   }
   async settleWin({ to, amount, fixtureId, market }) {
     return this.wallet.settle({ to, amount, memo: JSON.stringify({ p: "nyx-bet-v1", fixtureId, market }) });
+  }
+  // Killer path: analyze a market and, the instant the outcome is GUARANTEED (100%),
+  // pay the winner in real USD₮ on-chain. No human in the loop.
+  async autoSettle({ fixtureId, market = "ou25", bookOdds = 1.95, bankroll = 1000, to, amount, lang = "en" }) {
+    const r = await this.analyze({ fixtureId, market, bookOdds, bankroll, lang });
+    const isWin = r.guaranteed && r.fairProb >= 1;
+    if (!isWin) {
+      const why = r.guaranteed ? `settled against (${r.guaranteedReason})` : "outcome not guaranteed yet";
+      this.emit("log", `autoSettle skipped \u2014 ${why}`);
+      return { settled: false, guaranteed: r.guaranteed, reason: why, analysis: r };
+    }
+    const payout = amount != null ? amount : +(r.stake * r.bookOdds).toFixed(2);
+    this.emit("log", `GUARANTEED win (${r.guaranteedReason}) \u2014 auto-paying ${payout} USD\u20ae to ${to}`);
+    const res = await this.settleWin({ to, amount: payout, fixtureId, market });
+    this.emit("settle", { fixtureId, market, to, amount: payout, result: res });
+    return { settled: !!res.settled, hash: res.hash || null, reason: res.reason || null, amount: payout, analysis: r };
   }
   async stop() { if (this._timer) clearInterval(this._timer); await this.mesh.stop(); await this.brain.unload(); }
 }
