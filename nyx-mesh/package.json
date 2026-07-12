@@ -1,0 +1,21 @@
+{
+  "name": "nyx-mesh",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Nyx desktop brain: on-device QVAC LLM+RAG, Hyperswarm P2P mesh for verified TxLINE snapshots, and USD\u20ae settlement via Tether WDK.",
+  "main": "src/index.js",
+  "exports": { ".": "./src/index.js" },
+  "scripts": {
+    "demo": "node src/index.js",
+    "check": "node --check src/index.js && node --check src/agent.js"
+  },
+  "dependencies": {
+    "hyperswarm": "^4.8.4",
+    "b4a": "^1.6.7"
+  },
+  "optionalDependencies": {
+    "@qvac/sdk": "*"
+  },
+  "engines": { "node": ">=18" }
+}
