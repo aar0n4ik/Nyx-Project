@@ -56,3 +56,8 @@ Real, verifiable on-chain deployment (no mocks) — full ledger in [DEPLOYMENTS.
 - **Settlement program `nyx_settlement`:** `AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3` — https://explorer.solana.com/address/AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3?cluster=devnet
 - **Live auto-settlement:** agent auto-paid 39 USD₮ on a GUARANTEED win — tx `5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy` — https://explorer.solana.com/tx/5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy?cluster=devnet
 - **First USD₮ payout (Route A):** tx `2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA`
+
+### On-chain proof — nyx_pamm (pAMM)
+Second protocol program live on Solana devnet: a recentred-LMSR probability AMM that settles itself.
+- Program: `8hxh836KRG4H6poU7oZ161AV71gpTLKKE1mYrEsuwpW3` (explorer: https://explorer.solana.com/address/8hxh836KRG4H6poU7oZ161AV71gpTLKKE1mYrEsuwpW3?cluster=devnet)
+- Pure market engine `pamm-math`: 12 passing tests; LP max loss mathematically bounded at b*ln(n).

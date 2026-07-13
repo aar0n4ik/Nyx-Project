@@ -85,3 +85,11 @@ Then set the id in `public/nyx/nyx-config.js` (`window.NYX_PROGRAM_ID`) and in `
 - **Tx:** `5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy`
 - **Explorer:** https://explorer.solana.com/tx/5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy?cluster=devnet
 - **Date:** 2026-07-12 (America/Chicago)
+
+## nyx_pamm — live-probability AMM (Solana devnet)
+- Program Id: `8hxh836KRG4H6poU7oZ161AV71gpTLKKE1mYrEsuwpW3`
+- ProgramData: `HLSD4aE8FSuxDt6JWJqZPKgbi1VV36Tm792jeJY7KWio`
+- Upgrade authority: `7tMb9N3L4YvMNwYoexd2MmHUDi4pnC19PYfm3LKRdRB6`
+- Deployed slot: 476046975 · size 331344 bytes · 2026-07-13
+- Explorer: https://explorer.solana.com/address/8hxh836KRG4H6poU7oZ161AV71gpTLKKE1mYrEsuwpW3?cluster=devnet
+- Recentred-LMSR maker: init_pool / buy / sell / push_oracle / resolve / claim. Core math in `pamm-math` (12 tests). Max LP loss bounded by b*ln(n).
