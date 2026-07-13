@@ -46,3 +46,8 @@ Real, verifiable on-chain deployment (no mocks) — full ledger in [DEPLOYMENTS.
 | `nyx_settlement` program | _pending devnet deploy_ |
 
 **Auto-settlement:** the moment a market is decided by the score, `NyxAgent.autoSettle()` sends the winnings in real USD₮ via the Tether WDK — no human in the loop. Run: `NYX_AUTOPAY_DEMO=1 node nyx-mesh/src/index.js`.
+
+## On-chain proofs (Solana devnet)
+- **Settlement program `nyx_settlement`:** `AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3` — https://explorer.solana.com/address/AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3?cluster=devnet
+- **Live auto-settlement:** agent auto-paid 39 USD₮ on a GUARANTEED win — tx `5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy` — https://explorer.solana.com/tx/5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy?cluster=devnet
+- **First USD₮ payout (Route A):** tx `2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA`

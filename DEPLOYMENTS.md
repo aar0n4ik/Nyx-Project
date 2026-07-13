@@ -65,3 +65,13 @@ Then set the id in `public/nyx/nyx-config.js` (`window.NYX_PROGRAM_ID`) and in `
 - **Binary size:** 310608 bytes
 - **Date:** 2026-07-12 (America/Chicago)
 - **Explorer:** https://explorer.solana.com/address/AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3?cluster=devnet
+
+## Auto-settlement (killer feature) — LIVE on devnet
+- **Trigger:** agent detected GUARANTEED win — Over 2.5 reached (fixture 17588232 seeded 3:1 FT), deterministic verdict fairProb=100% edge=95%
+- **Agent auto-paid:** 39 USD₮ (no human in the loop)
+- **From (treasury):** `8AV3c2YE4XnUDXSBVkGtzgvQXNhbHLQL9FwyKFYviftF`
+- **To (winner, WDK acct #1):** `D3Uf37hQh3CEBZcuHX1fFpGGMBnAua1dZRXCTCnNBCz4`
+- **Mint (test USD₮):** `5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS`
+- **Tx:** `5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy`
+- **Explorer:** https://explorer.solana.com/tx/5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy?cluster=devnet
+- **Date:** 2026-07-12 (America/Chicago)
