@@ -51,3 +51,8 @@ Real, verifiable on-chain deployment (no mocks) — full ledger in [DEPLOYMENTS.
 - **Settlement program `nyx_settlement`:** `AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3` — https://explorer.solana.com/address/AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3?cluster=devnet
 - **Live auto-settlement:** agent auto-paid 39 USD₮ on a GUARANTEED win — tx `5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy` — https://explorer.solana.com/tx/5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy?cluster=devnet
 - **First USD₮ payout (Route A):** tx `2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA`
+
+## On-chain proofs (Solana devnet)
+- **Settlement program `nyx_settlement`:** `AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3` — https://explorer.solana.com/address/AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3?cluster=devnet
+- **Live auto-settlement:** agent auto-paid 39 USD₮ on a GUARANTEED win — tx `5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy` — https://explorer.solana.com/tx/5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy?cluster=devnet
+- **First USD₮ payout (Route A):** tx `2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA`
