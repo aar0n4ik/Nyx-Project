@@ -6,10 +6,11 @@
   "usdtMint": "5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS",
   "usdtDecimals": 6,
   "firstPayoutTx": "2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA",
-  "settlementProgramId": null,
+  "settlementProgramId": "AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3",
   "explorer": {
     "wallet": "https://explorer.solana.com/address/8AV3c2YE4XnUDXSBVkGtzgvQXNhbHLQL9FwyKFYviftF?cluster=devnet",
     "usdtMint": "https://explorer.solana.com/address/5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS?cluster=devnet",
-    "firstPayoutTx": "https://explorer.solana.com/tx/2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA?cluster=devnet"
+    "firstPayoutTx": "https://explorer.solana.com/tx/2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA?cluster=devnet",
+    "settlementProgram": "https://explorer.solana.com/address/AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3?cluster=devnet"
   }
 }

@@ -45,3 +45,23 @@ anchor deploy
 anchor keys list             # -> copy the nyx_settlement program id
 \`\`\`
 Then set the id in `public/nyx/nyx-config.js` (`window.NYX_PROGRAM_ID`) and in `public/nyx/deployments.json` (`settlementProgramId`).
+
+## nyx_settlement — Solana devnet (LIVE)
+- **Program Id:** `AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3`
+- **ProgramData:** `8iuCCZv8cm8LBc5E3b38d6K4BTR6ra1S8UPdkpWDm7BL`
+- **Upgrade Authority:** `7tMb9N3L4YvMNwYoexd2MmHUDi4pnC19PYfm3LKRdRB6`
+- **Cluster:** devnet (https://api.devnet.solana.com)
+- **Deployed slot:** 475861414
+- **Binary size:** 310608 bytes
+- **Date:** 2026-07-12 (America/Chicago)
+- **Explorer:** https://explorer.solana.com/address/AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3?cluster=devnet
+
+## nyx_settlement — Solana devnet (LIVE)
+- **Program Id:** `AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3`
+- **ProgramData:** `8iuCCZv8cm8LBc5E3b38d6K4BTR6ra1S8UPdkpWDm7BL`
+- **Upgrade Authority:** `7tMb9N3L4YvMNwYoexd2MmHUDi4pnC19PYfm3LKRdRB6`
+- **Cluster:** devnet (https://api.devnet.solana.com)
+- **Deployed slot:** 475861414
+- **Binary size:** 310608 bytes
+- **Date:** 2026-07-12 (America/Chicago)
+- **Explorer:** https://explorer.solana.com/address/AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3?cluster=devnet
