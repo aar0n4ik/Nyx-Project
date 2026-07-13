@@ -5,3 +5,8 @@ node_modules
 .vercel
 *.log
 .DS_Store
+
+# Rust / Anchor build artifacts
+target/
+**/target/
+Cargo.lock
