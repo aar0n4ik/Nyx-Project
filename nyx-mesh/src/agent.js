@@ -96,15 +96,32 @@ export class NyxAgent extends EventEmitter {
     this.emit("snapshot", { snapshot: s, source: "manual" });
     return s;
   }
+  // Prices the requested LIVE market from match state using a Poisson goals model.
+  // Remaining goal expectancy (lamRem) decays with the match minute and is split
+  // evenly between the two teams for scorer-based markets like BTTS.
   model(st) {
-    const minute = Math.min(90, st.minute || 0), rem = Math.max(0.001, (90 - minute) / 90);
-    const gc = (st.g1 || 0) + (st.g2 || 0), lamRem = 2.7 * rem;
+    const minute = Math.min(90, st.minute || 0);
+    const rem = Math.max(0.001, (90 - minute) / 90);
+    const g1 = st.g1 || 0, g2 = st.g2 || 0, gc = g1 + g2;
+    const lamRem = 2.7 * rem;        // remaining total goals expected
+    const lamTeam = lamRem / 2;      // per-team remaining expectancy
     const fact = (n) => { let r = 1; for (let i = 2; i <= n; i++) r *= i; return r; };
     const pois = (k, l) => Math.exp(-l) * Math.pow(l, k) / fact(k);
-    const cdf = (k, l) => { let s = 0; for (let i = 0; i <= k; i++) s += pois(i, l); return s; };
+    const cdf = (k, l) => { let s = 0; for (let i = 0; i <= Math.max(0, k); i++) s += pois(i, l); return s; };
     const clamp = (p) => Math.min(0.995, Math.max(0.005, p));
-    const over = (line) => { const k = Math.floor(line) - gc; return k < 0 ? 0.995 : clamp(1 - cdf(k, lamRem)); };
-    return { ou25: over(2.5), ou15: over(1.5), minute, gc };
+    // P(final total strictly beats the line), conditioned on goals already scored.
+    const over = (line) => { const need = Math.ceil(line) - gc; return need <= 0 ? 0.995 : clamp(1 - cdf(need - 1, lamRem)); };
+    const under = (line) => clamp(1 - over(line));
+    // P(both teams score by full time), conditioned on who has already scored.
+    const p1 = g1 >= 1 ? 1 : 1 - Math.exp(-lamTeam);
+    const p2 = g2 >= 1 ? 1 : 1 - Math.exp(-lamTeam);
+    const btts = clamp(p1 * p2);
+    return {
+      minute, gc,
+      ou05: over(0.5), ou15: over(1.5), ou25: over(2.5), ou35: over(3.5), ou45: over(4.5),
+      uu05: under(0.5), uu15: under(1.5), uu25: under(2.5), uu35: under(3.5),
+      btts, gg: btts, nbtts: clamp(1 - btts), ng: clamp(1 - btts),
+    };
   }
   async analyze({ fixtureId, market = "ou25", bookOdds = 2.0, bankroll = 1000, lang = "en" }) {
     const st = this.snapshots.get(fixtureId);
