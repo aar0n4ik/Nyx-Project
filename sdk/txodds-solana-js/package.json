@@ -1,0 +1,41 @@
+{
+  "name": "nyx-txodds-solana",
+  "version": "0.1.0",
+  "description": "Unofficial community SDK to build & verify TxODDS txoracle validate_stat_v2 instructions on Solana. Not affiliated with TxODDS.",
+  "type": "module",
+  "main": "index.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "types": "./index.d.ts"
+    }
+  },
+  "files": [
+    "index.mjs",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "solana",
+    "txodds",
+    "txoracle",
+    "oracle",
+    "prediction-markets",
+    "merkle",
+    "cpi",
+    "anchor",
+    "settlement"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aar0n4ik/Nyx-Project.git"
+  },
+  "peerDependencies": {
+    "@coral-xyz/anchor": ">=0.30",
+    "@solana/web3.js": ">=1.90",
+    "bn.js": ">=5.2"
+  }
+}

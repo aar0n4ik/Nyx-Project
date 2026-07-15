@@ -1,0 +1,19 @@
+[package]
+name = "nyx-txodds-verifier"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT"
+description = "Unofficial Rust SDK to verify TxODDS TxLINE sports data on Solana via on-chain CPI into txoracle::validate_stat_v2. Not affiliated with TxODDS."
+repository = "https://github.com/aar0n4ik/Nyx-Project"
+homepage = "https://github.com/aar0n4ik/Nyx-Project"
+documentation = "https://docs.rs/nyx-txodds-verifier"
+readme = "README.md"
+keywords = ["solana", "txodds", "oracle", "sports", "merkle"]
+categories = ["cryptography::cryptocurrencies", "api-bindings"]
+
+[dependencies]
+solana-program = ">=1.17, <3"
+borsh = { version = "1", features = ["derive"] }
+
+[workspace]

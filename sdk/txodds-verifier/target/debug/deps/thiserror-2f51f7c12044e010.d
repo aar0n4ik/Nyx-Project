@@ -1,0 +1,14 @@
+/workspaces/Nyx-Project/sdk/txodds-verifier/target/debug/deps/thiserror-2f51f7c12044e010.d: /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/lib.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/aserror.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/display.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/var.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/private.rs /workspaces/Nyx-Project/sdk/txodds-verifier/target/debug/build/thiserror-780649e3a16a84fc/out/private.rs
+
+/workspaces/Nyx-Project/sdk/txodds-verifier/target/debug/deps/libthiserror-2f51f7c12044e010.rlib: /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/lib.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/aserror.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/display.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/var.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/private.rs /workspaces/Nyx-Project/sdk/txodds-verifier/target/debug/build/thiserror-780649e3a16a84fc/out/private.rs
+
+/workspaces/Nyx-Project/sdk/txodds-verifier/target/debug/deps/libthiserror-2f51f7c12044e010.rmeta: /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/lib.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/aserror.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/display.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/var.rs /home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/private.rs /workspaces/Nyx-Project/sdk/txodds-verifier/target/debug/build/thiserror-780649e3a16a84fc/out/private.rs
+
+/home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/lib.rs:
+/home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/aserror.rs:
+/home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/display.rs:
+/home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/var.rs:
+/home/codespace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/private.rs:
+/workspaces/Nyx-Project/sdk/txodds-verifier/target/debug/build/thiserror-780649e3a16a84fc/out/private.rs:
+
+# env-dep:OUT_DIR=/workspaces/Nyx-Project/sdk/txodds-verifier/target/debug/build/thiserror-780649e3a16a84fc/out
