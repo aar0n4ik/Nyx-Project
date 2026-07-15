@@ -1,0 +1,16 @@
+{
+  "name": "nyx-txodds-settlement",
+  "version": "0.1.0",
+  "description": "Trust-minimized sports settlement on Solana for TxLINE/TxODDS feeds: instruction builders, PDA derivation and account decoders for the Nyx optimistic-oracle settlement, dispute and oracle-bridge programs.",
+  "type": "module",
+  "main": "src/index.mjs",
+  "exports": { ".": "./src/index.mjs" },
+  "files": ["src", "README.md"],
+  "scripts": { "test": "node test/smoke.mjs" },
+  "keywords": ["solana", "txodds", "txline", "prediction-markets", "optimistic-oracle", "settlement", "dispute", "anchor", "usdt", "tether", "nyx"],
+  "license": "MIT",
+  "peerDependencies": { "@solana/web3.js": ">=1.87.0" },
+  "repository": { "type": "git", "url": "https://github.com/aar0n4ik/Nyx-Project.git", "directory": "sdk/nyx-txodds-settlement" },
+  "homepage": "https://github.com/aar0n4ik/Nyx-Project/tree/main/sdk/nyx-txodds-settlement#readme",
+  "bugs": { "url": "https://github.com/aar0n4ik/Nyx-Project/issues" }
+}

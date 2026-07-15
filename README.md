@@ -105,3 +105,46 @@ open: they publish TypeScript examples + an IDL, but no Rust on-chain verifier c
 
 > Unofficial community project. Not affiliated with, sponsored by, or endorsed by TxODDS.
 > "TxODDS" is a trademark of its respective owner; used only to describe compatibility.
+
+## Trust-minimized settlement layer (TxLINE → Solana)
+
+TxLINE proves a feed is internally consistent (a Merkle root over the data it published).
+It does **not** prove an outcome is *true*, and it gives you no on-chain way to challenge a
+bad signer. So every prediction market built directly on a feed inherits an admin key that
+can call `resolve()` — one leaked key and the "trustless" market is drained or rigged.
+
+Nyx closes that gap with three composable Anchor programs. An outcome only reaches
+settlement after surviving an optimistic dispute game, and the market's oracle is a
+**program PDA**, not a person:
+
+```
+propose (bond) -> dispute (matching bond) -> arbitrate -> slash the wrong side
+                                   |
+                                   v
+      nyx_oracle_bridge PDA --CPI--> nyx_settlement.resolve   (no human key)
+```
+
+Honest asserters reclaim their bond; wrong ones are slashed to the challenger; undisputed
+outcomes finalize after a liveness window. The bridge's `push_resolution` is permissionless
+but can forward *only* the outcome the dispute layer already finalized — anything else reverts.
+
+| Program (devnet) | ID |
+| --- | --- |
+| `nyx_settlement` | `AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3` |
+| `nyx_dispute` | `7bSmAPPAypVtWsRMvMhmT6bUrJyvmc76VKXinAgwc8vN` |
+| `nyx_oracle_bridge` | `BiJaXJ7kEXy8cohxf7NxfyqS2sLbxZSa3Fx4JjEZS9bk` |
+
+Proven end-to-end on devnet (no mocks):
+
+- CPI resolve — dispute outcome pushed into settlement through the PDA oracle: [`q9yZGM…fWAkQ`](https://explorer.solana.com/tx/q9yZGMJbHgfSqKmrqWyhHJZ6PRNW89b2ZEJG6icVV2dEGDHRdAzYxnheS9aix9c14CEzBTERqYrPgvSjbMfWAkQ?cluster=devnet)
+- Dispute arbitrated, wrong side slashed: [`KDsynE…dB2vPFm`](https://explorer.solana.com/tx/KDsynE3WonhsfXYPKCKhM13RqEyiKGDMYrSuXF74yNog1ccdZf55TqTD3aHa8Kjx5HL8EL14E8H2GFqqdB2vPFm?cluster=devnet)
+
+### Developer SDK — settlement stack
+
+| Package | Registry | Install |
+| --- | --- | --- |
+| `nyx-txodds-settlement` (JS/TS) | [npm](https://www.npmjs.com/package/nyx-txodds-settlement) | `npm i nyx-txodds-settlement` |
+
+Instruction builders, PDA derivation and account decoders for all three programs, so anyone
+can assemble the full `assert -> dispute -> slash -> settle -> payout` loop without an IDL.
+See [`sdk/nyx-txodds-settlement`](./sdk/nyx-txodds-settlement).
