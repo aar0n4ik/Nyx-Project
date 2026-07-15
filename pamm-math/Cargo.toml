@@ -1,0 +1,5 @@
+[package]
+name = "pamm-math"
+version = "0.1.0"
+edition = "2021"
+description = "Fixed-point recentred-LMSR probability AMM core for Nyx pAMM"

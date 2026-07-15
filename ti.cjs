@@ -1,0 +1,23 @@
+"use strict";
+const web3=require("@solana/web3.js");
+const { Transaction, sendAndConfirmTransaction } = web3;
+const { connection, loadKeypair, poolPda, ixInitPool } = require("./pamm-client.cjs");
+(async()=>{
+  const c=connection();
+  const tre=loadKeypair("~/.config/solana/nyx-treasury.json");
+  const ev=BigInt(Date.now());
+  const { ix } = ixInitPool({ creator:tre.publicKey, eventId:ev, n:2, b:10000000000n, keeper:tre.publicKey });
+  const tx=new Transaction().add(ix); tx.feePayer=tre.publicKey;
+  const sig=await sendAndConfirmTransaction(c,tx,[tre],{commitment:"confirmed"});
+  console.log("init sig:", sig, "\nevent_id:", ev.toString());
+  const d=(await c.getAccountInfo(poolPda(ev))).data;
+  const treHex=tre.publicKey.toBuffer().toString("hex");
+  const kHex=d.subarray(291,323).toString("hex");
+  console.log("data len       :", d.length);
+  console.log("event_id @8..16:", d.subarray(8,16).toString("hex"));
+  console.log("n @16          :", d[16], "| b @17..33:", d.subarray(17,33).toString("hex"));
+  console.log("keeper @291..323:", kHex);
+  console.log("treasury        :", treHex);
+  console.log(">>> KEEPER MATCH (init-only):", kHex===treHex);
+  console.log("mid8 @307..315 :", d.subarray(307,315).toString("hex"), "(ждём accda7434f261a75)");
+})();

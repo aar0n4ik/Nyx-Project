@@ -1,0 +1,185 @@
+{
+  "program": "6k1LZGb8xWPwiZNhyk9p4AMdZRGeyYerDaxzPXmRRr83",
+  "market": "8Z5x7og5J8EaYk3papSb3jRywrh93p7JNZJ6r5ewMDZM",
+  "cluster": "devnet",
+  "initSig": "PR75SryyFUFwihueoqBEBVN5k6Uxv7uvMyF1AbG4dT2gGnnp2GAKkmDvzynFRQSmZM7KXouTUgFjTaJ43zaw6Yr",
+  "settleSig": "5Y41ipofRJHGYtL2EbBFXNgr4TnzWxpzKnRPxBcFVLvzKezezN44h5r45e7CmUm2KQNZL7euz145CnMgncH3Nqex",
+  "final": {
+    "price": 9276,
+    "decided": true,
+    "terminalYes": true
+  },
+  "fixture": {
+    "home": "Home",
+    "away": "Away",
+    "competition": "World Cup — live oracle replay"
+  },
+  "steps": [
+    {
+      "min": 0,
+      "hg": 0,
+      "ag": 0,
+      "label": "Kickoff",
+      "oracle": 5755,
+      "price": 5151,
+      "tf": 0,
+      "sig": "4B7YmEKVsEbe5Ea56hHuP3wT2jm97oG4iE7P2ARqbvMyFNyCArqzanYjoxNNrepFDa58Mqe2on9WDgTkgpEjqPVY",
+      "phase": "match"
+    },
+    {
+      "min": 23,
+      "hg": 1,
+      "ag": 0,
+      "label": "GOAL Home 1-0",
+      "oracle": 8047,
+      "price": 5730,
+      "tf": 2556,
+      "sig": "3DBxqWVWsuGvzxXiubrEmByGM4hE8irg5zTBxqQSp9tjYPf9gLiTAwfRD1gfXLXAF3mmwhqLEf8pCsqjMcSnSFm7",
+      "phase": "match"
+    },
+    {
+      "min": 40,
+      "hg": 1,
+      "ag": 0,
+      "label": "Halftime",
+      "oracle": 8256,
+      "price": 6235,
+      "tf": 4444,
+      "sig": "Tr5uqHqqdjPpwwzm3RAVFNeQN3gchuh4mEkFYdY21wadywJpnstf6vPExLWBnqV6vXg7jSYkqTXKoZZQa9nXwF7",
+      "phase": "match"
+    },
+    {
+      "min": 55,
+      "hg": 1,
+      "ag": 1,
+      "label": "GOAL Away 1-1",
+      "oracle": 5427,
+      "price": 6074,
+      "tf": 6111,
+      "sig": "5PkoSbbprHDJT4CBNQmZh54JVtX9ViHRQGEPk6xWHuWZkt58YhQQjiuN9NgRFdUFuPSvsk7cdVcfzZHmtVnFn6Ww",
+      "phase": "match"
+    },
+    {
+      "min": 70,
+      "hg": 1,
+      "ag": 1,
+      "label": "",
+      "oracle": 5310,
+      "price": 5922,
+      "tf": 7778,
+      "sig": "M7GR3Lb3qE22tabbFsYewdDDrB9LLB3dr6wviJQxiJSjYZcoKat42JJxMDYBmVbER95yAsyUNkkjWRiXuq1uFJR",
+      "phase": "match"
+    },
+    {
+      "min": 78,
+      "hg": 2,
+      "ag": 1,
+      "label": "GOAL Home 2-1",
+      "oracle": 9163,
+      "price": 6570,
+      "tf": 8667,
+      "sig": "3Kf3LAcNPyHSGWQnUs8zmBDZBWZueboEhpQLUK4FWdywvS9RszLwALATLpijeD9okTs7Cb6dpcQngxFXteyvBAmd",
+      "phase": "match"
+    },
+    {
+      "min": 90,
+      "hg": 2,
+      "ag": 1,
+      "label": "90'",
+      "oracle": 9699,
+      "price": 7195,
+      "tf": 10000,
+      "sig": "3CNvwyrWAkg6nv3WnjUYSNbsDydqqcEXCJFJVpc4au7C63kWHVaRRAuzXBVAifYjHwBsDkB2zLZyFRFSgxEQMpse",
+      "phase": "match"
+    },
+    {
+      "min": 90,
+      "hg": 2,
+      "ag": 1,
+      "label": "",
+      "oracle": 9699,
+      "price": 7695,
+      "tf": 10000,
+      "sig": "fDrJAJMmLgwzBcTSV3AGH4vLhQPGcXBJgb7VPviwdyuszuE6XZisEsc5bg4nZWwpwttM6JmnCtqRyqgXLHfgcgH",
+      "phase": "relax"
+    },
+    {
+      "min": 90,
+      "hg": 2,
+      "ag": 1,
+      "label": "",
+      "oracle": 9699,
+      "price": 8095,
+      "tf": 10000,
+      "sig": "5aXtcGSpBMF47NLUdn1WFLx9eBHcyKhTHne9PahHUscvFe5wBkUvdJiygoQu4pQ9QakgXeS1wc65Fa2rprvW7Bm4",
+      "phase": "relax"
+    },
+    {
+      "min": 90,
+      "hg": 2,
+      "ag": 1,
+      "label": "",
+      "oracle": 9699,
+      "price": 8415,
+      "tf": 10000,
+      "sig": "53suXA3TFxURsfx59VRxPrisDfst4uL8wiwmP2ed1fZ7Ro2DNcn25rAGcCKHnwYvndEdpwnkrBNfia7hvAVYPmYn",
+      "phase": "relax"
+    },
+    {
+      "min": 90,
+      "hg": 2,
+      "ag": 1,
+      "label": "",
+      "oracle": 9699,
+      "price": 8671,
+      "tf": 10000,
+      "sig": "2U7YwkQLaZkvuBgkY8CfKgGQVYUTShjYwSZiGBvVAYqJRGb9eJwbgE5fKqpsot9YdKnPDPMwrYE6VvALcnzXaQnz",
+      "phase": "relax"
+    },
+    {
+      "min": 90,
+      "hg": 2,
+      "ag": 1,
+      "label": "",
+      "oracle": 9699,
+      "price": 8876,
+      "tf": 10000,
+      "sig": "mkPLpieRUzyZ1XEq7knkDGfM1vnv2gdfx6pPRdBfBy3UjYdZv18gXznJU3SML7Ka7pWXKT1nZ2TSbJn28s1AmqJ",
+      "phase": "relax"
+    },
+    {
+      "min": 90,
+      "hg": 2,
+      "ag": 1,
+      "label": "",
+      "oracle": 9699,
+      "price": 9040,
+      "tf": 10000,
+      "sig": "5B1QE3b2QKitaNXAhQymoPCyNqRWKGqE6BGivsVQoavd77ih4b35SD7JDMSurR56LoioiVK41iXM4jfHUqAHxBT3",
+      "phase": "relax"
+    },
+    {
+      "min": 90,
+      "hg": 2,
+      "ag": 1,
+      "label": "",
+      "oracle": 9699,
+      "price": 9171,
+      "tf": 10000,
+      "sig": "2j841epAejB8BbDQdZjskt9HuJdzguVmXLu6YVw6RCs7unVrtDx6s6Kr4b9QihgcAfGbJafxUFbk9rbE7NQT6u8Y",
+      "phase": "relax"
+    },
+    {
+      "min": 90,
+      "hg": 2,
+      "ag": 1,
+      "label": "Converged to truth",
+      "oracle": 9699,
+      "price": 9276,
+      "tf": 10000,
+      "sig": "3ckef5dSRaJu3CKiwBHg7cFMdE81To41Gp3f57QtpsQUNpkxpZiAiM5c2pPzFjpNkRWeAqZGfNEGAgrcqf1odtXK",
+      "phase": "relax"
+    }
+  ],
+  "recordedAt": "2026-07-15T00:16:49.156Z"
+}

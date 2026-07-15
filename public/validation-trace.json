@@ -1,0 +1,28 @@
+{
+  "program": "6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J",
+  "pda": "BcLwqHJehs8ut8ycRo6NhCGsrtmRnkZbFMm273SdcPGe",
+  "fixtureId": 18175981,
+  "seq": 991,
+  "statKeys": "1,2,3001",
+  "ts": 1782859802824,
+  "epochDay": 20634,
+  "statsToProve": [
+    {
+      "key": 1,
+      "value": 3,
+      "period": 5
+    },
+    {
+      "key": 2,
+      "value": 0,
+      "period": 5
+    },
+    {
+      "key": 3001,
+      "value": 2,
+      "period": 5
+    }
+  ],
+  "predicate": false,
+  "verifiedAt": "2026-07-15T03:48:42.073Z"
+}

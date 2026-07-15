@@ -1,0 +1,33 @@
+{
+  "positionsProgram": "5mHnHLotoAnXzaSQwnM8HeL6JyAdirdTm96gK6wGhUgu",
+  "market": "8Z5x7og5J8EaYk3papSb3jRywrh93p7JNZJ6r5ewMDZM",
+  "cluster": "devnet",
+  "entryPriceBps": 5151,
+  "marketSettleSig": "5Y41ipofRJHGYtL2EbBFXNgr4TnzWxpzKnRPxBcFVLvzKezezN44h5r45e7CmUm2KQNZL7euz145CnMgncH3Nqex",
+  "terminalYes": true,
+  "positions": [
+    {
+      "side": "YES",
+      "user": "7tMb9N3L4YvMNwYoexd2MmHUDi4pnC19PYfm3LKRdRB6",
+      "pda": "BHqewahVCDEH6cDQdxvCDyEYjMjXiECbBf6M64NZoR1Y",
+      "notional": 1000000,
+      "entryPriceBps": 5151,
+      "settled": true,
+      "pnlBps": 4849,
+      "openSig": "3wo9cDZCY4pss6xddcdYka4JN7rKVD94MfUZVAg5pZsjwySVgpJMMycYZ2M3zwB8XT6z3cAkE6qz6K6f8KZ5df4h",
+      "settleSig": "4rvG8A6Z3giESYvZEvbdKRm3x3p5hRvKXMZE8vRjnvy8dFMd4Ch6EeSe1aWqEuF9vnAESRaN4NQBAAVt5f3oyx9R"
+    },
+    {
+      "side": "NO",
+      "user": "2YQDxzWtjottCNoX4FPcXejkkKHngb5bEEvtf2nwXFuX",
+      "pda": "3cV2ZT38vSbBjQbKQeoxApuXp7WdMNuUshymU8eRiqwE",
+      "notional": 1000000,
+      "entryPriceBps": 5151,
+      "settled": true,
+      "pnlBps": -4849,
+      "openSig": "4cfyMhyBADfHhwccwpJskeHxHmvj5FcqQqeqMY1S3DZ74vABUUcegffSnAcD6u6XmiCeMz4xhPWp7BK9d1AXJSLJ",
+      "settleSig": "4be5jLwADEW7pu1yW4UpVLX778pjniAkAf1d3eLKoPoq6ZqjyWyvG8o1VMSrUphDJtShuWhfLZ1xm2Svm4MXeKMF"
+    }
+  ],
+  "recordedAt": "2026-07-15T00:16:49.184Z"
+}

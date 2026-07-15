@@ -1,0 +1,26 @@
+{
+  "program": "6k1LZGb8xWPwiZNhyk9p4AMdZRGeyYerDaxzPXmRRr83",
+  "cluster": "devnet",
+  "fixtureId": 18241006,
+  "home": "England",
+  "away": "Argentina",
+  "source": "TXLineStablePriceDemargined",
+  "messageId": "1837829895:00003:000043-10021-stab",
+  "market": "ASIANHANDICAP_PARTICIPANT_GOALS",
+  "marketParams": "line=0.25",
+  "marketPeriod": "half=1",
+  "prices": [
+    1471,
+    3124
+  ],
+  "pct": [
+    "NA",
+    "NA"
+  ],
+  "homeProbBps": 6799,
+  "via": "Prices(shortDecimal)",
+  "lopMarket": "HtmrJ1kkQ445NReG5SdbpCSPbA5aEMNY9EF51dPFwvar",
+  "initSig": "3QQCF4aUxWELjPaQ2UA9uNjpWn6YW6x3VNZHL9fD1bgwWeBnVQzskvabzntKFTnivX6TTytbhCqDQqh8cnTRaxtN",
+  "pushSig": "5DwVQDJLtmPVLS3BuxCxTESe2ZuCbD7k3tNhxiCYh38WkpJmwAxRMx6tj6D23jnviK3F23wLiJGxEAJ4fdYmBRzB",
+  "recordedAt": "2026-07-15T03:10:26.018Z"
+}

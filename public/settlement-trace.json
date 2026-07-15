@@ -1,0 +1,13 @@
+{
+  "program": "6k1LZGb8xWPwiZNhyk9p4AMdZRGeyYerDaxzPXmRRr83",
+  "cluster": "devnet",
+  "gate": "TxLINE validateStatV2 (Merkle proof)",
+  "proofVerified": true,
+  "verifiedOutcome": false,
+  "market": "7pEA9ce5P1Ww8soxTZnAz78nQBHvBdMLbAEdSx66RDr2",
+  "initSig": "4pX1v5Ayiu6UFyR1CgbLjcnnwqk79f5pNs7DrXK9HshkLkd9PFxQ7cQ4fxsRHB8csEbLoxnkzFV4QxRrzbyX4byw",
+  "pushSig": "42hJPbn8fARvviUktKoyu4y4syz5rEDuQds5a6sPxdWSLvTeXYsf1dwver2QQfPXEcrUEhphBr1wFCjZwmEgT6Cp",
+  "settleSig": "3E1ugstrULieY4Bu2pwtDmVDsj3KUiJbqGz5rorw9cf3QgGTRqvfwWM1m77d4Uxxg5oygh6aw32xzgj6zMpf6HWs",
+  "terminalYes": false,
+  "recordedAt": "2026-07-15T03:48:45.618Z"
+}

@@ -6,6 +6,8 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
+nyx_verifier = "GPiPk4ymC76uBntrxUXyr2rL4kWmxWRRZsBya5uxLNLY"
+lop = "6k1LZGb8xWPwiZNhyk9p4AMdZRGeyYerDaxzPXmRRr83"
 nyx_settlement = "AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3"
 
 [registry]

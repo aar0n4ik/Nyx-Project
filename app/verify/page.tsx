@@ -79,10 +79,10 @@ function A({ kind, v }: { kind: string; v?: string }) {
 function Raw({ data }: { data: Any | null }) {
   if (!data) return null;
   return (
-    <toggle>
-      <summary style={S.summary}>raw JSON
+    <div>
+      <div style={S.summary}>raw JSON</div>
       <pre style={S.pre}>{JSON.stringify(data, null, 2)}</pre>
-    </toggle>
+    </div>
   );
 }
 function Spark({ values }: { values: number[] }) {

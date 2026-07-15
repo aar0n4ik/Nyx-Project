@@ -1,0 +1,37 @@
+{
+  "program": "6k1LZGb8xWPwiZNhyk9p4AMdZRGeyYerDaxzPXmRRr83",
+  "cluster": "devnet",
+  "fixtureId": 18241006,
+  "home": "England",
+  "away": "Argentina",
+  "lopMarket": "HtmrJ1kkQ445NReG5SdbpCSPbA5aEMNY9EF51dPFwvar",
+  "source": "TxLINE StablePrice (SSE+poll)",
+  "updates": 4,
+  "steps": [
+    {
+      "ts": "2026-07-15T03:35:18.785Z",
+      "bps": 5285,
+      "src": "init",
+      "sig": "3eD4ApXB8rdgzjr5KrYLf8yrCqSgeUScCeYkPDNwHiczDWbnF8sQZgqHFoLKgPREFkXkBGPU92PqNPVLNi6ch8Mr"
+    },
+    {
+      "ts": "2026-07-15T03:35:33.705Z",
+      "bps": 3551,
+      "src": "sse",
+      "sig": "2vLa4CuWYZ4oRJxPgfJKmuEex8x4Znu6nf6Diy2fHQLmHvBfhALr6DkkJ6mEFLQoRrafBbtp3iLziu8BrBNNjZsm"
+    },
+    {
+      "ts": "2026-07-15T03:36:49.521Z",
+      "bps": 3547,
+      "src": "sse",
+      "sig": "58b4cHLDx1cy6EnAqiaZvtLHrp2jye1bS5qcJpWXTF6qVNhZExFwKYUm8riSQDvpWz1Ta8MVdNYBjKR3HuUw7XW9"
+    },
+    {
+      "ts": "2026-07-15T03:36:59.536Z",
+      "bps": 3546,
+      "src": "sse",
+      "sig": "3rCSjX78yid3NUS9fWPrMhyxmcTwqLUKKkfKnAVu6oDoSPnfkw2byxBzxvV5uoJ3ghEEmNy4LqMzPXNeUBC4JMVd"
+    }
+  ],
+  "recordedAt": "2026-07-15T03:37:18.790Z"
+}

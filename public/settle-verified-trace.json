@@ -1,0 +1,16 @@
+{
+  "nyxProgram": "GPiPk4ymC76uBntrxUXyr2rL4kWmxWRRZsBya5uxLNLY",
+  "txoracle": "6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J",
+  "record": "DYQJWXi3ajbVaKYx1FUQT3Qn7odmuCNDPvv2rNeA13Ct",
+  "dailyScoresMerkleRoots": "BcLwqHJehs8ut8ycRo6NhCGsrtmRnkZbFMm273SdcPGe",
+  "fixtureId": 18175981,
+  "seq": 991,
+  "statKeys": "1,2,3001",
+  "epochDay": 20634,
+  "cpiDataLen": 792,
+  "tx": "65r1WhdDMuyU479caqWLjEskBrTGbZedNP6rDbgBh259MnRQo7PzCgcC1aPbVhsRNZji1FfPTD8AY7VBGaMXfV9v",
+  "verified": true,
+  "outcome": false,
+  "slot": 476364561,
+  "settledAt": "2026-07-15T05:12:44.998Z"
+}
