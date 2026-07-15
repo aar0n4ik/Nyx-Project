@@ -10,3 +10,9 @@ node_modules/
 dist/
 *.tgz
 .env.local
+
+# secrets
+**/.env
+nyx-mesh/.env
+*keypair*.json
+nyx-treasury.json
