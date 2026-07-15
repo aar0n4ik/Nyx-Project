@@ -148,3 +148,16 @@ Proven end-to-end on devnet (no mocks):
 Instruction builders, PDA derivation and account decoders for all three programs, so anyone
 can assemble the full `assert -> dispute -> slash -> settle -> payout` loop without an IDL.
 See [`sdk/nyx-txodds-settlement`](./sdk/nyx-txodds-settlement).
+
+### Published SDK packages (proof)
+
+| Package | Language | Registry | Install |
+| --- | --- | --- | --- |
+| `nyx-txodds-settlement` | JS/TS | [npm](https://www.npmjs.com/package/nyx-txodds-settlement) | `npm i nyx-txodds-settlement` |
+| `nyx-txodds-oracle` | Rust | [crates.io](https://crates.io/crates/nyx-txodds-oracle) | `cargo add nyx-txodds-oracle` |
+
+Both wrap the exact three programs above. The JS package builds instructions, derives PDAs
+and decodes accounts off-chain; the Rust crate does the same on-chain and ships a
+`push_resolution` CPI helper so any program can forward a dispute-finalized outcome into
+settlement. Anyone can rebuild the full `assert -> dispute -> slash -> settle -> payout`
+loop from these two — no IDL required.
