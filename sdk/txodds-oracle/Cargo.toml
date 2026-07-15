@@ -1,0 +1,19 @@
+[package]
+name = "nyx-txodds-oracle"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT"
+description = "Unofficial Rust building blocks for the Nyx trust-minimized settlement stack on Solana: program IDs, Anchor discriminators, PDA derivation, borsh account decoders, instruction-data builders, and an on-chain CPI helper to push a dispute-finalized outcome into settlement. Not affiliated with TxODDS."
+repository = "https://github.com/aar0n4ik/Nyx-Project"
+homepage = "https://github.com/aar0n4ik/Nyx-Project"
+documentation = "https://docs.rs/nyx-txodds-oracle"
+readme = "README.md"
+keywords = ["solana", "txodds", "settlement", "oracle", "dispute"]
+categories = ["cryptography::cryptocurrencies", "api-bindings"]
+
+[dependencies]
+solana-program = ">=1.17, <3"
+borsh = { version = "1", features = ["derive"] }
+
+[workspace]
