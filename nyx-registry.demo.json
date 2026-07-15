@@ -1,0 +1,38 @@
+{
+  "040f433a3ea4097fff6e934db4ef792d27f542c43d6f5bfe2a90c81a874c8731": {
+    "publicKeyHex": "040f433a3ea4097fff6e934db4ef792d27f542c43d6f5bfe2a90c81a874c8731",
+    "payoutAddress": "D3Uf37hQh3CEBZcuHX1fFpGGMBnAua1dZRXCTCnNBCz4",
+    "modelId": "LLAMA_3_2_1B_INST_Q4_0",
+    "pricePerKTokenUsdt": 0.015,
+    "endpoint": "040f433a3ea4097fff6e934db4ef792d27f542c43d6f5bfe2a90c81a874c8731",
+    "stakeUsdt": 50,
+    "served": 2,
+    "failed": 0,
+    "paidUsdt": 0.01536,
+    "registeredAt": 1784153723593
+  },
+  "a90214ab794fc6684232b1c3c5dc658d4e86e195b9da467fdbd24e805fcd9f44": {
+    "publicKeyHex": "a90214ab794fc6684232b1c3c5dc658d4e86e195b9da467fdbd24e805fcd9f44",
+    "payoutAddress": "D3Uf37hQh3CEBZcuHX1fFpGGMBnAua1dZRXCTCnNBCz4",
+    "modelId": "LLAMA_3_2_1B_INST_Q4_0",
+    "pricePerKTokenUsdt": 0.03,
+    "endpoint": "a90214ab794fc6684232b1c3c5dc658d4e86e195b9da467fdbd24e805fcd9f44",
+    "stakeUsdt": 120,
+    "served": 0,
+    "failed": 0,
+    "paidUsdt": 0,
+    "registeredAt": 1784153723593
+  },
+  "80b607a8bfb926ad24773d56658db19cab8af3121c77d1ef4e0632412a0ab36c": {
+    "publicKeyHex": "80b607a8bfb926ad24773d56658db19cab8af3121c77d1ef4e0632412a0ab36c",
+    "payoutAddress": "D3Uf37hQh3CEBZcuHX1fFpGGMBnAua1dZRXCTCnNBCz4",
+    "modelId": "LLAMA_3_2_1B_INST_Q4_0",
+    "pricePerKTokenUsdt": 0.008,
+    "endpoint": "80b607a8bfb926ad24773d56658db19cab8af3121c77d1ef4e0632412a0ab36c",
+    "stakeUsdt": 0,
+    "served": 0,
+    "failed": 1,
+    "paidUsdt": 0,
+    "registeredAt": 1784153723594
+  }
+}
