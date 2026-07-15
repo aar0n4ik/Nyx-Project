@@ -61,3 +61,22 @@ Real, verifiable on-chain deployment (no mocks) — full ledger in [DEPLOYMENTS.
 Second protocol program live on Solana devnet: a recentred-LMSR probability AMM that settles itself.
 - Program: `8hxh836KRG4H6poU7oZ161AV71gpTLKKE1mYrEsuwpW3` (explorer: https://explorer.solana.com/address/8hxh836KRG4H6poU7oZ161AV71gpTLKKE1mYrEsuwpW3?cluster=devnet)
 - Pure market engine `pamm-math`: 12 passing tests; LP max loss mathematically bounded at b*ln(n).
+
+## Developer SDK — TxODDS on-chain verification
+
+Nyx ships a reusable, **unofficial** SDK for building & verifying TxODDS `txoracle`
+`validate_stat_v2` instructions on Solana. It fills a gap TxODDS's own tooling leaves
+open: they publish TypeScript examples + an IDL, but no Rust on-chain verifier crate.
+
+| Package | Registry | Install |
+| --- | --- | --- |
+| `nyx-txodds-verifier` (Rust) | [crates.io](https://crates.io/crates/nyx-txodds-verifier) | `cargo add nyx-txodds-verifier` |
+| `nyx-txodds-solana` (JS/TS) | [npm](https://www.npmjs.com/package/nyx-txodds-solana) | `npm i nyx-txodds-solana` |
+
+- **Rust crate** — IDL-exact borsh types, instruction builders, PDA derivation, and CPI
+  helpers (`verify_stat_cpi`) for trustless in-program settlement. 5/5 unit tests passing.
+- **JS package** — REST→payload mapping, strategy builders, and `validateStatV2View`
+  for off-chain simulation of the verification result.
+
+> Unofficial community project. Not affiliated with, sponsored by, or endorsed by TxODDS.
+> "TxODDS" is a trademark of its respective owner; used only to describe compatibility.
