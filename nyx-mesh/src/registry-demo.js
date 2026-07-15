@@ -1,12 +1,16 @@
 // Discovery + reputation demo. A cheat lists the cheapest price, wins round 1,
 // fails proof-of-inference, its rating collapses, and it is filtered out — honest
 // providers take over. Real USD₮ payout on verified rounds (if wallet seed set).
+// Set NYX_CLUSTER=mainnet-beta to switch explorer links off devnet.
 import "./load-env.js";
 import { rmSync } from "node:fs";
 import { newIdentity, signReceipt } from "./poi.js";
 import { PaidInferenceProvider, PaidInferenceConsumer } from "./paid-inference.js";
 import { ProviderRegistry } from "./provider-registry.js";
 import { NyxWallet } from "./wallet.js";
+
+const CLUSTER = process.env.NYX_CLUSTER || (process.env.NYX_NETWORK === "mainnet" ? "mainnet-beta" : "devnet");
+const txUrl = (h) => `https://explorer.solana.com/tx/${h}?cluster=${CLUSTER}`;
 
 const modelId = "LLAMA_3_2_1B_INST_Q4_0";
 const prompt = [{ role: "user", content: "Summarise the match in one sentence." }];
@@ -24,7 +28,7 @@ const regPath = process.env.NYX_REGISTRY_PATH || "nyx-registry.demo.json";
 try { rmSync(regPath, { force: true }); } catch {}
 const registry = new ProviderRegistry({ path: regPath });
 registry.register({ publicKeyHex: idCheap.publicKeyHex, payoutAddress, modelId, pricePerKTokenUsdt: 0.015, stakeUsdt: 50 });
-registry.register({ publicKeyHex: idFast.publicKeyHex,  payoutAddress, modelId, pricePerKTokenUsdt: 0.030, stakeUsdt: 120 });
+registry.register({ publicKeyHex: idFast.publicKeyHex, payoutAddress, modelId, pricePerKTokenUsdt: 0.030, stakeUsdt: 120 });
 registry.register({ publicKeyHex: idCheat.publicKeyHex, payoutAddress, modelId, pricePerKTokenUsdt: 0.008, stakeUsdt: 0 });
 
 const honest = (id, price) => new PaidInferenceProvider({ identity: id, payoutAddress, pricePerKTokenUsdt: price,
@@ -35,7 +39,7 @@ const cheat = (id, price) => ({ async handle({ modelId, prompt, seed }) {
 } });
 const handlers = {
   [idCheap.publicKeyHex]: honest(idCheap, 0.015),
-  [idFast.publicKeyHex]:  honest(idFast, 0.030),
+  [idFast.publicKeyHex]: honest(idFast, 0.030),
   [idCheat.publicKeyHex]: cheat(idCheat, 0.008),
 };
 
@@ -52,7 +56,7 @@ for (let round = 1; round <= 3; round++) {
   console.log(`\n=== round ${round}: selected ${sid(pick.publicKeyHex)} (price=${pick.pricePerKTokenUsdt}, rating=${pick.rating}) ===`);
   const consumer = new PaidInferenceConsumer({ wallet, maxPricePerKTokenUsdt: 0.05, expectedProviderHex: pick.publicKeyHex });
   const r = await consumer.request(handlers[pick.publicKeyHex], { modelId, prompt });
-  console.log(`verified=${r.verified} paid=${r.paid} ${r.paid ? "tx=" + r.hash : "reason=" + r.reason}`);
+  console.log(`verified=${r.verified} paid=${r.paid} ${r.paid ? "tx=" + txUrl(r.hash) : "reason=" + r.reason}`);
   registry.recordResult(pick.publicKeyHex, { verified: r.verified, paidUsdt: r.paid ? r.cost : 0 });
   board(`after round ${round}`);
 }

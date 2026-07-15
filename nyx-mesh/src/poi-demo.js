@@ -1,13 +1,18 @@
 // Proof-of-Inference demo: honest provider gets paid in USD₮; a provider that
-// swaps the model / tampers the output gets NOTHING. Runs today with no QVAC and
-// no second machine (mock runners). To go real, replace runCompletion with a QVAC
-// delegated completion() call and set NYX_WALLET_SEED for the USD₮ payout.
+// swaps the model / tampers the output gets NOTHING. Uses a REAL QVAC delegated
+// completion when @qvac/sdk is installed, and falls back to a deterministic mock
+// so it still runs offline with no GPU and no second machine. Set NYX_WALLET_SEED
+// for the real USD₮ payout, and NYX_CLUSTER=mainnet-beta to switch explorer links.
 import "./load-env.js";
 import { newIdentity, identityFromSeed, signReceipt } from "./poi.js";
 import { PaidInferenceProvider, PaidInferenceConsumer } from "./paid-inference.js";
 import { NyxWallet } from "./wallet.js";
+import makeQvacRunner from "./qvac-runner.js";
 
-const price = Number(process.env.NYX_POI_PRICE || 0.02);          // USD₮ / 1k tokens
+const CLUSTER = process.env.NYX_CLUSTER || (process.env.NYX_NETWORK === "mainnet" ? "mainnet-beta" : "devnet");
+const txUrl = (h) => `https://explorer.solana.com/tx/${h}?cluster=${CLUSTER}`;
+
+const price = Number(process.env.NYX_POI_PRICE || 0.02); // USD₮ / 1k tokens
 const provider = process.env.NYX_POI_PROVIDER_SEED
   ? identityFromSeed(process.env.NYX_POI_PROVIDER_SEED) : newIdentity();
 console.log("▸ Provider id:", provider.publicKeyHex);
@@ -29,19 +34,31 @@ const modelId = "LLAMA_3_2_1B_INST_Q4_0";
 const prompt = [{ role: "user", content: "Summarise the match in one sentence." }];
 const GOOD = "Home side edged it 2-1 with a late winner.";
 
+// Real QVAC delegated inference when @qvac/sdk is present; deterministic mock otherwise.
+const qvac = await makeQvacRunner({ modelType: "llm" });
+console.log(qvac.ready
+  ? "▸ QVAC runner: REAL on-device inference\n"
+  : `▸ QVAC runner: mock fallback (${qvac.reason})\n`);
+const honestRun = qvac.ready
+  ? async ({ prompt, seed }) => {
+      const r = await qvac.runCompletion({ prompt, seed });
+      return { output: r.output, tokenCount: r.tokenCount };
+    }
+  : async () => ({ output: GOOD, tokenCount: 512 });
+
 function report(tag, r) {
   console.log(`\n=== ${tag} ===`);
   console.log(`verified=${r.verified} paid=${r.paid} cost=${r.cost != null ? r.cost + " USD₮" : "-"}`);
-  console.log(r.paid ? `tx=${r.hash}` : `reason: ${r.reason}`);
+  console.log(r.paid ? `tx=${txUrl(r.hash)}` : `reason: ${r.reason}`);
 }
 
-// A) Honest provider: runs the requested model, returns what it signed.
+// A) Honest provider: runs the requested model, returns exactly what it signed.
 const honest = new PaidInferenceProvider({ identity: provider, payoutAddress, pricePerKTokenUsdt: price,
-  runCompletion: async () => ({ output: GOOD, tokenCount: 512 }) });
+  runCompletion: honestRun });
 report("HONEST provider", await consumer.request(honest, { modelId, prompt }));
 
 // B) Cheating provider: signs a nice receipt but actually returns junk from a
-//    cheaper model. verifyDelivery recomputes the output hash -> OUTPUT MISMATCH.
+// cheaper model. verifyDelivery recomputes the output hash -> OUTPUT MISMATCH.
 const cheat = {
   async handle({ modelId, prompt, seed }) {
     const receipt = signReceipt(provider, { modelId, prompt, output: GOOD, tokenCount: 512,
@@ -61,4 +78,5 @@ const forged = {
 };
 report("FORGED receipt (tampered price)", await consumer.request(forged, { modelId, prompt }));
 
+await qvac.dispose();
 console.log("\n▸ Only the honest, verifiable run is eligible for USD₮ payment.");
