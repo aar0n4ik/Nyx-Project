@@ -1,12 +1,12 @@
 node_modules
-.next
-.env
-.env.local
-.vercel
-*.log
-.DS_Store
+dist
 
-# Rust / Anchor build artifacts
-target/
-**/target/
-Cargo.lock
+# --- Nyx: build artifacts & secrets ---
+/target
+**/target
+node_modules/
+**/node_modules/
+.next/
+dist/
+*.tgz
+.env.local
