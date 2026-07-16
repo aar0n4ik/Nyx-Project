@@ -3,7 +3,7 @@ import {
   Connection, PublicKey, Keypair, Transaction, TransactionInstruction,
   SystemProgram, sendAndConfirmTransaction, clusterApiUrl,
 } from "@solana/web3.js";
-import { settlement, pda, decodeMarket } from "../sdk/nyx-txodds-settlement/src/index.mjs";
+import { settlement, dispute, bridge, pda, decodeMarket } from "../sdk/nyx-txodds-settlement/src/index.mjs";
 
 const ALLOW = new PublicKey("De1egAFMkMWZSN5rYXRj9CAdheBamobVNubTsi9avR44");
 const TOKEN = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
@@ -91,7 +91,7 @@ const agent = Keypair.fromSecretKey(Uint8Array.from(
 console.log("NYX autonomous zero-custody betting agent");
 console.log("NYX user :", user.publicKey.toBase58());
 console.log("NYX agent:", agent.publicKey.toBase58());
-console.log("NYX reference P(YES) from the feed:", REF_PROB);
+console.log("NYX reference P(YES) (TxLINE input, set via NYX_REF_PROB):", REF_PROB);
 
 await send([createAtaIx(user.publicKey, user.publicKey), createAtaIx(user.publicKey, agent.publicKey)], [user]);
 if ((await conn.getBalance(agent.publicKey)) < 10000000) {
@@ -106,7 +106,8 @@ const fixtureId = Math.floor(Date.now() / 1000);
 const marketKey = [11, 0, 0, 0, 0, 0, 0, 0];
 const closeTs = Math.floor(Date.now() / 1000) + 3600;
 const market = pda.market(fixtureId, marketKey);
-await send([settlement.createMarket({ fixtureId, marketKey, closeTs, authority: user.publicKey, mint: MINT })], [user]);
+await send([bridge.createBoundMarket({ fixtureId, marketKey, closeTs, mint: MINT })], [user]);
+console.log("NYX market oracle bound to bridge PDA " + pda.oracle().toBase58() + " -- no human key can resolve");
 await send([settlement.placeBet({ fixtureId, marketKey, bettor: agent.publicKey, bettorAta: ata(agent.publicKey), sideYes: false, amount: NO_SEED })], [agent]);
 console.log("NYX market " + market.toBase58() + " opened with " + (NO_SEED / ONE) + " USDT of NO liquidity (stand-in for other bettors)");
 
@@ -139,7 +140,13 @@ for (let i = 1; i <= MAX_ITERS; i++) {
 }
 console.log("NYX total auto-staked from the capped budget: " + (spent / ONE) + " / " + (CAP / ONE) + " USDT");
 
-await send([settlement.resolve({ fixtureId, marketKey, oracle: user.publicKey, outcomeYes: true })], [user]);
+const LIVENESS = 3, BOND = 1 * ONE;
+await send([dispute.propose({ fixtureId, marketKey, proposer: user.publicKey, proposerAta: ata(user.publicKey), mint: MINT, arbiter: user.publicKey, outcomeYes: true, bond: BOND, liveness: LIVENESS })], [user]);
+console.log("NYX outcome YES proposed under a " + (BOND / ONE) + " USDT bond; " + LIVENESS + "s liveness, no challenger");
+await sleep((LIVENESS + 2) * 1000);
+await send([dispute.settleUndisputed({ fixtureId, marketKey, proposer: user.publicKey, proposerAta: ata(user.publicKey) })], [user]);
+const sResolve = await send([bridge.pushResolution({ fixtureId, marketKey })], [agent]);
+console.log("NYX resolved trustlessly: bridge PDA wrote the outcome via CPI; fee-payer " + agent.publicKey.toBase58() + " is NOT an oracle: " + link(sResolve));
 const before = await bal(user.publicKey);
 const sClaim = await send([settlement.claim({ fixtureId, marketKey, bettor: user.publicKey, bettorAta: ata(user.publicKey) })], [user]);
 const after = await bal(user.publicKey);

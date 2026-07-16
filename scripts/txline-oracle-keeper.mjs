@@ -8,7 +8,7 @@ const RPC=process.env.SOLANA_RPC||"https://api.devnet.solana.com";
 const LOP=new PublicKey("6k1LZGb8xWPwiZNhyk9p4AMdZRGeyYerDaxzPXmRRr83");
 const DURATION=Number(process.env.DURATION_MS||120000);
 let jwt=process.env.TXLINE_JWT, apiToken=process.env.TXLINE_API_TOKEN;
-if(!apiToken){ console.error("Нет TXLINE_API_TOKEN"); process.exit(1); }
+if(!apiToken){ console.error("Missing TXLINE_API_TOKEN"); process.exit(1); }
 const getJwt=async()=>(await(await fetch(`${ORIGIN}/auth/guest/start`,{method:"POST"})).json()).token;
 async function api(q,retry=true){ const r=await fetch(`${ORIGIN}/api${q}`,{headers:{Authorization:`Bearer ${jwt}`,"X-Api-Token":apiToken}}); if(r.status===401&&retry){jwt=await getJwt();return api(q,false);} const t=await r.text(); if(!r.ok) throw new Error(`${r.status} ${q}: ${t.slice(0,150)}`); return t?JSON.parse(t):null; }
 
@@ -35,7 +35,7 @@ const send=async(ix,signers)=>{ const tx=new Transaction().add(ix); tx.feePayer=
 let market=process.env.MARKET;
 try{ if(!market) market=JSON.parse(fs.readFileSync("public/odds-oracle-trace.json","utf8")).lopMarket; }catch{}
 let mktPk;
-if(market){ mktPk=new PublicKey(market); console.log("Реюз рынка:", market); }
+if(market){ mktPk=new PublicKey(market); console.log("Reusing market:", market); }
 else { const mkt=Keypair.generate(); mktPk=mkt.publicKey; market=mktPk.toBase58();
   console.log("initialize_market:", await send(new TransactionInstruction({programId:LOP,keys:[{pubkey:mkt.publicKey,isSigner:true,isWritable:true},{pubkey:auth.publicKey,isSigner:true,isWritable:true},{pubkey:SystemProgram.programId,isSigner:false,isWritable:false}],data:Buffer.concat([disc("initialize_market"),auth.publicKey.toBuffer(),u16(2000),u16(5000)])}),[auth,mkt])); }
 
@@ -46,13 +46,13 @@ async function pushOracle(bps,src){ const now=Date.now(); if(bps==null||busy||no
   catch(e){ console.log("push fail:",e.message); } finally{ busy=false; } }
 async function tick(src){ try{ await pushOracle(deriveBps(await api(`/odds/snapshot/${fixtureId}`)),src); }catch(e){ console.log("tick fail:",e.message); } }
 
-console.log(`Keeper старт: fixture ${fixtureId} (${meta?.Participant1} vs ${meta?.Participant2}), market ${market}, ${DURATION/1000}s`);
+console.log(`Keeper start: fixture ${fixtureId} (${meta?.Participant1} vs ${meta?.Participant2}), market ${market}, ${DURATION/1000}s`);
 await tick("init");
 const poll=setInterval(()=>tick("poll"),15000);
 const ab=new AbortController();
 (async()=>{ try{ const res=await fetch(`${ORIGIN}/api/odds/stream`,{headers:{Authorization:`Bearer ${jwt}`,"X-Api-Token":apiToken,Accept:"text/event-stream","Cache-Control":"no-cache"},signal:ab.signal});
-  if(!res.ok||!res.body){ console.log("SSE недоступен:",res.status,"— работаю на poll"); return; }
-  console.log("SSE odds stream открыт"); const rd=res.body.getReader(),dec=new TextDecoder(); let buf="";
+  if(!res.ok||!res.body){ console.log("SSE unavailable:",res.status,"— falling back to poll"); return; }
+  console.log("SSE odds stream opened"); const rd=res.body.getReader(),dec=new TextDecoder(); let buf="";
   while(true){ const {value,done}=await rd.read(); if(done) break; buf+=dec.decode(value,{stream:true});
     let mm; while((mm=buf.match(/\r?\n\r?\n/))){ const blk=buf.slice(0,mm.index); buf=buf.slice(mm.index+mm[0].length);
       if(blk.split(/\r?\n/).some(l=>l.startsWith("data:"))) await tick("sse"); } } }
@@ -60,5 +60,5 @@ const ab=new AbortController();
 
 setTimeout(()=>{ clearInterval(poll); ab.abort();
   fs.writeFileSync("public/oracle-live-trace.json", JSON.stringify({program:LOP.toBase58(),cluster:"devnet",fixtureId,home:meta&&(homeIsPart1?meta.Participant1:meta.Participant2),away:meta&&(homeIsPart1?meta.Participant2:meta.Participant1),lopMarket:market,source:"TxLINE StablePrice (SSE+poll)",updates:steps.length,steps,recordedAt:new Date().toISOString()},null,2));
-  console.log(`\nГотово: ${steps.length} обновлений оракула из TxLINE. WROTE public/oracle-live-trace.json`); process.exit(0);
+  console.log(`\nDone: ${steps.length} oracle updates from TxLINE. WROTE public/oracle-live-trace.json`); process.exit(0);
 }, DURATION);

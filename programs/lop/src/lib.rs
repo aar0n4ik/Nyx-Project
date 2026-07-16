@@ -26,7 +26,7 @@ pub mod lop {
         Ok(())
     }
 
-    // Оракул (TxLINE keeper) пушит живую вероятность и фазу матча.
+    // Oracle (TxLINE keeper) pushes the live probability and match phase.
     pub fn push_oracle(
         ctx: Context<PushOracle>,
         oracle_prob_bps: u16,
@@ -41,8 +41,8 @@ pub mod lop {
         Ok(())
     }
 
-    // ЯДРО: funding = settlement. Пермишенлесс-кранк.
-    // Если decided => target=0/1, rate=100% => это финальная выплата.
+    // CORE: funding = settlement. Permissionless crank.
+    // If decided => target=0/1, rate=100% => this is the final payout.
     pub fn apply_funding(ctx: Context<ApplyFunding>) -> Result<()> {
         let m = &mut ctx.accounts.market;
         let (target, rate_bps): (i64, i64) = if m.decided {
@@ -64,7 +64,7 @@ pub mod lop {
         Ok(())
     }
 
-    // Фиксация исхода. Сеттлмент делает следующий apply_funding.
+    // Lock the outcome. Settlement happens on the next apply_funding.
     pub fn settle(ctx: Context<Settle>, terminal_yes: bool) -> Result<()> {
         let m = &mut ctx.accounts.market;
         require_keys_eq!(ctx.accounts.oracle.key(), m.oracle, LopError::Unauthorized);

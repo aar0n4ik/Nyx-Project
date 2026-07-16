@@ -109,6 +109,41 @@ footer h4{color:#fff;font-size:13px;letter-spacing:.06em;text-transform:uppercas
     </div>
   </div></section>
 </main>
+
+<!-- NYX_ROADMAP_START -->
+<section id="roadmap" class="tracks">
+  <div class="container">
+    <span class="eyebrow">Roadmap</span>
+    <h2 class="h2">Win, improve, scale</h2>
+    <p class="sub">Nyx isn't a hackathon throwaway. The plan is deliberately open-ended: win the World Cup Hackathon, keep hardening the stack, then grow it into real infrastructure.</p>
+    <div class="grid3">
+      <div class="card"><div class="ic">🏆</div><h3>Win</h3><p>Ship the full three-track stack — verifier- and dispute-gated settlement, the zero-custody agent, and one-tap Blinks — with a polished demo and every claim verifiable on-chain.</p></div>
+      <div class="card"><div class="ic">🔧</div><h3>Improve</h3><p>Harden the on-chain programs, widen market and stat coverage, deepen the TxLINE integration, add languages, and put the settlement path through a proper security review.</p></div>
+      <div class="card"><div class="ic">🌍</div><h3>Scale</h3><p>Open the agent marketplace, move settlement to mainnet, extend beyond football to more sports and leagues, and become the default settlement rail for fan apps built on TxODDS data.</p></div>
+    </div>
+  </div>
+</section>
+<section id="creator">
+  <div class="container">
+    <span class="eyebrow">About the creator</span>
+    <h2 class="h2">Built by one 17-year-old, for the long run</h2>
+    <p class="sub">I'm Aaron, 17. I built Nyx solo — the Solana programs, the on-device agent, the published SDKs, and this app. I'm not here to submit and vanish: I want to keep building on TxODDS and Solana long after the hackathon, honestly and in the open. Every program, transaction and package linked here is real and reproducible — no mock data. If you back this, you're backing someone who is in it for the long term.</p>
+  </div>
+</section>
+<section id="sponsors" class="tracks">
+  <div class="container">
+    <span class="eyebrow">Built on &amp; giving back</span>
+    <h2 class="h2">TxODDS &middot; Tether QVAC &middot; Solana</h2>
+    <p class="sub">Nyx is built directly on the sponsors' stacks — and contributes back to them.</p>
+    <div class="grid3">
+      <div class="card"><div class="ic">📡</div><h3>TxODDS / TxLINE</h3><p>Live match data and the on-chain <code>txoracle</code> are the trust anchor of every settlement. TxODDS ships TS + an IDL but no Rust on-chain crate, so we published <code>nyx-txodds-verifier</code> and <code>nyx-txodds-oracle</code> to close that gap — plus concrete integration feedback (SSE JWT refresh, de-margined <code>NA</code> handling, v2/v3 IDL discoverability).</p></div>
+      <div class="card"><div class="ic">🧠</div><h3>Tether QVAC</h3><p>The agent runs a local Qwen3-4B through QVAC's OpenAI-compatible server with a deterministic fallback, and settles into a Tether WDK USD₮ wallet — fully on-device, private by default.</p></div>
+      <div class="card"><div class="ic">⚡</div><h3>Solana</h3><p>Programs live on devnet, on-chain capped allowances (zero custody), Actions/Blinks distribution, and a Proof-of-Inference anchor running on mainnet — settlement for fractions of a cent.</p></div>
+    </div>
+  </div>
+</section>
+<!-- NYX_ROADMAP_END -->
+
 <footer><div class="container">
   <div class="fgrid">
     <div><div class="fbrand"><img src="/nyx/nyx-mark.svg" alt="Nyx"/>Nyx</div><p style="color:#9fb2ce;font-size:14px;max-width:320px;margin-top:12px" data-i18n="ft_tag">The invisible Web3 layer for football. On-device AI with Tether QVAC, settled at Solana speed.</p><div class="badge-row"><span class="badge">Tether QVAC</span><span class="badge">Solana</span><span class="badge">TxLINE</span></div></div>

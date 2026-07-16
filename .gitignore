@@ -24,3 +24,4 @@ id*.json
 .npmrc
 **/.npmrc
 tsconfig.tsbuildinfo
+scripts/.agent.json

@@ -62,6 +62,7 @@ export class NyxAgent extends EventEmitter {
     this.oracle = new TxlineOracle(opts.oracle || {});
     this.wallet = new NyxWallet(opts.wallet || {});
     this.snapshots = new Map();
+    this.snapSource = new Map(); // fixtureId -> "txline" | "mesh" | "manual"
     this._timer = null;
     this._isSource = opts.source !== false;
   }
@@ -71,6 +72,7 @@ export class NyxAgent extends EventEmitter {
     this.mesh.on("warn", (w) => this.emit("log", `mesh: ${w}`));
     this.mesh.on("snapshot", ({ snapshot, from }) => {
       this.snapshots.set(snapshot.fixtureId, snapshot);
+      this.snapSource.set(snapshot.fixtureId, "mesh");
       this.emit("snapshot", { snapshot, source: "mesh:" + from });
     });
     await this.mesh.start();
@@ -84,6 +86,7 @@ export class NyxAgent extends EventEmitter {
       try {
         const snap = await this.oracle.snapshot(id);
         this.snapshots.set(id, snap);
+        this.snapSource.set(id, "txline");
         this.mesh.broadcast(snap);
         this.emit("snapshot", { snapshot: snap, source: "txline" });
       } catch (e) { this.emit("log", `oracle ${id}: ${e.message}`); }
@@ -93,6 +96,7 @@ export class NyxAgent extends EventEmitter {
   setSnapshot(fixtureId, snap) {
     const s = { fixtureId, ...snap };
     this.snapshots.set(fixtureId, s);
+    this.snapSource.set(fixtureId, "manual");
     this.emit("snapshot", { snapshot: s, source: "manual" });
     return s;
   }
@@ -146,6 +150,13 @@ export class NyxAgent extends EventEmitter {
   // Killer path: analyze a market and, the instant the outcome is GUARANTEED (100%),
   // pay the winner in real USD₮ on-chain. No human in the loop.
   async autoSettle({ fixtureId, market = "ou25", bookOdds = 1.95, bankroll = 1000, to, amount, lang = "en" }) {
+    const trusted = new Set(["txline"]);
+    if (process.env.NYX_DEMO_REPLAY === "1") trusted.add("manual");
+    const src = this.snapSource.get(fixtureId);
+    if (!trusted.has(src)) {
+      this.emit("log", `autoSettle refused \u2014 payout only on first-party TxLINE data, not "${src || "unknown"}" (mesh gossip is never trusted for settlement)`);
+      return { settled: false, guaranteed: false, reason: "untrusted snapshot source: " + (src || "unknown"), analysis: null };
+    }
     const r = await this.analyze({ fixtureId, market, bookOdds, bankroll, lang });
     const isWin = r.guaranteed && r.fairProb >= 1;
     if (!isWin) {

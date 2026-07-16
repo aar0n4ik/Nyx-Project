@@ -15,7 +15,7 @@ const NYX = new PublicKey("GPiPk4ymC76uBntrxUXyr2rL4kWmxWRRZsBya5uxLNLY");
 const IDL_URL = "https://raw.githubusercontent.com/txodds/tx-on-chain/main/examples/devnet/idl/txoracle.json";
 
 let jwt = process.env.TXLINE_JWT, apiToken = process.env.TXLINE_API_TOKEN;
-if (!apiToken) { console.error("Нет TXLINE_API_TOKEN в .env.local"); process.exit(1); }
+if (!apiToken) { console.error("Missing TXLINE_API_TOKEN in .env.local"); process.exit(1); }
 const getJwt = async () => (await (await fetch(`${ORIGIN}/auth/guest/start`,{method:"POST"})).json()).token;
 async function api(q, retry=true){
   const r = await fetch(`${ORIGIN}/api${q}`,{headers:{Authorization:`Bearer ${jwt}`,"X-Api-Token":apiToken}});
@@ -32,7 +32,7 @@ anchor.setProvider(provider);
 const program = new Program(idl, provider);
 
 const to32 = v => { let b = Array.isArray(v)?Uint8Array.from(v): v instanceof Uint8Array? v: v.startsWith("0x")?Buffer.from(v.slice(2),"hex"):Buffer.from(v,"base64");
-  if(b.length!==32) throw new Error(`ждём 32 байта, получили ${b.length}`); return Array.from(b); };
+  if(b.length!==32) throw new Error(`expected 32 bytes, got ${b.length}`); return Array.from(b); };
 const pn = ns => ns.map(n=>({hash:to32(n.hash), isRightSibling:n.isRightSibling}));
 
 const fixtureId = Number(process.env.FIXTURE_ID || 18175981);
@@ -52,12 +52,12 @@ const payload = { ts:new BN(ts),
 const strategy = { geometricTargets:[], distancePredicate:null,
   discretePredicates:statKeys.split(",").map((_,i)=>({ single:{ index:i, predicate:{ threshold:0, comparison:{ greaterThan:{} } } } })) };
 
-// 1) кодируем РОВНО ту же validate_stat_v2 -> это cpi_data
+// 1) encode the EXACT same validate_stat_v2 -> this becomes cpi_data
 const vIx = await program.methods.validateStatV2(payload, strategy).accounts({ dailyScoresMerkleRoots: pda }).instruction();
 const cpiData = vIx.data;
-console.log("cpi_data байт:", cpiData.length);
+console.log("cpi_data bytes:", cpiData.length);
 
-// 2) наша инструкция settle_verified(cpi_data)
+// 2) our settle_verified(cpi_data) instruction
 const disc = n => createHash("sha256").update(`global:${n}`).digest().subarray(0,8);
 const u32le = n => { const b = Buffer.alloc(4); b.writeUInt32LE(n>>>0); return b; };
 const data = Buffer.concat([disc("settle_verified"), u32le(cpiData.length), cpiData]);
@@ -75,14 +75,14 @@ const tx = new Transaction().add(ComputeBudgetProgram.setComputeUnitLimit({units
 const sig = await sendAndConfirmTransaction(conn, tx, [kp], {commitment:"confirmed"});
 console.log("settle_verified TX:", sig);
 
-// 3) читаем SettlementRecord
+// 3) read the SettlementRecord
 const acc = await conn.getAccountInfo(recordPda);
 const b = acc.data;
 const verified = b[8]===1, outcome = b[9]===1, slot = b.readBigUInt64LE(10);
-console.log(`ЗАПИСЬ: verified=${verified} outcome=${outcome} slot=${slot}`);
+console.log(`RECORD: verified=${verified} outcome=${outcome} slot=${slot}`);
 fs.writeFileSync("public/settle-verified-trace.json", JSON.stringify({
   nyxProgram:NYX.toBase58(), txoracle:TXORACLE.toBase58(), record:recordPda.toBase58(),
   dailyScoresMerkleRoots:pda.toBase58(), fixtureId, seq, statKeys, epochDay,
   cpiDataLen:cpiData.length, tx:sig, verified, outcome, slot:Number(slot), settledAt:new Date().toISOString()
 }, null, 2));
-console.log("WROTE public/settle-verified-trace.json — расчёт прошёл через реальный он-чейн CPI в TxLINE.");
+console.log("WROTE public/settle-verified-trace.json — settlement ran through a real on-chain CPI into TxLINE.");

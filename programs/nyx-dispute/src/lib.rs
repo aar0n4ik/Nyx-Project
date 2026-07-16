@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
-// Placeholder id; run `anchor keys sync` after the first build to set the real one.
+// Deployed devnet program id. Keep in sync via `anchor keys sync`.
 declare_id!("7bSmAPPAypVtWsRMvMhmT6bUrJyvmc76VKXinAgwc8vN");
 
 /// Nyx optimistic dispute — an assert / challenge / slash layer on top of TxLINE.

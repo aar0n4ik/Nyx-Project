@@ -13,7 +13,7 @@ const PROGRAM_ID = new PublicKey("6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J")
 const IDL_URL = "https://raw.githubusercontent.com/txodds/tx-on-chain/main/examples/devnet/idl/txoracle.json";
 
 let jwt = process.env.TXLINE_JWT, apiToken = process.env.TXLINE_API_TOKEN;
-if (!apiToken) { console.error("Нет TXLINE_API_TOKEN в .env.local — сначала активация"); process.exit(1); }
+if (!apiToken) { console.error("Missing TXLINE_API_TOKEN in .env.local — activate first"); process.exit(1); }
 const getJwt = async () => (await (await fetch(`${ORIGIN}/auth/guest/start`,{method:"POST"})).json()).token;
 async function api(q, retry=true){
   const r = await fetch(`${ORIGIN}/api${q}`,{headers:{Authorization:`Bearer ${jwt}`,"X-Api-Token":apiToken}});
@@ -28,7 +28,7 @@ anchor.setProvider(provider);
 const program = new Program(idl, provider);
 
 const to32 = v => { let b = Array.isArray(v)?Uint8Array.from(v): v instanceof Uint8Array? v: v.startsWith("0x")?Buffer.from(v.slice(2),"hex"):Buffer.from(v,"base64");
-  if(b.length!==32) throw new Error(`ждём 32 байта, получили ${b.length}`); return Array.from(b); };
+  if(b.length!==32) throw new Error(`expected 32 bytes, got ${b.length}`); return Array.from(b); };
 const pn = ns => ns.map(n=>({hash:to32(n.hash), isRightSibling:n.isRightSibling}));
 
 const fixtureId = Number(process.env.FIXTURE_ID || 18175981);
@@ -51,7 +51,7 @@ try {
   const ok = await program.methods.validateStatV2(payload, strategy)
     .accounts({ dailyScoresMerkleRoots: pda })
     .preInstructions([ComputeBudgetProgram.setComputeUnitLimit({units:1_400_000})]).view();
-  console.log("MERKLE PROOF ПРОВЕРЕН on-chain против корня TxLINE. predicate =", ok);
+  console.log("MERKLE PROOF VERIFIED on-chain against the TxLINE root. predicate =", ok);
   fs.writeFileSync("public/validation-trace.json", JSON.stringify({ program:PROGRAM_ID.toBase58(), pda:pda.toBase58(),
     fixtureId, seq, statKeys, ts, epochDay, statsToProve:val.statsToProve, predicate:ok, verifiedAt:new Date().toISOString() },null,2));
   console.log("WROTE public/validation-trace.json");

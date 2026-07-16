@@ -1,7 +1,7 @@
 # Nyx overlay — how to apply (no manual delete/paste)
 
 This archive is an OVERLAY: it only contains new/changed files. You do not delete anything by
-hand — git figures out what to replace, and one command removes the old OFFSIDE files.
+hand — git figures out what to replace, and one command removes the old Nyx files.
 
 ## ~2 minutes
     cd nyx-project
@@ -11,7 +11,7 @@ hand — git figures out what to replace, and one command removes the old OFFSID
     npm i @solana/web3.js @solana/spl-token   # deps for the Actions endpoint
     npm pkg set name=nyx                       # rename the package
     git add -A                                 # stages adds, changes AND the deletion
-    git commit -m "Rebrand OFFSIDE->Nyx + flag i18n + real Solana Actions + settlement program"
+    git commit -m "Rebrand Nyx->Nyx + flag i18n + real Solana Actions + settlement program"
     git push                                   # Vercel auto-redeploys
 
 That's it. `git add -A` handles the deleted public/offside folder and every new/updated file in

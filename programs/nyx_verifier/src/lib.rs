@@ -7,8 +7,8 @@ declare_id!("GPiPk4ymC76uBntrxUXyr2rL4kWmxWRRZsBya5uxLNLY");
 pub mod nyx_verifier {
     use super::*;
 
-    /// Принимает сериализованную (disc+args) инструкцию validate_stat_v2 и делает
-    /// реальный CPI в TxLINE. Невалидный Merkle-пруф уронит CPI -> запись не произойдёт.
+    /// Accepts a serialized (disc+args) validate_stat_v2 instruction and performs
+    /// a real CPI into TxLINE. An invalid Merkle proof reverts the CPI -> nothing is recorded.
     pub fn settle_verified(ctx: Context<SettleVerified>, cpi_data: Vec<u8>) -> Result<()> {
         let txoracle = ctx.accounts.txoracle_program.key();
         require!(txoracle.to_string() == "6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J", VErr::WrongProgram);
@@ -43,7 +43,7 @@ pub struct SettleVerified<'info> {
     pub record: Account<'info, SettlementRecord>,
     /// CHECK: TxLINE daily_scores_roots PDA
     pub daily_scores_merkle_roots: UncheckedAccount<'info>,
-    /// CHECK: TxLINE oracle program (сверяется require)
+    /// CHECK: TxLINE oracle program (validated by the require above)
     pub txoracle_program: UncheckedAccount<'info>,
     #[account(mut)]
     pub signer: Signer<'info>,

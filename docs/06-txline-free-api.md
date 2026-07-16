@@ -9,7 +9,7 @@ purchase), and a guest login is free too.
 TxLINE (by TxODDS) is a Solana-native oracle for **live football/soccer match data**:
 scores, goals, cards, corners — with **cryptographic proofs** that a stat is real (Merkle
 proof validated on-chain via `validateStatV2`). So your app doesn't just *show* a score, it
-can *prove* the score is genuine. That proof is exactly what powers OFFSIDE's settlement.
+can *prove* the score is genuine. That proof is exactly what powers Nyx's settlement.
 
 ## Why we need it
 
@@ -31,13 +31,13 @@ can *prove* the score is genuine. That proof is exactly what powers OFFSIDE's se
 4. **Free World Cup tier = service level 1** (devnet has no sampling delay). For the free
    tier you don't buy TxL; you activate an API token bound to your guest JWT. Full activate
    flow (guest → on-chain subscribe → sign → activate) is already coded in
-   `packages/txline-oracle/src/client.ts`.
+   `nyx-mesh/src/txline-oracle.js`.
 5. Data requests then send two headers: `Authorization: Bearer <jwt>` and
    `X-Api-Token: <apiToken>`.
 
 ## What you actually call (already implemented for you)
 
-`packages/txline-oracle/src/client.ts` — verified against the real API:
+`nyx-mesh/src/txline-oracle.js` — verified against the real API:
 
 | Need | Method | Endpoint |
 | --- | --- | --- |
@@ -52,7 +52,7 @@ market. `epochDay` MUST come from `summary.updateStats.minTimestamp`, never `Dat
 
 Soccer stat keys: `1/2` goals, `3/4` yellows, `5/6` reds, `7/8` corners; period prefixes
 `0`=full, `1000`=H1, `2000`=HT, `3000`=H2. Final whistle = `action=game_finalised`
-(statusId=100). All in `packages/txline-oracle/src/config.ts`.
+(statusId=100). All in `nyx-mesh/src/txline-oracle.js`.
 
 ## What to do now (2 minutes) vs later (go-live)
 
@@ -67,7 +67,3 @@ in `config.js`: `window.TXLINE_PROXY = "https://<your-app>/api/txline"` and
 forwards to `txline-dev.txodds.com/api/*` (keys never touch the browser). Empty proxy =
 fully local demo with built-in sample fixtures (nothing breaks offline).
 
-## Bybit / exchange execution
-
-Left intact for the future — config-gated behind an empty `CW_ORDER_PROXY`, so it never
-fires in the local demo. Nothing to change, nothing broken.

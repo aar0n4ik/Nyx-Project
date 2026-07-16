@@ -27,4 +27,4 @@ try { const j = JSON.parse(raw); apiToken = j.token || j.apiToken || j.apiKey ||
 console.log("API token:", short(apiToken));
 
 appendFileSync(".env.local", `\nTXLINE_NET=devnet\nTXLINE_ORIGIN=${HOST}\nTXLINE_JWT=${jwt}\nTXLINE_API_TOKEN=${apiToken}\n`);
-console.log("\u2705 .env.local обновлён. Перезапусти dev.");
+console.log("\u2705 .env.local updated. Restart dev.");

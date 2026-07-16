@@ -7,7 +7,7 @@ const ORIGIN = process.env.TXLINE_ORIGIN || "https://txline-dev.txodds.com";
 const RPC = process.env.SOLANA_RPC || "https://api.devnet.solana.com";
 const LOP = new PublicKey("6k1LZGb8xWPwiZNhyk9p4AMdZRGeyYerDaxzPXmRRr83");
 let jwt = process.env.TXLINE_JWT, apiToken = process.env.TXLINE_API_TOKEN;
-if(!apiToken){ console.error("Нет TXLINE_API_TOKEN — сначала активация"); process.exit(1); }
+if(!apiToken){ console.error("Missing TXLINE_API_TOKEN — activate first"); process.exit(1); }
 const getJwt=async()=>(await(await fetch(`${ORIGIN}/auth/guest/start`,{method:"POST"})).json()).token;
 async function api(q,retry=true){ const r=await fetch(`${ORIGIN}/api${q}`,{headers:{Authorization:`Bearer ${jwt}`,"X-Api-Token":apiToken}});
   if(r.status===401&&retry){jwt=await getJwt();return api(q,false);} const t=await r.text();
@@ -18,7 +18,7 @@ const fx = await fixtures(); const byId = new Map(fx.map(f=>[f.FixtureId??f.fixt
 let fixtureId=process.env.FIXTURE_ID?Number(process.env.FIXTURE_ID):null, meta=null, odds=null;
 const order = fixtureId?[fixtureId]:[18241006,17588320,...fx.map(f=>f.FixtureId??f.fixtureId)];
 for(const id of order){ try{ const o=await api(`/odds/snapshot/${id}`); if(Array.isArray(o)&&o.length){ fixtureId=id; odds=o; meta=byId.get(id)||null; break; } }catch(e){} }
-if(!odds){ console.error("Нет fixture с odds"); process.exit(1); }
+if(!odds){ console.error("No fixture with odds"); process.exit(1); }
 
 console.log(`\n=== FIXTURE ${fixtureId} | entries ${odds.length} ===`);
 odds.forEach((o,i)=>console.log(`[${i}] ${o.SuperOddsType} | ${o.MarketParameters} | ${o.MarketPeriod} | names=${JSON.stringify(o.PriceNames)} Prices=${JSON.stringify(o.Prices)} Pct=${JSON.stringify(o.Pct)}`));
@@ -33,9 +33,9 @@ if(Array.isArray(best.Pct)&&best.Pct.length>=2){ const h=Number(best.Pct[homeIsP
 if(homeBps==null && Array.isArray(best.Prices)&&best.Prices.length>=2){ const ip=best.Prices.map(p=>1/(Number(p)/1000)); const sum=ip[0]+ip[1]; homeBps=Math.max(1,Math.min(9999,Math.round(ip[homeIsPart1?0:1]/sum*10000))); via="Prices(shortDecimal)"; }
 const home = meta && (homeIsPart1?meta.Participant1:meta.Participant2);
 const away = meta && (homeIsPart1?meta.Participant2:meta.Participant1);
-console.log(`\nВыбран рынок: ${best.SuperOddsType} | ${best.MarketParameters} | ${best.MarketPeriod}`);
-console.log(`Источник: ${best.Bookmaker} (MessageId ${best.MessageId})`);
-console.log(`Де-маржинальная implied prob(home) = ${homeBps} bps (via ${via}) | ${home??"part1"} vs ${away??"part2"}`);
+console.log(`\nSelected market: ${best.SuperOddsType} | ${best.MarketParameters} | ${best.MarketPeriod}`);
+console.log(`Source: ${best.Bookmaker} (MessageId ${best.MessageId})`);
+console.log(`De-margined implied prob(home) = ${homeBps} bps (via ${via}) | ${home??"part1"} vs ${away??"part2"}`);
 
 let initSig=null, pushSig=null, market=null;
 if(homeBps!=null){

@@ -39,12 +39,12 @@ async function resolveProbBps(minuteHint) {
       else if (v > 1 && v <= 100) v *= 100;
       return Math.round(Math.max(0, Math.min(10000, v)));
     }
-    console.log(`  ! Не нашёл вероятность в ответе TxLINE: ${JSON.stringify(j).slice(0,180)}`);
+    console.log(`  ! No probability in TxLINE response: ${JSON.stringify(j).slice(0,180)}`);
   } catch (e) {
-    console.log(`  ! TxLINE недоступен (${NYX_URL}): ${e.message}`);
+    console.log(`  ! TxLINE unavailable (${NYX_URL}): ${e.message}`);
   }
   const sim = { 20: 5200, 60: 6100, 85: 7400 }[minuteHint] ?? 5000;
-  console.log(`  \u2192 fallback PROB_BPS=${sim} (запусти Next / задай NYX_URL или PROB_BPS для живого TxLINE)`);
+  console.log(`  \u2192 fallback PROB_BPS=${sim} (run Next / set NYX_URL or PROB_BPS for live TxLINE)`);
   return sim;
 }
 
@@ -63,11 +63,11 @@ async function showMarket(pk) {
 
 async function main() {
   const wallet = loadWallet();
-  const oracle = wallet;               // MVP: кошелёк = оракул = authority
+  const oracle = wallet;               // MVP: wallet = oracle = authority
   const market = Keypair.generate();
   console.log(`RPC: ${RPC}\nWallet/Oracle: ${wallet.publicKey.toBase58()}\nMarket: ${exAddr(market.publicKey.toBase58())}\n`);
 
-  console.log("STEP 1 — initialize_market (старт 50%)");
+  console.log("STEP 1 — initialize_market (start 50%)");
   await send(new TransactionInstruction({
     programId: PROGRAM_ID,
     keys: [
@@ -103,7 +103,7 @@ async function main() {
     await applyFunding(`funding tick @${min}'`);
   }
 
-  console.log("\nSTEP — settle(YES) + финальный funding tick (= СЕТТЛМЕНТ)");
+  console.log("\nSTEP — settle(YES) + final funding tick (= SETTLEMENT)");
   await send(new TransactionInstruction({
     programId: PROGRAM_ID,
     keys: [
@@ -114,6 +114,6 @@ async function main() {
   }), [oracle], "match decided: YES");
   await applyFunding("SETTLEMENT tick (price \u2192 100%)");
 
-  console.log(`\n\u2705 Полный цикл на devnet. Market: ${exAddr(market.publicKey.toBase58())}`);
+  console.log(`\n\u2705 Full cycle on devnet. Market: ${exAddr(market.publicKey.toBase58())}`);
 }
 main().catch((e) => { console.error(e); process.exit(1); });

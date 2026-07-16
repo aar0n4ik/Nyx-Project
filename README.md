@@ -2,7 +2,7 @@
 
 **One autonomous agent that prices, bets, and settles football markets on Solana in Tether USD₮ — with zero custody of user funds, every outcome trust-minimized on-chain, and every AI inference cryptographically provable.**
 
-Built for the Superteam × TxODDS World Cup Hackathon (track: Prediction Markets & Settlement). Powered by TxLINE match data, Tether QVAC on-device inference, and Solana Actions/Blinks.
+Built for the Superteam × TxODDS World Cup Hackathon — one stack spanning all three tracks: **Prediction Markets & Settlement** (verifier- and dispute-gated on-chain settlement), **Trading Tools & Agents** (the zero-custody betting agent), and **Consumer & Fan Experiences** (one-tap Blinks + zero-CAC affiliate). Powered by TxLINE match data, Tether QVAC on-device inference, and Solana Actions/Blinks.
 
 > Unofficial community project. Not affiliated with, sponsored by, or endorsed by TxODDS. "TxODDS" and "TxLINE" are trademarks of their respective owners, used only to describe compatibility.
 
@@ -51,7 +51,15 @@ Recorded devnet markets (open in any explorer):
 
 ## Trust-minimized settlement (TxLINE -> Solana)
 
-TxLINE proves a feed is internally consistent — it does **not** prove an outcome is true, and gives no on-chain way to challenge a bad signer. Nyx closes that gap with three composable Anchor programs:
+TxLINE proves a feed is internally consistent — it does **not** prove an outcome is true, and gives no on-chain way to challenge a bad signer. Nyx closes that gap with **two live settlement modes**, both deployed on devnet.
+
+**Mode 1 — proof-gated (fast path).** `nyx_verifier.settle_verified` forwards TxODDS's own `validate_stat_v2` check to the `txoracle` program via CPI and settles only if the oracle returns `verified = true` — no trusted keeper decides the outcome. The market and user positions live in the `lop` and `positions` programs.
+
+    nyx_verifier --CPI--> txoracle.validate_stat_v2  ->  settles only if verified = true
+
+Proof (devnet): [65r1Whd...aMXfV9v](https://explorer.solana.com/tx/65r1WhdDMuyU479caqWLjEskBrTGbZedNP6rDbgBh259MnRQo7PzCgcC1aPbVhsRNZji1FfPTD8AY7VBGaMXfV9v?cluster=devnet)
+
+**Mode 2 — optimistic dispute game (fallback).** For stats the oracle cannot directly attest, three composable Anchor programs run a bonded challenge:
 
     propose (bond) -> dispute (matching bond) -> arbitrate -> slash wrong side
                                     |
@@ -100,11 +108,15 @@ Latest anchor: [4cHmiwce...ESdMUeR](https://explorer.solana.com/tx/4cHmiwceMJ4Db
 | --- | --- | --- | --- |
 | `nyx-txodds-settlement` | JS/TS | npm | `npm i nyx-txodds-settlement` |
 | `nyx-txodds-allowance` | JS/TS | npm | `npm i nyx-txodds-allowance` |
+| `nyx-txodds-solana` | JS/TS | npm | `npm i nyx-txodds-solana` |
 | `nyx-txodds-oracle` | Rust | crates.io | `cargo add nyx-txodds-oracle` |
+| `nyx-txodds-verifier` | Rust | crates.io | `cargo add nyx-txodds-verifier` |
 
 - `nyx-txodds-settlement` — instruction builders, PDA derivation, account decoders for all three settlement programs; assemble the full `assert -> dispute -> slash -> settle -> payout` loop with no IDL.
 - `nyx-txodds-allowance` — instruction builders for the Subscriptions & Allowances flow (create authority, grant fixed delegation, transfer, revoke).
 - `nyx-txodds-oracle` — IDL-exact borsh types + `verify_stat_cpi` helper for trustless in-program settlement.
+- `nyx-txodds-solana` — high-level JS client: build and settle markets, run the agent loop, decode accounts without touching an IDL.
+- `nyx-txodds-verifier` — Rust CPI verifier crate: drop `validate_stat_v2` proof-gating into any Anchor program.
 
 ---
 
@@ -132,10 +144,14 @@ Full ledger in `DEPLOYMENTS.md`.
 | `nyx_oracle_bridge` | `BiJaXJ7kEXy8cohxf7NxfyqS2sLbxZSa3Fx4JjEZS9bk` |
 | `nyx_pamm` | `8hxh836KRG4H6poU7oZ161AV71gpTLKKE1mYrEsuwpW3` |
 | `nyx_verifier` | `GPiPk4ymC76uBntrxUXyr2rL4kWmxWRRZsBya5uxLNLY` |
+| `lop` (proof-gated market) | `6k1LZGb8xWPwiZNhyk9p4AMdZRGeyYerDaxzPXmRRr83` |
+| `positions` (proof-gated positions) | `5mHnHLotoAnXzaSQwnM8HeL6JyAdirdTm96gK6wGhUgu` |
+| TxODDS `txoracle` (dependency) | `6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J` |
 | Subscriptions & Allowances (Solana Foundation, mainnet + devnet) | `De1egAFMkMWZSN5rYXRj9CAdheBamobVNubTsi9avR44` |
 
 | Settlement proof (devnet) | Tx |
 | --- | --- |
+| Proof-gated CPI settle (verifier -> txoracle) | [65r1Whd...aMXfV9v](https://explorer.solana.com/tx/65r1WhdDMuyU479caqWLjEskBrTGbZedNP6rDbgBh259MnRQo7PzCgcC1aPbVhsRNZji1FfPTD8AY7VBGaMXfV9v?cluster=devnet) |
 | First on-chain USD₮ payout | [2xXK...soga](https://explorer.solana.com/tx/2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA?cluster=devnet) |
 | Live auto-settlement payout | [5fxc...jsbVy](https://explorer.solana.com/tx/5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy?cluster=devnet) |
 
@@ -167,6 +183,7 @@ Every command prints a real Solana explorer link.
 | `programs/nyx-settlement` | Settlement: markets, bets, `place_bet_for`, resolve, claim |
 | `programs/nyx-dispute` | Optimistic dispute game (bond / challenge / slash) |
 | `programs/nyx-oracle-bridge` | PDA oracle -> settlement via CPI |
+| `programs/nyx_verifier`, `programs/lop`, `programs/positions` | Proof-gated settlement stack (verifier CPI into txoracle) |
 | `programs/nyx-pamm` + `pamm-math` | Recentred-LMSR pricing AMM |
 | `nyx-mesh` | On-device QVAC inference, P2P mesh, WDK wallet, PoI + on-chain anchor |
 | `scripts/allowance-*`, `scripts/nyx-agent-loop.mjs` | Zero-custody agent demos |

@@ -19,7 +19,7 @@ const ACTIONS_CORS = {
 }
 const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr")
 const RPC = process.env.SOLANA_RPC || ("https:" + "//api.devnet.solana.com")
-const USDC_MINT = new PublicKey(process.env.NYX_STABLE_MINT || "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU")
+const STABLE_MINT = new PublicKey(process.env.NYX_STABLE_MINT || "5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS")
 const STABLE_DECIMALS = Number(process.env.NYX_STABLE_DECIMALS || 6)
 const TREASURY = new PublicKey(process.env.NYX_TREASURY || "DDLyynBSATRkb5svSXjZRLYGPrf2Trvudbrv7HKoaraE")
 const REF_BPS_DEFAULT = Number(process.env.NYX_REF_BPS || 500)
@@ -54,7 +54,7 @@ export async function GET(req: Request) {
   const description = (lay
     ? ("Someone backed their pick on " + m + ". Take the OTHER side - stake test " + USDT + " on \"" + k + "\".")
     : ("Stake test " + USDT + " on \"" + k + "\" for " + m + "."))
-    + " Settled on-chain against verified TxLINE final scores by the Nyx settlement program. Devnet only."
+    + " Your stake is recorded on-chain now (SPL transfer + memo); the Nyx settlement program settles the market against verified TxLINE final scores and pays winners out. Devnet only."
     + (ref ? " (Referred link - your stake is unchanged.)" : "")
   const mkAmt = (a: string | number) => base + "&amount=" + a
   const payload = {
@@ -80,20 +80,20 @@ export async function POST(req: Request) {
     const body = (await req.json().catch(() => ({}))) as { account?: string }
     if (!body.account) return new Response(JSON.stringify({ message: "Missing 'account'" }), { status: 400, headers: ACTIONS_CORS })
     const payer = new PublicKey(body.account); const connection = new Connection(RPC, "confirmed")
-    const fromAta = await getAssociatedTokenAddress(USDC_MINT, payer); const toAta = await getAssociatedTokenAddress(USDC_MINT, TREASURY)
+    const fromAta = await getAssociatedTokenAddress(STABLE_MINT, payer); const toAta = await getAssociatedTokenAddress(STABLE_MINT, TREASURY)
     const ixs: TransactionInstruction[] = []
-    try { await getAccount(connection, toAta) } catch { ixs.push(createAssociatedTokenAccountInstruction(payer, toAta, TREASURY, USDC_MINT)) }
+    try { await getAccount(connection, toAta) } catch { ixs.push(createAssociatedTokenAccountInstruction(payer, toAta, TREASURY, STABLE_MINT)) }
     const raw = BigInt(Math.round(amount * (10 ** STABLE_DECIMALS)))
     // Zero-CAC affiliate revenue split: carve a referral cut out of the stake (never on top of it).
     let affiliate: PublicKey | null = null
     try { if (ref) affiliate = new PublicKey(ref) } catch { affiliate = null }
     const affRaw = (affiliate && refBps > 0) ? (raw * BigInt(refBps) / 10000n) : 0n
     if (affiliate && affRaw > 0n && !affiliate.equals(TREASURY)) {
-      const affAta = await getAssociatedTokenAddress(USDC_MINT, affiliate)
-      try { await getAccount(connection, affAta) } catch { ixs.push(createAssociatedTokenAccountInstruction(payer, affAta, affiliate, USDC_MINT)) }
-      ixs.push(createTransferCheckedInstruction(fromAta, USDC_MINT, affAta, payer, affRaw, STABLE_DECIMALS))
+      const affAta = await getAssociatedTokenAddress(STABLE_MINT, affiliate)
+      try { await getAccount(connection, affAta) } catch { ixs.push(createAssociatedTokenAccountInstruction(payer, affAta, affiliate, STABLE_MINT)) }
+      ixs.push(createTransferCheckedInstruction(fromAta, STABLE_MINT, affAta, payer, affRaw, STABLE_DECIMALS))
     }
-    ixs.push(createTransferCheckedInstruction(fromAta, USDC_MINT, toAta, payer, raw - affRaw, STABLE_DECIMALS))
+    ixs.push(createTransferCheckedInstruction(fromAta, STABLE_MINT, toAta, payer, raw - affRaw, STABLE_DECIMALS))
     const memo = JSON.stringify({ p: "nyx-bet-v1", match, market, odds, amount, side: lay ? "lay" : "back", ref: ref || null, refBps: affRaw > 0n ? refBps : 0 })
     ixs.push(new TransactionInstruction({ keys: [{ pubkey: payer, isSigner: true, isWritable: false }], programId: MEMO_PROGRAM_ID, data: Buffer.from(memo, "utf8") }))
     const bh = await connection.getLatestBlockhash()

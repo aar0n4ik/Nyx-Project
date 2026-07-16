@@ -7,14 +7,14 @@ try { for (const l of fs.readFileSync(".env.local","utf8").split("\n")){ const m
 const RPC=process.env.SOLANA_RPC||"https://api.devnet.solana.com";
 const LOP=new PublicKey("6k1LZGb8xWPwiZNhyk9p4AMdZRGeyYerDaxzPXmRRr83");
 
-console.log("== ГЕЙТ: on-chain валидация TxLINE (validateStatV2) ==");
+console.log("== GATE: on-chain TxLINE validation (validateStatV2) ==");
 let out=""; try { out=execSync("node scripts/txline-validate.mjs",{encoding:"utf8"}); } catch(e){ out=(e.stdout||"")+"\n"+(e.stderr||""); }
 process.stdout.write(out);
-const proofOk=/MERKLE PROOF ПРОВЕРЕН/i.test(out);
+const proofOk=/MERKLE PROOF VERIFIED/i.test(out);
 const m=out.match(/predicate\s*=\s*(true|false)/i); let outcome=m?/true/i.test(m[1]):null;
 try { if(outcome==null){ const t=JSON.parse(fs.readFileSync("public/validation-trace.json","utf8")); outcome=!!(t.predicate??t.outcome??t.result); } } catch {}
-if(!proofOk){ console.error("\n❌ Пруф TxLINE НЕ подтверждён — РАСЧЁТ ЗАБЛОКИРОВАН (trustless gate)."); process.exit(1); }
-console.log(`\n✅ Merkle-пруф TxLINE подтверждён on-chain. Verified outcome = ${outcome}. Разрешаю settle.\n`);
+if(!proofOk){ console.error("\n❌ TxLINE proof NOT verified — SETTLEMENT BLOCKED (trustless gate)."); process.exit(1); }
+console.log(`\n✅ TxLINE Merkle proof verified on-chain. Verified outcome = ${outcome}. Allowing settle.\n`);
 
 const conn=new Connection(RPC,"confirmed");
 const auth=Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(path.join(os.homedir(),".config/solana/id.json"),"utf8"))));
@@ -31,4 +31,4 @@ const settleSig=await send(new TransactionInstruction({programId:LOP,keys:[{pubk
 console.log("settle:", settleSig, "| terminal_yes =", outcome);
 
 fs.writeFileSync("public/settlement-trace.json", JSON.stringify({program:LOP.toBase58(),cluster:"devnet",gate:"TxLINE validateStatV2 (Merkle proof)",proofVerified:true,verifiedOutcome:outcome,market:mkt.publicKey.toBase58(),initSig,pushSig,settleSig,terminalYes:outcome,recordedAt:new Date().toISOString()},null,2));
-console.log("\nWROTE public/settlement-trace.json — settle выполнен ТОЛЬКО после подтверждённого пруфа TxLINE.");
+console.log("\nWROTE public/settlement-trace.json — settle executed ONLY after a verified TxLINE proof.");
