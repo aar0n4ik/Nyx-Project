@@ -189,3 +189,9 @@ Not devnet-only: the on-chain Proof-of-Inference anchor runs on **Solana mainnet
 - Mainnet anchor tx: [2SDKgy1A...TaaH7Vn](https://explorer.solana.com/tx/2SDKgy1AGbosRkXbvDitxLLsyysbDY32RsA7wJsX2Bs4Tcc4iZMkADmqKDzxYGkAzPiWbQmPE3W2zoXD9TaaH7Vn)
 - Digest anchored on-chain: `4331d8b7c75bac406fe8e7aa09605db63f6f809e6919fd48b0f042ff9f2664d8`
 - Reproduce: `NYX_NETWORK=mainnet node nyx-mesh/src/poi-anchor-demo.js` (funded mainnet key required)
+
+---
+
+## Business model & unit economics
+
+Nyx is infrastructure, not a book: about 99% gross margin, near-zero marginal cost, four revenue lines, zero-CAC distribution via Blinks. The affiliate revenue split is proven on-chain (a 5% cut lands in the creator wallet automatically). Full model in [BUSINESS.md](BUSINESS.md).

@@ -39,6 +39,7 @@ Sports prediction markets need three things at once: a **trustworthy outcome**, 
 | Auto-settlement payout | [5fxc...jsbVy](https://explorer.solana.com/tx/5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy?cluster=devnet) |
 | On-chain PoI anchor | [4cHmiwce...ESdMUeR](https://explorer.solana.com/tx/4cHmiwceMJ4DbNQsHupQVUdyL4EwA5SEv425M3yFkfksVLCT128ieutsVpeChNiRuRuZyfMYhmhinEnm8ESdMUeR?cluster=devnet) |
 | On-chain PoI anchor (Solana MAINNET) | [2SDKgy1A...TaaH7Vn](https://explorer.solana.com/tx/2SDKgy1AGbosRkXbvDitxLLsyysbDY32RsA7wJsX2Bs4Tcc4iZMkADmqKDzxYGkAzPiWbQmPE3W2zoXD9TaaH7Vn) |
+| Affiliate revenue split (devnet) | [29zHMJ9A...MLNqRS](https://explorer.solana.com/tx/29zHMJ9AA4dH1zWMzDAERWCXedG5JurPrtimWfRX37E7SFu9CeTmib2LhisSfPSQc7ro8przE5SYpp9LQrMLNqRS?cluster=devnet) |
 
 Published SDKs: `nyx-txodds-settlement` (npm), `nyx-txodds-allowance` (npm), `nyx-txodds-oracle` (crates.io).
 
