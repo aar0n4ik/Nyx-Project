@@ -57,3 +57,11 @@ node src/inplay-demo.js                # live edge, refuses to settle, then pays
 ## pAMM — recentred-LMSR probability AMM
 - Instructions: `init_pool` / `buy` / `sell` / `push_oracle` / `resolve` / `claim`.
 - Core market engine `pamm-math`: 12 passing tests; LP max loss bounded at `b·ln(n)`.
+
+## Mainnet (live)
+
+- Network: Solana mainnet-beta
+- Proof-of-Inference anchor tx: 2SDKgy1AGbosRkXbvDitxLLsyysbDY32RsA7wJsX2Bs4Tcc4iZMkADmqKDzxYGkAzPiWbQmPE3W2zoXD9TaaH7Vn
+- Explorer: https://explorer.solana.com/tx/2SDKgy1AGbosRkXbvDitxLLsyysbDY32RsA7wJsX2Bs4Tcc4iZMkADmqKDzxYGkAzPiWbQmPE3W2zoXD9TaaH7Vn
+- Digest anchored: 4331d8b7c75bac406fe8e7aa09605db63f6f809e6919fd48b0f042ff9f2664d8
+- Signer (anchor key): 7tMb9N3L4YvMNwYoexd2MmHUDi4pnC19PYfm3LKRdRB6

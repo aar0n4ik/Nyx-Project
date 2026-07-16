@@ -3,7 +3,7 @@
 **Superteam × TxODDS World Cup Hackathon — Track: Prediction Markets & Settlement**
 
 ## TL;DR
-One autonomous agent that **prices, bets, and settles** football markets on Solana in Tether USD₮ — with **zero custody** of user funds, **trust-minimized** on-chain outcomes, and **provable** AI inference. Live and verifiable on devnet; the mainnet path is implemented and config-ready.
+One autonomous agent that **prices, bets, and settles** football markets on Solana in Tether USD₮ — with **zero custody** of user funds, **trust-minimized** on-chain outcomes, and **provable** AI inference. Live and verifiable on devnet; the on-chain Proof-of-Inference anchor also runs live on Solana mainnet.
 
 - Live app: https://nyx-project-roan.vercel.app
 - On-chain verifier: https://nyx-project-roan.vercel.app/verify
@@ -38,6 +38,7 @@ Sports prediction markets need three things at once: a **trustworthy outcome**, 
 | First USD₮ payout | [2xXK...soga](https://explorer.solana.com/tx/2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA?cluster=devnet) |
 | Auto-settlement payout | [5fxc...jsbVy](https://explorer.solana.com/tx/5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy?cluster=devnet) |
 | On-chain PoI anchor | [4cHmiwce...ESdMUeR](https://explorer.solana.com/tx/4cHmiwceMJ4DbNQsHupQVUdyL4EwA5SEv425M3yFkfksVLCT128ieutsVpeChNiRuRuZyfMYhmhinEnm8ESdMUeR?cluster=devnet) |
+| On-chain PoI anchor (Solana MAINNET) | [2SDKgy1A...TaaH7Vn](https://explorer.solana.com/tx/2SDKgy1AGbosRkXbvDitxLLsyysbDY32RsA7wJsX2Bs4Tcc4iZMkADmqKDzxYGkAzPiWbQmPE3W2zoXD9TaaH7Vn) |
 
 Published SDKs: `nyx-txodds-settlement` (npm), `nyx-txodds-allowance` (npm), `nyx-txodds-oracle` (crates.io).
 

@@ -179,3 +179,13 @@ Every command prints a real Solana explorer link.
 ## Deploy the web app
 
 Push to GitHub, import on Vercel (auto-detects Next.js), deploy. `/` redirects to the offline app; `/api/*` routes add AI narrative, live TxLINE data, and Blinks — all secrets stay server-side.
+
+---
+
+## Live on Solana mainnet
+
+Not devnet-only: the on-chain Proof-of-Inference anchor runs on **Solana mainnet** through the exact same code path (the settlement programs remain on devnet for the hackathon).
+
+- Mainnet anchor tx: [2SDKgy1A...TaaH7Vn](https://explorer.solana.com/tx/2SDKgy1AGbosRkXbvDitxLLsyysbDY32RsA7wJsX2Bs4Tcc4iZMkADmqKDzxYGkAzPiWbQmPE3W2zoXD9TaaH7Vn)
+- Digest anchored on-chain: `4331d8b7c75bac406fe8e7aa09605db63f6f809e6919fd48b0f042ff9f2664d8`
+- Reproduce: `NYX_NETWORK=mainnet node nyx-mesh/src/poi-anchor-demo.js` (funded mainnet key required)
