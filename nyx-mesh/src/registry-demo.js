@@ -10,7 +10,7 @@ import { ProviderRegistry } from "./provider-registry.js";
 import { NyxWallet } from "./wallet.js";
 
 const CLUSTER = process.env.NYX_CLUSTER || (process.env.NYX_NETWORK === "mainnet" ? "mainnet-beta" : "devnet");
-const txUrl = (h) => `https://explorer.solana.com/tx/${h}?cluster=${CLUSTER}`;
+const txUrl = (h) => "https://explorer.solana.com/tx/" + h + "?cluster=" + CLUSTER;
 
 const modelId = "LLAMA_3_2_1B_INST_Q4_0";
 const prompt = [{ role: "user", content: "Summarise the match in one sentence." }];
@@ -45,19 +45,19 @@ const handlers = {
 
 const sid = (h) => h.slice(0, 10) + "…";
 function board(tag) {
-  console.log(`\n--- registry (${tag}) ---`);
+  console.log("\n--- registry (" + tag + ") ---");
   for (const p of registry.list({ modelId }))
-    console.log(`${sid(p.publicKeyHex)} price=${p.pricePerKTokenUsdt}/1k stake=${p.stakeUsdt} served=${p.served} failed=${p.failed} rating=${p.rating}`);
+    console.log(sid(p.publicKeyHex) + " price=" + p.pricePerKTokenUsdt + "/1k stake=" + p.stakeUsdt + " served=" + p.served + " failed=" + p.failed + " rating=" + p.rating);
 }
 
 board("initial — cheat is cheapest, no track record yet");
 for (let round = 1; round <= 3; round++) {
   const pick = registry.select({ modelId, maxPricePerKTokenUsdt: 0.05, minRating: 0.5 });
-  console.log(`\n=== round ${round}: selected ${sid(pick.publicKeyHex)} (price=${pick.pricePerKTokenUsdt}, rating=${pick.rating}) ===`);
+  console.log("\n=== round " + round + ": selected " + sid(pick.publicKeyHex) + " (price=" + pick.pricePerKTokenUsdt + ", rating=" + pick.rating + ") ===");
   const consumer = new PaidInferenceConsumer({ wallet, maxPricePerKTokenUsdt: 0.05, expectedProviderHex: pick.publicKeyHex });
   const r = await consumer.request(handlers[pick.publicKeyHex], { modelId, prompt });
-  console.log(`verified=${r.verified} paid=${r.paid} ${r.paid ? "tx=" + txUrl(r.hash) : "reason=" + r.reason}`);
+  console.log("verified=" + r.verified + " paid=" + r.paid + " " + (r.paid ? "tx=" + txUrl(r.hash) : "reason=" + r.reason));
   registry.recordResult(pick.publicKeyHex, { verified: r.verified, paidUsdt: r.paid ? r.cost : 0 });
-  board(`after round ${round}`);
+  board("after round " + round);
 }
 console.log("\n▸ Price-first but reputation-gated: the cheat wins once on price, fails proof, drops below the rating bar, and is excluded. Honest providers earn the flow.");

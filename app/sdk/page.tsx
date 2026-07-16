@@ -2,8 +2,8 @@
 import type { CSSProperties } from "react";
 
 const CLUSTER = process.env.NEXT_PUBLIC_SOLANA_CLUSTER || "devnet";
-const tx = (h: string) => `https://explorer.solana.com/tx/${h}?cluster=${CLUSTER}`;
-const addr = (a: string) => `https://explorer.solana.com/address/${a}?cluster=${CLUSTER}`;
+const tx = (h: string) => "https://explorer.solana.com/tx/" + h + "?cluster=" + CLUSTER;
+const addr = (a: string) => "https://explorer.solana.com/address/" + a + "?cluster=" + CLUSTER;
 
 const PROOF = {
   cpiResolve: "q9yZGMJbHgfSqKmrqWyhHJZ6PRNW89b2ZEJG6icVV2dEGDHRdAzYxnheS9aix9c14CEzBTERqYrPgvSjbMfWAkQ",
@@ -77,10 +77,10 @@ export default function SdkPage() {
             Nyx removes that key. An outcome reaches settlement only after surviving an
             optimistic dispute game, and the market&apos;s oracle is a program PDA, not a person:
           </p>
-          <div style={S.flow}>{`propose (bond) → dispute (matching bond) → arbitrate → slash the wrong side
-                                   │
-                                   ▼
-        oracle-bridge PDA ──CPI──▶ settlement.resolve   (no human key, ever)`}</div>
+          <div style={S.flow}>{`propose (bond) -> dispute (matching bond) -> arbitrate -> slash the wrong side
+                                   |
+                                   v
+        oracle-bridge PDA --CPI--> settlement.resolve   (no human key, ever)`}</div>
           <p style={S.p}>
             Honest asserters reclaim their bond; wrong ones are slashed to the challenger;
             undisputed outcomes finalize after a liveness window. The bridge forwards only

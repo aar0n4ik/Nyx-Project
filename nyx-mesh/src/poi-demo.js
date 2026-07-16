@@ -10,7 +10,7 @@ import { NyxWallet } from "./wallet.js";
 import makeQvacRunner from "./qvac-runner.js";
 
 const CLUSTER = process.env.NYX_CLUSTER || (process.env.NYX_NETWORK === "mainnet" ? "mainnet-beta" : "devnet");
-const txUrl = (h) => `https://explorer.solana.com/tx/${h}?cluster=${CLUSTER}`;
+const txUrl = (h) => "https://explorer.solana.com/tx/" + h + "?cluster=" + CLUSTER;
 
 const price = Number(process.env.NYX_POI_PRICE || 0.02); // USD₮ / 1k tokens
 const provider = process.env.NYX_POI_PROVIDER_SEED
@@ -38,7 +38,7 @@ const GOOD = "Home side edged it 2-1 with a late winner.";
 const qvac = await makeQvacRunner({ modelType: "llm" });
 console.log(qvac.ready
   ? "▸ QVAC runner: REAL on-device inference\n"
-  : `▸ QVAC runner: mock fallback (${qvac.reason})\n`);
+  : "▸ QVAC runner: mock fallback (" + qvac.reason + ")\n");
 const honestRun = qvac.ready
   ? async ({ prompt, seed }) => {
       const r = await qvac.runCompletion({ prompt, seed });
@@ -47,9 +47,9 @@ const honestRun = qvac.ready
   : async () => ({ output: GOOD, tokenCount: 512 });
 
 function report(tag, r) {
-  console.log(`\n=== ${tag} ===`);
-  console.log(`verified=${r.verified} paid=${r.paid} cost=${r.cost != null ? r.cost + " USD₮" : "-"}`);
-  console.log(r.paid ? `tx=${txUrl(r.hash)}` : `reason: ${r.reason}`);
+  console.log("\n=== " + tag + " ===");
+  console.log("verified=" + r.verified + " paid=" + r.paid + " cost=" + (r.cost != null ? r.cost + " USD₮" : "-"));
+  console.log(r.paid ? "tx=" + txUrl(r.hash) : "reason: " + r.reason);
 }
 
 // A) Honest provider: runs the requested model, returns exactly what it signed.
