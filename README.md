@@ -202,6 +202,7 @@ Every command prints a real Solana explorer link.
 | `app/api/actions/*`, `app/actions.json` | Solana Blinks (bet, delegate) + affiliate split |
 | `sdk/nyx-txodds-settlement`, `sdk/nyx-txodds-allowance` | Published JS SDKs |
 | `public/nyx` | Offline-first PWA (trading calculator + track views, 5 languages) |
+| `tracks/` | Per-track guides: what each hackathon track ships, where it lives, and its on-chain proofs |
 
 ---
 
