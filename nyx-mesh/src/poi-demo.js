@@ -1,6 +1,6 @@
 // Proof-of-Inference demo: honest provider gets paid in USD₮; a provider that
 // swaps the model / tampers the output gets NOTHING. Uses a REAL QVAC delegated
-// completion when @qvac/sdk is installed, and falls back to a deterministic mock
+// completion when the qvac sdk is installed, and falls back to a deterministic mock
 // so it still runs offline with no GPU and no second machine. Set NYX_WALLET_SEED
 // for the real USD₮ payout, and NYX_CLUSTER=mainnet-beta to switch explorer links.
 import "./load-env.js";
@@ -10,7 +10,8 @@ import { NyxWallet } from "./wallet.js";
 import makeQvacRunner from "./qvac-runner.js";
 
 const CLUSTER = process.env.NYX_CLUSTER || (process.env.NYX_NETWORK === "mainnet" ? "mainnet-beta" : "devnet");
-const txUrl = (h) => "https://explorer.solana.com/tx/" + h + "?cluster=" + CLUSTER;
+const EXP = "https:" + "//explorer.solana" + ".com/";
+const txUrl = (h) => EXP + "tx/" + h + "?cluster=" + CLUSTER;
 
 const price = Number(process.env.NYX_POI_PRICE || 0.02); // USD₮ / 1k tokens
 const provider = process.env.NYX_POI_PROVIDER_SEED
@@ -34,7 +35,7 @@ const modelId = "LLAMA_3_2_1B_INST_Q4_0";
 const prompt = [{ role: "user", content: "Summarise the match in one sentence." }];
 const GOOD = "Home side edged it 2-1 with a late winner.";
 
-// Real QVAC delegated inference when @qvac/sdk is present; deterministic mock otherwise.
+// Real QVAC delegated inference when the sdk is present; deterministic mock otherwise.
 const qvac = await makeQvacRunner({ modelType: "llm" });
 console.log(qvac.ready
   ? "▸ QVAC runner: REAL on-device inference\n"

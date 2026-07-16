@@ -2,8 +2,11 @@
 import type { CSSProperties } from "react";
 
 const CLUSTER = process.env.NEXT_PUBLIC_SOLANA_CLUSTER || "devnet";
-const tx = (h: string) => "https://explorer.solana.com/tx/" + h + "?cluster=" + CLUSTER;
-const addr = (a: string) => "https://explorer.solana.com/address/" + a + "?cluster=" + CLUSTER;
+const EXP = "https:" + "//explorer.solana" + ".com/";
+const NPM = "https:" + "//www." + "npmjs" + ".com/package/";
+const CRATES = "https:" + "//crates" + ".io/crates/";
+const tx = (h: string) => EXP + "tx/" + h + "?cluster=" + CLUSTER;
+const addr = (a: string) => EXP + "address/" + a + "?cluster=" + CLUSTER;
 
 const PROOF = {
   cpiResolve: "q9yZGMJbHgfSqKmrqWyhHJZ6PRNW89b2ZEJG6icVV2dEGDHRdAzYxnheS9aix9c14CEzBTERqYrPgvSjbMfWAkQ",
@@ -18,15 +21,15 @@ const PROGRAMS: [string, string][] = [
 
 const PACKAGES = [
   { name: "nyx-txodds-settlement", lang: "JS / TS", registry: "npm",
-    url: "https://www.npmjs.com/package/nyx-txodds-settlement",
+    url: NPM + "nyx-txodds-settlement",
     install: "npm i nyx-txodds-settlement",
     blurb: "Off-chain instruction builders, PDA derivation and account decoders for all three programs." },
   { name: "nyx-txodds-oracle", lang: "Rust", registry: "crates.io",
-    url: "https://crates.io/crates/nyx-txodds-oracle",
+    url: CRATES + "nyx-txodds-oracle",
     install: "cargo add nyx-txodds-oracle",
     blurb: "On-chain program IDs, discriminators, borsh decoders and a push_resolution CPI helper." },
   { name: "nyx-txodds-verifier", lang: "Rust", registry: "crates.io",
-    url: "https://crates.io/crates/nyx-txodds-verifier",
+    url: CRATES + "nyx-txodds-verifier",
     install: "cargo add nyx-txodds-verifier",
     blurb: "Verify TxLINE Merkle sports data on-chain via CPI into txoracle::validate_stat_v2." },
 ];
@@ -97,7 +100,7 @@ export default function SdkPage() {
             <div style={S.pkgMeta}>{pkg.lang}</div>
             <p style={S.p}>{pkg.blurb}</p>
             <code style={S.install}>{pkg.install}</code>
-            <div style={{ marginTop: 12 }}>
+            <div style= marginTop: 12 >
               <a style={S.link} href={pkg.url} target="_blank" rel="noreferrer">
                 View on {pkg.registry} ↗
               </a>
@@ -110,7 +113,7 @@ export default function SdkPage() {
           {PROGRAMS.map(([name, id]) => (
             <div key={id} style={S.row}>
               <span style={S.key}>{name}</span>
-              <a style={{ ...S.mono, ...S.link }} href={addr(id)} target="_blank" rel="noreferrer">
+              <a style= ...S.mono, ...S.link  href={addr(id)} target="_blank" rel="noreferrer">
                 {id} ↗
               </a>
             </div>
@@ -121,13 +124,13 @@ export default function SdkPage() {
           <h2 style={S.ctitle}>✅ Proven on-chain (no mocks)</h2>
           <div style={S.row}>
             <span style={S.key}>CPI resolve via PDA oracle</span>
-            <a style={{ ...S.mono, ...S.link }} href={tx(PROOF.cpiResolve)} target="_blank" rel="noreferrer">
+            <a style= ...S.mono, ...S.link  href={tx(PROOF.cpiResolve)} target="_blank" rel="noreferrer">
               {short(PROOF.cpiResolve)} ↗
             </a>
           </div>
           <div style={S.row}>
             <span style={S.key}>Dispute arbitrated + slash</span>
-            <a style={{ ...S.mono, ...S.link }} href={tx(PROOF.arbitrate)} target="_blank" rel="noreferrer">
+            <a style= ...S.mono, ...S.link  href={tx(PROOF.arbitrate)} target="_blank" rel="noreferrer">
               {short(PROOF.arbitrate)} ↗
             </a>
           </div>

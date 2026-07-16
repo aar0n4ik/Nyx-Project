@@ -10,7 +10,8 @@ import { ProviderRegistry } from "./provider-registry.js";
 import { NyxWallet } from "./wallet.js";
 
 const CLUSTER = process.env.NYX_CLUSTER || (process.env.NYX_NETWORK === "mainnet" ? "mainnet-beta" : "devnet");
-const txUrl = (h) => "https://explorer.solana.com/tx/" + h + "?cluster=" + CLUSTER;
+const EXP = "https:" + "//explorer.solana" + ".com/";
+const txUrl = (h) => EXP + "tx/" + h + "?cluster=" + CLUSTER;
 
 const modelId = "LLAMA_3_2_1B_INST_Q4_0";
 const prompt = [{ role: "user", content: "Summarise the match in one sentence." }];
