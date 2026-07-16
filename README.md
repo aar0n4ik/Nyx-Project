@@ -8,6 +8,18 @@ Built for the Superteam × TxODDS World Cup Hackathon — one stack spanning all
 
 ---
 
+## Navigate by track
+
+New here? Pick the track you care about — each folder has its own focused README (what it does, which files/programs implement it, the on-chain proofs, and how to run it). This page is the general overview that ties all three together.
+
+| Track | Guide |
+| --- | --- |
+| 🏁 Prediction Markets \& Settlement | [tracks/prediction-markets-settlement](tracks/prediction-markets-settlement/README.md) |
+| 🤖 Trading Tools \& Agents | [tracks/trading-tools-agents](tracks/trading-tools-agents/README.md) |
+| 🎉 Consumer \& Fan Experiences | [tracks/consumer-fan-experiences](tracks/consumer-fan-experiences/README.md) |
+
+---
+
 ## Why Nyx is different
 
 Most "AI betting" is a chatbot with a custodial wallet. Nyx is the opposite:
