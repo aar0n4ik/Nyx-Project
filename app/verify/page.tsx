@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
 type Any = Record<string, any>;
+const CLUSTER = process.env.NEXT_PUBLIC_SOLANA_CLUSTER || "devnet";
 
 const exUrl = (kind: string, v?: string) =>
-  v ? "https://explorer.solana.com/" + kind + "/" + v + "?cluster=devnet" : "";
+  v ? "https://explorer.solana.com/" + kind + "/" + v + "?cluster=" + CLUSTER : "";
 const short = (s?: string) => (s ? s.slice(0, 6) + "…" + s.slice(-6) : "—");
 
 const CPI_FALLBACK: Any = {
@@ -110,7 +111,7 @@ export default function VerifyPage() {
     <div style={S.page}>
       <div style={S.wrap}>
         <h1 style={S.h1}>Nyx — Live On-Chain Proofs</h1>
-        <p style={S.sub}>Every claim below is a real transaction on Solana devnet. Click any link to verify it yourself.</p>
+        <p style={S.sub}>Every claim below is a real transaction on Solana devnet. Click any link to verify it yourself. <a href="/sdk" style={S.link}>Browse the SDK</a></p>
 
         <div style={S.hero}>
           <div style={S.head}>
