@@ -1,163 +1,181 @@
-# Nyx — Invisible Web3 for football
+# Nyx — Zero-Custody Prediction Markets & Trust-Minimized Settlement on Solana
 
-**One offline-first fan app on Solana + Tether QVAC + TxLINE.** The interactive app is
-static (`/public/nyx`) and runs 100% offline. The `/api` routes add the online extras
-(AI narrative, live TxLINE match data, Solana Actions/Blinks) — all secrets stay server-side.
+**One autonomous agent that prices, bets, and settles football markets on Solana in Tether USD₮ — with zero custody of user funds, every outcome trust-minimized on-chain, and every AI inference cryptographically provable.**
 
-## What's inside
+Built for the Superteam × TxODDS World Cup Hackathon (track: Prediction Markets & Settlement). Powered by TxLINE match data, Tether QVAC on-device inference, and Solana Actions/Blinks.
 
-| Path | What it is |
-|---|---|
-| `public/nyx/*` | The offline Nyx app (trading calculator + track views), PWA, 5 languages |
-| `app/api/actions/bet` | Solana Action — stake USD₮ on a match (Blink-ready) |
-| `app/actions.json` | Solana Actions registry |
-| `app/api/txline/[...path]` | Proxy to the real TxLINE match-data API (injects the token) |
-| `app/api/analyze-trade` | AI trade verdict (rule engine always; Groq if `GROQ_API_KEY` set) |
-| `nyx-mesh/` | Desktop QVAC module: on-device LLM+RAG, Hyperswarm P2P mesh, WDK USD₮ wallet |
-| `programs/nyx-settlement` | Anchor settlement program (Solana devnet, live) |
-| `pamm-math` + pAMM program | Recentred-LMSR probability AMM (Solana devnet, live) |
-| `sdk/` | Reusable TxODDS on-chain verification SDK (Rust crate + JS package) |
+> Unofficial community project. Not affiliated with, sponsored by, or endorsed by TxODDS. "TxODDS" and "TxLINE" are trademarks of their respective owners, used only to describe compatibility.
 
-## Deploy (Vercel)
+---
 
-1. Push this repo to GitHub.
-2. vercel.com → Add New → Project → import the repo. Framework auto-detects **Next.js**. Deploy.
-3. `/` redirects to `/nyx/index.html`. The offline app is live immediately.
+## Why Nyx is different
 
-## Desktop module (nyx-mesh)
+Most "AI betting" is a chatbot with a custodial wallet. Nyx is the opposite:
 
-\`\`\`bash
-cd nyx-mesh && npm install && npm run demo
-\`\`\`
+- **Zero custody.** The agent never holds user funds. Users grant a capped, expiring on-chain **allowance** (Solana Foundation Subscriptions & Allowances program). The agent bets on the user's behalf via `place_bet_for`; the user owns the position and the winnings. Revoke anytime.
+- **Trust-minimized outcomes.** No admin key can call `resolve()`. Outcomes survive an optimistic **dispute game** and are pushed into settlement by a **program PDA**, not a person.
+- **Provable inference.** Every model call produces a signed Proof-of-Inference receipt whose digest is **anchored on-chain** in a Solana Memo tx — publicly timestamped, tamper-evident, independent of payment.
+- **Distribution-native.** Bet and delegate straight from X/Discord via Solana Blinks, with a zero-CAC affiliate revenue split composed at the Action layer (Jupiter-style).
 
-- **Brain** — on-device Qwen3-4B via `@qvac/sdk` (LLM+RAG), with a deterministic fallback.
-- **Mesh** — Hyperswarm P2P: devices gossip TxLINE snapshots peer-to-peer, no server.
-- **Wallet** — Tether WDK USD₮ wallet for on-device settlement.
-- By default the oracle reads live scores through this project's `/api/txline` proxy, so the
-  desktop works with zero secrets. Set `NYX_SNAPSHOT_BASE` to go direct to TxLINE.
+---
 
-### Live in-play agent demo (real edge, not a rigged scenario)
+## The zero-custody agent (flagship)
 
-\`\`\`bash
-cd nyx-mesh && node src/inplay-demo.js
-\`\`\`
+    user grants allowance (cap + expiry)  --on-chain-->  SubscriptionAuthority PDA
+              |                                                   |
+              v                                                   v
+    agent prices market (pAMM + Poisson/Kelly)           place_bet_for(user) --> user owns Position
+              |                                                   |
+              v                                                   v
+    market resolves (dispute-gated oracle)               user claims winnings in USD₮
+              |
+              v
+    agent self-stops at edge threshold; user can revoke() anytime
 
-Prices a **live, undecided** market with a Poisson model + half-Kelly staking, **refuses to
-settle while the outcome is uncertain**, then pays the winner in real USD₮ the instant the
-market is mathematically GUARANTEED (e.g. the 3rd goal settles Over 2.5). No human in the loop.
+- Cap + expiry + revoke are enforced **on-chain**; overspend reverts with `AmountExceedsLimit`.
+- Custody-stateless: losing the agent key cannot drain a user.
 
-## Settlement networks
+Proven end-to-end on devnet — run it yourself:
 
-Nyx settles in USD₮ via the Tether WDK. The network is chosen with `NYX_NETWORK`:
+    node scripts/allowance-demo.mjs        # init authority, grant capped allowance, pull, reject overspend
+    node scripts/allowance-expiry-demo.mjs # expiry enforced on-chain
+    node scripts/allowance-claim-demo.mjs  # agent bets for user, market resolves, user claims
+    node scripts/nyx-agent-loop.mjs        # fully autonomous: price -> bet within allowance -> claim
 
-| Network | Default | USD₮ mint | Notes |
-|---|---|---|---|
-| `devnet` | ✅ default | test mint you control | free, fully verifiable — used for all demos below |
-| `mainnet` | opt-in | real Tether USD₮ (`Es9vMF…`) | requires `NYX_ALLOW_MAINNET=1` safety flag to send |
+Recorded devnet markets (open in any explorer):
 
-Devnet is verified end-to-end (see below). The mainnet path is implemented and config-ready
-(`nyx-mesh/.env.mainnet.example`); it awaits a funded wallet to run live.
+- claim-demo market `FAzwcBzofAQQfVFUKKF4ZG5LF2XT1g9BCiu7zYb4QSW4`
+- agent-loop market `88mhZ4ajNhaLschn1EpyUeVNzkVxXNsbMRDCphNptShb`
 
-## Live on Solana devnet
+---
 
-Real, verifiable on-chain deployment (no mocks) — full ledger in [DEPLOYMENTS.md](./DEPLOYMENTS.md).
+## Trust-minimized settlement (TxLINE -> Solana)
 
-| Item | Value |
-|---|---|
-| Network | Solana devnet |
-| Nyx settlement wallet | `8AV3c2YE4XnUDXSBVkGtzgvQXNhbHLQL9FwyKFYviftF` |
-| Test USD₮ mint (6 dec) | `5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS` |
-| `nyx_settlement` program | `AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3` |
-| `nyx_pamm` program | `8hxh836KRG4H6poU7oZ161AV71gpTLKKE1mYrEsuwpW3` |
-| First on-chain USD₮ payout | [`2xXK…soga`](https://explorer.solana.com/tx/2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA?cluster=devnet) |
-| Live auto-settlement payout | [`5fxc…jsbVy`](https://explorer.solana.com/tx/5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy?cluster=devnet) |
+TxLINE proves a feed is internally consistent — it does **not** prove an outcome is true, and gives no on-chain way to challenge a bad signer. Nyx closes that gap with three composable Anchor programs:
 
-**Auto-settlement:** the moment a market is decided by the score, `NyxAgent.autoSettle()` sends
-the winnings in real USD₮ via the Tether WDK — no human in the loop.
+    propose (bond) -> dispute (matching bond) -> arbitrate -> slash wrong side
+                                    |
+                                    v
+              nyx_oracle_bridge PDA --CPI--> nyx_settlement.resolve   (no human key)
+
+Honest asserters reclaim their bond; wrong ones are slashed to the challenger; undisputed outcomes finalize after a liveness window.
+
+Proofs (devnet):
+
+- CPI resolve (dispute outcome -> settlement via PDA oracle): [q9yZGM...fwAkQ](https://explorer.solana.com/tx/q9yZGMJbHgfSqKmrqWyhHJZ6PRNW89b2ZEJG6icVV2dEGDHRdAzYxnheS9aix9c14CEzBTERqYrPgvSjbMfWAkQ?cluster=devnet)
+- Dispute arbitrated, wrong side slashed: [KDsynE...dB2vPFm](https://explorer.solana.com/tx/KDsynE3WonhsfXYPKCKhM13RqEyiKGDMYrSuXF74yNog1ccdZf55TqTD3aHa8Kjx5HL8EL14E8H2GFqqdB2vPFm?cluster=devnet)
+
+---
+
+## Pricing — recentred-LMSR pAMM
+
+`nyx_pamm` prices live, undecided markets with a recentred-LMSR maker: LPs earn the spread, the protocol takes a cut, and **max LP loss is mathematically bounded at b·ln(n)**. See `pamm-math/`.
+
+---
+
+## Proof-of-Inference + on-chain anchor
+
+`nyx-mesh/` is the on-device layer: Qwen3-4B via Tether QVAC (`@qvac/sdk`) with a deterministic fallback, a Hyperswarm P2P mesh, and a Tether WDK USD₮ wallet. Each inference emits a signed ed25519 PoI receipt binding model + prompt + output + price + payout + nonce; the digest is then **anchored on-chain** in a Solana Memo tx.
+
+Run it (real devnet Memo tx, no mock):
+
+    cd nyx-mesh && NYX_NETWORK=devnet node src/poi-anchor-demo.js
+
+Latest anchor: [4cHmiwce...ESdMUeR](https://explorer.solana.com/tx/4cHmiwceMJ4DbNQsHupQVUdyL4EwA5SEv425M3yFkfksVLCT128ieutsVpeChNiRuRuZyfMYhmhinEnm8ESdMUeR?cluster=devnet) — digest `38d667dd86c40d94f74d0b214cd6bdaf6dc3926eed8657b91fdde54d71e8310c` verified present in the transaction logs.
+
+---
+
+## Distribution — Blinks + zero-CAC affiliate
+
+- `app/api/actions/bet` — stake USD₮ on a match from any X/Discord post.
+- `app/api/actions/delegate` — "Delegate to Nyx": grant the agent a capped allowance in one tap.
+- `app/actions.json` — Solana Actions registry.
+- Affiliate split: a referral cut is carved out of the stake at the Action layer and routed to the referrer's ATA (Jupiter-style, client-composed; on-chain protocol-fee enforcement scoped for v2). The user pays the same, the referrer earns, and the referral is written to the on-chain memo.
+
+---
+
+## Open-source SDKs (published)
+
+| Package | Language | Registry | Install |
+| --- | --- | --- | --- |
+| `nyx-txodds-settlement` | JS/TS | npm | `npm i nyx-txodds-settlement` |
+| `nyx-txodds-allowance` | JS/TS | npm | `npm i nyx-txodds-allowance` |
+| `nyx-txodds-oracle` | Rust | crates.io | `cargo add nyx-txodds-oracle` |
+
+- `nyx-txodds-settlement` — instruction builders, PDA derivation, account decoders for all three settlement programs; assemble the full `assert -> dispute -> slash -> settle -> payout` loop with no IDL.
+- `nyx-txodds-allowance` — instruction builders for the Subscriptions & Allowances flow (create authority, grant fixed delegation, transfer, revoke).
+- `nyx-txodds-oracle` — IDL-exact borsh types + `verify_stat_cpi` helper for trustless in-program settlement.
+
+---
 
 ## Revenue model
 
-Nyx is infrastructure, not a book — it never takes the other side of a bet. Revenue comes from
-being the settlement and pricing rails:
+Nyx is infrastructure, not a book — it never takes the other side of a bet. Revenue:
 
-- **Settlement fee** — a small basis-point fee on each USD₮ payout routed through `nyx_settlement`.
-- **pAMM spread / LP fee** — the recentred-LMSR maker charges a spread; LPs earn it, the protocol takes a cut. Max LP loss is mathematically bounded at `b·ln(n)`.
-- **Blink/Action distribution** — staking straight from X/Discord makes Nyx the default rail for third-party fan apps; volume-based fees.
-- **SDK / data-verification** — the TxODDS on-chain verifier SDK is a wedge into B2B trust tooling for other builders.
+- **Settlement fee** — basis-point fee on each USD₮ payout through `nyx_settlement`.
+- **pAMM / LP spread** — recentred-LMSR maker spread; protocol takes a cut of bounded-risk LP income.
+- **Blink / Action distribution** — Nyx as the default rail for third-party fan apps; volume-based fees.
+- **SDK / data-verification** — the on-chain verifier SDK is a wedge into B2B trust tooling.
 
-Cost base is near-zero: inference runs on-device (QVAC), and Solana settlement is fractions of a cent.
+Cost base is near-zero: inference runs on-device (QVAC), Solana settlement is fractions of a cent.
 
-## Developer SDK — TxODDS on-chain verification
+---
 
-Nyx ships a reusable, **unofficial** SDK for building & verifying TxODDS `txoracle`
-`validate_stat_v2` instructions on Solana. It fills a gap TxODDS's own tooling leaves
-open: they publish TypeScript examples + an IDL, but no Rust on-chain verifier crate.
+## Deployments
 
-| Package | Registry | Install |
-| --- | --- | --- |
-| `nyx-txodds-verifier` (Rust) | [crates.io](https://crates.io/crates/nyx-txodds-verifier) | `cargo add nyx-txodds-verifier` |
-| `nyx-txodds-solana` (JS/TS) | [npm](https://www.npmjs.com/package/nyx-txodds-solana) | `npm i nyx-txodds-solana` |
+Full ledger in `DEPLOYMENTS.md`.
 
-- **Rust crate** — IDL-exact borsh types, instruction builders, PDA derivation, and CPI
-  helpers (`verify_stat_cpi`) for trustless in-program settlement. 5/5 unit tests passing.
-- **JS package** — REST→payload mapping, strategy builders, and `validateStatV2View`
-  for off-chain simulation of the verification result.
-
-> Unofficial community project. Not affiliated with, sponsored by, or endorsed by TxODDS.
-> "TxODDS" is a trademark of its respective owner; used only to describe compatibility.
-
-## Trust-minimized settlement layer (TxLINE → Solana)
-
-TxLINE proves a feed is internally consistent (a Merkle root over the data it published).
-It does **not** prove an outcome is *true*, and it gives you no on-chain way to challenge a
-bad signer. So every prediction market built directly on a feed inherits an admin key that
-can call `resolve()` — one leaked key and the "trustless" market is drained or rigged.
-
-Nyx closes that gap with three composable Anchor programs. An outcome only reaches
-settlement after surviving an optimistic dispute game, and the market's oracle is a
-**program PDA**, not a person:
-
-```
-propose (bond) -> dispute (matching bond) -> arbitrate -> slash the wrong side
-                                   |
-                                   v
-      nyx_oracle_bridge PDA --CPI--> nyx_settlement.resolve   (no human key)
-```
-
-Honest asserters reclaim their bond; wrong ones are slashed to the challenger; undisputed
-outcomes finalize after a liveness window. The bridge's `push_resolution` is permissionless
-but can forward *only* the outcome the dispute layer already finalized — anything else reverts.
-
-| Program (devnet) | ID |
+| Program (Solana devnet) | ID |
 | --- | --- |
 | `nyx_settlement` | `AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3` |
 | `nyx_dispute` | `7bSmAPPAypVtWsRMvMhmT6bUrJyvmc76VKXinAgwc8vN` |
 | `nyx_oracle_bridge` | `BiJaXJ7kEXy8cohxf7NxfyqS2sLbxZSa3Fx4JjEZS9bk` |
+| `nyx_pamm` | `8hxh836KRG4H6poU7oZ161AV71gpTLKKE1mYrEsuwpW3` |
+| `nyx_verifier` | `GPiPk4ymC76uBntrxUXyr2rL4kWmxWRRZsBya5uxLNLY` |
+| Subscriptions & Allowances (Solana Foundation, mainnet + devnet) | `De1egAFMkMWZSN5rYXRj9CAdheBamobVNubTsi9avR44` |
 
-Proven end-to-end on devnet (no mocks):
+| Settlement proof (devnet) | Tx |
+| --- | --- |
+| First on-chain USD₮ payout | [2xXK...soga](https://explorer.solana.com/tx/2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA?cluster=devnet) |
+| Live auto-settlement payout | [5fxc...jsbVy](https://explorer.solana.com/tx/5fxcHPgZiQqyT2vzhdswa7NpDUQSFTLgM2jpz1FpdYVJkiGS6mxkanGQ29nWzSmwGzuu81Wiw9hbquthQAVjsbVy?cluster=devnet) |
 
-- CPI resolve — dispute outcome pushed into settlement through the PDA oracle: [`q9yZGM…fWAkQ`](https://explorer.solana.com/tx/q9yZGMJbHgfSqKmrqWyhHJZ6PRNW89b2ZEJG6icVV2dEGDHRdAzYxnheS9aix9c14CEzBTERqYrPgvSjbMfWAkQ?cluster=devnet)
-- Dispute arbitrated, wrong side slashed: [`KDsynE…dB2vPFm`](https://explorer.solana.com/tx/KDsynE3WonhsfXYPKCKhM13RqEyiKGDMYrSuXF74yNog1ccdZf55TqTD3aHa8Kjx5HL8EL14E8H2GFqqdB2vPFm?cluster=devnet)
+Networks: `NYX_NETWORK=devnet` (default; test USD₮ mint you control) or `mainnet` (real Tether USD₮ `Es9vMF...`, gated behind `NYX_ALLOW_MAINNET=1`). Devnet is verified end-to-end; the mainnet path is implemented and config-ready (`nyx-mesh/.env.mainnet.example`).
 
-### Developer SDK — settlement stack
+Key accounts (devnet): settlement wallet `8AV3c2YE4XnUDXSBVkGtzgvQXNhbHLQL9FwyKFYviftF` · test USD₮ mint `5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS` · agent `5Ybj5JBMzoEp7UVQV1xWQQ5V7RVgBWarBfBdNuXShKBU`.
 
-| Package | Registry | Install |
-| --- | --- | --- |
-| `nyx-txodds-settlement` (JS/TS) | [npm](https://www.npmjs.com/package/nyx-txodds-settlement) | `npm i nyx-txodds-settlement` |
+---
 
-Instruction builders, PDA derivation and account decoders for all three programs, so anyone
-can assemble the full `assert -> dispute -> slash -> settle -> payout` loop without an IDL.
-See [`sdk/nyx-txodds-settlement`](./sdk/nyx-txodds-settlement).
+## Verify it yourself (60 seconds)
 
-### Published SDK packages (proof)
+    # 1) autonomous zero-custody agent (price -> bet for user -> claim)
+    node scripts/nyx-agent-loop.mjs
 
-| Package | Language | Registry | Install |
-| --- | --- | --- | --- |
-| `nyx-txodds-settlement` | JS/TS | [npm](https://www.npmjs.com/package/nyx-txodds-settlement) | `npm i nyx-txodds-settlement` |
-| `nyx-txodds-oracle` | Rust | [crates.io](https://crates.io/crates/nyx-txodds-oracle) | `cargo add nyx-txodds-oracle` |
+    # 2) on-chain Proof-of-Inference anchor (real devnet Memo tx)
+    cd nyx-mesh && NYX_NETWORK=devnet node src/poi-anchor-demo.js && cd ..
 
-Both wrap the exact three programs above. The JS package builds instructions, derives PDAs
-and decodes accounts off-chain; the Rust crate does the same on-chain and ships a
-`push_resolution` CPI helper so any program can forward a dispute-finalized outcome into
-settlement. Anyone can rebuild the full `assert -> dispute -> slash -> settle -> payout`
-loop from these two — no IDL required.
+    # 3) live in-play pricing (Poisson + half-Kelly, refuses to settle while undecided)
+    cd nyx-mesh && node src/inplay-demo.js && cd ..
+
+Every command prints a real Solana explorer link.
+
+---
+
+## Repo layout
+
+| Path | What |
+| --- | --- |
+| `programs/nyx-settlement` | Settlement: markets, bets, `place_bet_for`, resolve, claim |
+| `programs/nyx-dispute` | Optimistic dispute game (bond / challenge / slash) |
+| `programs/nyx-oracle-bridge` | PDA oracle -> settlement via CPI |
+| `programs/nyx-pamm` + `pamm-math` | Recentred-LMSR pricing AMM |
+| `nyx-mesh` | On-device QVAC inference, P2P mesh, WDK wallet, PoI + on-chain anchor |
+| `scripts/allowance-*`, `scripts/nyx-agent-loop.mjs` | Zero-custody agent demos |
+| `app/api/actions/*`, `app/actions.json` | Solana Blinks (bet, delegate) + affiliate split |
+| `sdk/nyx-txodds-settlement`, `sdk/nyx-txodds-allowance` | Published JS SDKs |
+| `public/nyx` | Offline-first PWA (trading calculator + track views, 5 languages) |
+
+---
+
+## Deploy the web app
+
+Push to GitHub, import on Vercel (auto-detects Next.js), deploy. `/` redirects to the offline app; `/api/*` routes add AI narrative, live TxLINE data, and Blinks — all secrets stay server-side.

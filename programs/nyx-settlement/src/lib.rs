@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 declare_id!("AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3");
-/// Nyx settlement program — parimutuel, oracle-settled markets. Real escrow, no house risk.
+/// Nyx settlement program - parimutuel, oracle-settled markets. Real escrow, no house risk.
 #[program]
 pub mod nyx_settlement {
     use super::*;
@@ -23,6 +23,22 @@ pub mod nyx_settlement {
         if side_yes { m.pool_yes = m.pool_yes.checked_add(amount).unwrap(); } else { m.pool_no = m.pool_no.checked_add(amount).unwrap(); }
         let pos = &mut ctx.accounts.position;
         pos.market = m.key(); pos.owner = ctx.accounts.bettor.key(); pos.side_yes = side_yes;
+        pos.amount = pos.amount.checked_add(amount).unwrap(); pos.claimed = false; pos.bump = ctx.bumps.position;
+        Ok(())
+    }
+    /// Delegated bet: an agent (signer) bets FOR `owner`, funding it from the agent's own
+    /// token account (filled via a capped Subscriptions & Allowances delegation).
+    /// The position and any winnings belong to `owner`, not the agent.
+    pub fn place_bet_for(ctx: Context<PlaceBetFor>, side_yes: bool, amount: u64) -> Result<()> {
+        require!(amount > 0, NyxError::ZeroAmount);
+        let now = Clock::get()?.unix_timestamp;
+        require!(now < ctx.accounts.market.close_ts, NyxError::MarketClosed);
+        require!(!ctx.accounts.market.resolved, NyxError::AlreadyResolved);
+        token::transfer(CpiContext::new(ctx.accounts.token_program.to_account_info(), Transfer { from: ctx.accounts.agent_ata.to_account_info(), to: ctx.accounts.vault.to_account_info(), authority: ctx.accounts.agent.to_account_info() }), amount)?;
+        let m = &mut ctx.accounts.market;
+        if side_yes { m.pool_yes = m.pool_yes.checked_add(amount).unwrap(); } else { m.pool_no = m.pool_no.checked_add(amount).unwrap(); }
+        let pos = &mut ctx.accounts.position;
+        pos.market = m.key(); pos.owner = ctx.accounts.owner.key(); pos.side_yes = side_yes;
         pos.amount = pos.amount.checked_add(amount).unwrap(); pos.claimed = false; pos.bump = ctx.bumps.position;
         Ok(())
     }
@@ -63,7 +79,7 @@ pub struct CreateMarket<'info> {
     #[account(init, payer = authority, space = 8 + Market::LEN, seeds = [b"market", fixture_id.to_le_bytes().as_ref(), market_key.as_ref()], bump)]
     pub market: Account<'info, Market>,
     #[account(mut)] pub authority: Signer<'info>,
-    /// CHECK: SPL mint of the USD₮ token
+    /// CHECK: SPL mint of the USDT token
     pub mint: AccountInfo<'info>,
     #[account(init, payer = authority, token::mint = mint, token::authority = market, seeds = [b"vault", market.key().as_ref()], bump)]
     pub vault: Account<'info, TokenAccount>,
@@ -76,6 +92,18 @@ pub struct PlaceBet<'info> {
     pub position: Account<'info, Position>,
     #[account(mut)] pub bettor: Signer<'info>,
     #[account(mut)] pub bettor_ata: Account<'info, TokenAccount>,
+    #[account(mut, address = market.vault)] pub vault: Account<'info, TokenAccount>,
+    pub token_program: Program<'info, Token>, pub system_program: Program<'info, System>,
+}
+#[derive(Accounts)]
+pub struct PlaceBetFor<'info> {
+    #[account(mut)] pub market: Account<'info, Market>,
+    #[account(init_if_needed, payer = agent, space = 8 + Position::LEN, seeds = [b"pos", market.key().as_ref(), owner.key().as_ref()], bump)]
+    pub position: Account<'info, Position>,
+    /// CHECK: beneficiary of the position; the agent bets on their behalf, not a signer
+    pub owner: AccountInfo<'info>,
+    #[account(mut)] pub agent: Signer<'info>,
+    #[account(mut)] pub agent_ata: Account<'info, TokenAccount>,
     #[account(mut, address = market.vault)] pub vault: Account<'info, TokenAccount>,
     pub token_program: Program<'info, Token>, pub system_program: Program<'info, System>,
 }

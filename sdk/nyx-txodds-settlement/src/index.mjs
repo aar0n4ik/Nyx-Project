@@ -71,6 +71,14 @@ export const settlement = {
       data: Buffer.concat([disc("place_bet"), Buffer.from([sideYes ? 1 : 0]), u64le(amount)]),
     });
   },
+  placeBetFor({ fixtureId, marketKey, owner, agent, agentAta, sideYes, amount }) {
+    const market = pda.market(fixtureId, marketKey);
+    return new TransactionInstruction({
+      programId: PROGRAM_IDS.settlement,
+      keys: [rw(market), rw(pda.position(market, owner)), ro(owner), rw(agent, true), rw(agentAta), rw(pda.vault(market)), ro(TOKEN_PROGRAM_ID), ro(SystemProgram.programId)],
+      data: Buffer.concat([disc("place_bet_for"), Buffer.from([sideYes ? 1 : 0]), u64le(amount)]),
+    });
+  },
   claim({ fixtureId, marketKey, bettor, bettorAta }) {
     const market = pda.market(fixtureId, marketKey);
     return new TransactionInstruction({

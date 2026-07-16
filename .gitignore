@@ -16,3 +16,11 @@ dist/
 nyx-mesh/.env
 *keypair*.json
 nyx-treasury.json
+.agent.json
+**/.agent.json
+*.agent.json
+**/id.json
+id*.json
+.npmrc
+**/.npmrc
+tsconfig.tsbuildinfo

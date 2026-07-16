@@ -1,0 +1,12 @@
+{
+  "name": "nyx-txodds-allowance",
+  "version": "0.1.0",
+  "description": "Zero-custody, capped, auto-expiring agent spending on Solana. Hand-built instruction builders for the Solana Foundation Subscriptions & Allowances (Fixed Delegation) program. Powers Nyx place_bet_for.",
+  "type": "module",
+  "main": "src/index.mjs",
+  "exports": { ".": "./src/index.mjs" },
+  "files": ["src", "README.md"],
+  "keywords": ["solana","allowance","subscriptions","fixed-delegation","zero-custody","ai-agent","prediction-markets","nyx","txodds"],
+  "license": "MIT",
+  "peerDependencies": { "@solana/web3.js": "^1.98.0" }
+}
