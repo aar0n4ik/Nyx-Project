@@ -1,37 +1,54 @@
 "use client";
-import { motion } from "framer-motion";
-import type { CSSProperties } from "react";
-
-type Social = { label: string; href: string; color: string; path: string };
-
-const GH = "https://github" + ".com/aar0n4ik";
-const XX = "https://x" + ".com/YOUR_HANDLE";
-const DC = "https://discord" + ".gg/YOUR_INVITE";
-
-const HOVER = { scale: 1.08, y: -2 };
-const TAP = { scale: 0.96 };
-
-const SOCIALS: Social[] = [
-  { label: "GitHub", href: GH, color: "#181717", path: "M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17 4.6 18 4.9 18 4.9c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6A11.5 11.5 0 0023.5 12C23.5 5.7 18.3.5 12 .5z" },
-  { label: "X", href: XX, color: "#000000", path: "M18.9 1.2h3.7l-8 9.1L24 22.8h-7.4l-5.8-7.6-6.6 7.6H.5l8.6-9.8L0 1.2h7.6l5.2 6.9 6.1-6.9zm-1.3 19.4h2L6.5 3.3h-2.2l13.3 17.3z" },
-  { label: "Discord", href: DC, color: "#5865F2", path: "M20.3 4.4A19.8 19.8 0 0015.4 3l-.2.5c1.7.4 2.5.9 3.4 1.5a13.3 13.3 0 00-10.5 0c.9-.6 1.9-1.1 3.4-1.5L11.3 3a19.8 19.8 0 00-4.9 1.4C2.5 8.6 1.7 12.7 2.1 16.7a19.9 19.9 0 006 3l.5-.7c-1-.4-1.9-.9-2.7-1.5l.6-.4a14.2 14.2 0 0012.2 0l.6.4c-.8.6-1.7 1.1-2.7 1.5l.5.7a19.9 19.9 0 006-3c.5-4.7-.8-8.8-3.4-12.3zM8.9 14.5c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm6.2 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z" },
-];
 
 export default function SocialButtons({ dark = false }: { dark?: boolean }) {
   return (
     <div className="flex items-center gap-3">
-      {SOCIALS.map((s) => {
-        const brandStyle = { ["--brand" as any]: s.color } as CSSProperties;
-        const wrap = "group flex h-11 w-11 items-center justify-center rounded-xl border transition-colors " + (dark ? "border-white/15 bg-white/5 hover:bg-[var(--brand)] hover:border-transparent" : "border-hairline bg-white hover:bg-[var(--brand)] hover:border-transparent");
-        const icon = "h-5 w-5 transition-colors " + (dark ? "fill-white/70 group-hover:fill-white" : "fill-ink group-hover:fill-white");
-        return (
-          <motion.a key={s.label} href={s.href} target="_blank" rel="noreferrer" aria-label={s.label} whileHover={HOVER} whileTap={TAP} style={brandStyle} className={wrap}>
-            <svg viewBox="0 0 24 24" className={icon}>
-              <path d={s.path} />
-            </svg>
-          </motion.a>
-        );
-      })}
+      <a
+        href="https://x.com/_aaron4ik_"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="X — @_aaron4ik_"
+        className="group flex h-11 w-11 items-center justify-center rounded-full border border-hairline bg-subtle transition hover:-translate-y-0.5 hover:border-ink/40 hover:shadow-lg"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          className={
+            "h-[18px] w-[18px] transition-transform group-hover:scale-110 " +
+            (dark ? "fill-white" : "fill-ink")
+          }
+          aria-hidden="true"
+        >
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+      </a>
+
+      <a
+        href="https://www.instagram.com/bohdan.aaron4ik/"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Instagram — @bohdan.aaron4ik"
+        className="group flex h-11 w-11 items-center justify-center rounded-full border border-hairline bg-subtle transition hover:-translate-y-0.5 hover:border-transparent hover:shadow-lg"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          className="h-[18px] w-[18px] transition-transform group-hover:scale-110"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="nyx-ig" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stopColor="#FEDA75" />
+              <stop offset="0.25" stopColor="#FA7E1E" />
+              <stop offset="0.5" stopColor="#D62976" />
+              <stop offset="0.75" stopColor="#962FBF" />
+              <stop offset="1" stopColor="#4F5BD5" />
+            </linearGradient>
+          </defs>
+          <path
+            fill="url(#nyx-ig)"
+            d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"
+          />
+        </svg>
+      </a>
     </div>
   );
 }

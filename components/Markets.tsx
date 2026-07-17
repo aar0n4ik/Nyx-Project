@@ -27,7 +27,7 @@ export default function Markets() {
       </Reveal>
       <div className="mt-10 flex flex-wrap justify-center gap-2">
         {CATS.map((c) => (
-          <button key={c} onClick={() => setCat(c)} className={ "rounded-full px-4 py-1.5 text-sm font-medium transition-colors " + (cat === c ? "bg-ink text-white" : "border border-hairline bg-white text-muted hover:text-ink") }>{c}</button>
+          <button key={c} onClick={() => setCat(c)} className={ "rounded-full px-4 py-1.5 text-sm font-medium transition-colors " + (cat === c ? "bg-ink text-ink" : "border border-hairline bg-white text-muted hover:text-ink") }>{c}</button>
         ))}
       </div>
       <motion.div layout className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

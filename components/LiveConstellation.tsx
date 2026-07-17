@@ -1,0 +1,161 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
+type Point = { x: number; y: number; z: number };
+
+const COUNT = 540;
+const TWO_PI = Math.PI * 2;
+
+function sphere(n: number): Point[] {
+  const pts: Point[] = [];
+  const inc = Math.PI * (3 - Math.sqrt(5));
+  const off = 2 / n;
+  for (let i = 0; i < n; i++) {
+    const y = i * off - 1 + off / 2;
+    const r = Math.sqrt(Math.max(0, 1 - y * y));
+    const phi = i * inc;
+    pts.push({ x: Math.cos(phi) * r, y, z: Math.sin(phi) * r });
+  }
+  return pts;
+}
+
+export default function LiveConstellation() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const points = sphere(COUNT);
+    let raf = 0;
+    let w = 0;
+    let h = 0;
+    let dpr = 1;
+
+    const resize = () => {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = parent.clientWidth;
+      h = parent.clientHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const pulses = Array.from({ length: 5 }, () => ({
+      i: Math.floor(Math.random() * COUNT),
+      t: Math.random(),
+      speed: 0.004 + Math.random() * 0.006,
+    }));
+
+    let angle = 0;
+
+    const frame = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      const baseR = isDark ? 168 : 120;
+      const baseG = isDark ? 174 : 128;
+      const baseB = isDark ? 194 : 150;
+
+      ctx.clearRect(0, 0, w, h);
+      angle += 0.0016;
+      const cx = w / 2;
+      const cy = h / 2;
+      const scale = Math.min(w, h) * 0.36;
+
+      const cosA = Math.cos(angle);
+      const sinA = Math.sin(angle);
+      const tilt = 0.42;
+      const cosT = Math.cos(tilt);
+      const sinT = Math.sin(tilt);
+
+      const projected: Array<{ sx: number; sy: number; depth: number }> = [];
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        const rx = p.x * cosA - p.z * sinA;
+        const rz = p.x * sinA + p.z * cosA;
+        const ry = p.y * cosT - rz * sinT;
+        const rzz = p.y * sinT + rz * cosT;
+        const depth = (rzz + 1) / 2;
+        projected.push({ sx: cx + rx * scale, sy: cy + ry * scale, depth });
+      }
+
+      projected.sort((a, b) => a.depth - b.depth);
+
+      for (let k = 0; k < projected.length; k++) {
+        const pr = projected[k];
+        const alpha = 0.15 + pr.depth * 0.7;
+        const size = 0.6 + pr.depth * 1.8;
+        const mix = Math.min(1, Math.max(0, (pr.sx - (cx - scale)) / (scale * 2)));
+        const r = Math.round(baseR + (mix - 0.5) * 40);
+        const g = Math.round(baseG + mix * 20);
+        const b = Math.round(baseB + (1 - mix) * 30);
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + alpha.toFixed(3) + ")";
+        ctx.arc(pr.sx, pr.sy, size, 0, TWO_PI);
+        ctx.fill();
+      }
+
+      for (let pI = 0; pI < pulses.length; pI++) {
+        const pu = pulses[pI];
+        pu.t += pu.speed;
+        if (pu.t > 1) {
+          pu.t = 0;
+          pu.i = Math.floor(Math.random() * COUNT);
+        }
+        const p = points[pu.i];
+        const rx = p.x * cosA - p.z * sinA;
+        const rz = p.x * sinA + p.z * cosA;
+        const ry = p.y * cosT - rz * sinT;
+        const sx = cx + rx * scale;
+        const sy = cy + ry * scale;
+        const ringR = 2 + pu.t * 22;
+        const ringA = (1 - pu.t) * 0.6;
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(153,69,255," + ringA.toFixed(3) + ")";
+        ctx.lineWidth = 1.2;
+        ctx.arc(sx, sy, ringR, 0, TWO_PI);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(11,181,214," + Math.min(1, ringA + 0.3).toFixed(3) + ")";
+        ctx.arc(sx, sy, 2.2, 0, TWO_PI);
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(frame);
+    };
+
+    raf = requestAnimationFrame(frame);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <section id="live" className="relative overflow-hidden bg-base py-24 text-ink">
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="relative h-[420px] w-full max-w-content">
+          <canvas ref={canvasRef} className="h-full w-full" />
+        </div>
+      </div>
+      <div className="relative mx-auto max-w-content px-6 text-center">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
+          Live on Solana
+        </p>
+        <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+          Every bet, settled in the open
+        </h2>
+        <p className="mx-auto mt-4 max-w-xl text-base text-muted">
+          A living map of on-chain activity — each pulse is a real transaction you can verify block by block.
+        </p>
+      </div>
+    </section>
+  );
+}

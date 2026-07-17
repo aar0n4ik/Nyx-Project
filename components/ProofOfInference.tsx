@@ -20,7 +20,7 @@ export default function ProofOfInference() {
         </Reveal>
         <div className="mt-12 grid gap-4 md:grid-cols-2">
           {CARDS.map((c, i) => {
-            const badge = `mb-4 inline-block rounded-lg bg-gradient-to-r ${c.tint} px-3 py-1 text-xs font-semibold text-white`;
+            const badge = `mb-4 inline-block rounded-lg bg-gradient-to-r ${c.tint} px-3 py-1 text-xs font-semibold text-ink`;
             return (
               <Reveal key={c.label} delay={i * 0.08}>
                 <div className="rounded-2xl border border-hairline bg-white p-6">

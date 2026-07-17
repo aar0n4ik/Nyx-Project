@@ -12,10 +12,19 @@ export const metadata: Metadata = {
     "Zero-custody betting, on-chain settlement and verifiable AI inference. Every bet, every payout, every proof lives on-chain.",
 };
 
+const fontVars = [inter.variable, display.variable, mono.variable].join(" ");
+const themeInit = {
+  __html:
+    "try{var t=localStorage.getItem('nyx-theme');if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}",
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${display.variable} ${mono.variable}`}>
-      <body className="font-sans antialiased bg-base text-ink">{children}</body>
+    <html lang="en" suppressHydrationWarning className={fontVars}>
+      <head>
+        <script dangerouslySetInnerHTML={themeInit} />
+      </head>
+      <body>{children}</body>
     </html>
   );
 }

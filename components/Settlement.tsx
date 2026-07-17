@@ -24,7 +24,7 @@ export default function Settlement() {
         <div className="mt-10 flex justify-center">
           <div className="inline-flex rounded-xl border border-hairline bg-white p-1">
             {(Object.keys(MODES) as Key[]).map((k) => (
-              <button key={k} onClick={() => setMode(k)} className={ "rounded-lg px-5 py-2 text-sm font-semibold transition-colors " + (mode === k ? "bg-ink text-white" : "text-muted hover:text-ink") }>{MODES[k].label}</button>
+              <button key={k} onClick={() => setMode(k)} className={ "rounded-lg px-5 py-2 text-sm font-semibold transition-colors " + (mode === k ? "bg-ink text-ink" : "text-muted hover:text-ink") }>{MODES[k].label}</button>
             ))}
           </div>
         </div>

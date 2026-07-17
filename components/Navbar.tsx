@@ -1,5 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
+import Logo from "@/components/Logo";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const LINKS = [
   { label: "Why Nyx", href: "#why" },
@@ -17,40 +20,33 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const shell =
+    "fixed inset-x-0 top-0 z-50 border-b transition-all duration-300 " +
+    (scrolled ? "border-hairline bg-base/80 backdrop-blur-md" : "border-transparent bg-base/40 backdrop-blur");
+
   return (
-    <header
-      className={
-        "fixed inset-x-0 top-0 z-50 transition-all " +
-        (scrolled ? "border-b border-hairline bg-white/80 backdrop-blur" : "bg-transparent")
-      }
-    >
-      <nav className="mx-auto flex max-w-content items-center justify-between px-6 py-4">
-        <a href="#" className={"font-display text-lg font-bold " + (scrolled ? "text-ink" : "text-white")}>
-          Nyx
+    <header className={shell}>
+      <nav className="mx-auto flex max-w-content items-center justify-between px-6 py-3">
+        <a href="/" className="shrink-0">
+          <Logo />
         </a>
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-7 md:flex">
           {LINKS.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className={
-                "text-sm font-medium transition-colors " +
-                (scrolled ? "text-muted hover:text-ink" : "text-white/70 hover:text-white")
-              }
-            >
+            <a key={l.href} href={l.href} className="text-sm font-medium text-muted transition hover:text-ink">
               {l.label}
             </a>
           ))}
         </div>
-        <a
-          href="#markets"
-          className={
-            "rounded-lg px-4 py-2 text-sm font-semibold transition-colors " +
-            (scrolled ? "bg-ink text-white hover:opacity-90" : "bg-white text-ink hover:bg-white/90")
-          }
-        >
-          Launch app
-        </a>
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <ThemeToggle />
+          <a
+            href="/app"
+            className="rounded-lg bg-gradient-to-r from-nyx to-verify px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
+          >
+            Launch app
+          </a>
+        </div>
       </nav>
     </header>
   );

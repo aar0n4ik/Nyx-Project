@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: "class",
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -7,11 +8,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        base: "#FFFFFF",
-        subtle: "#F6F7F9",
-        hairline: "#E7E9EF",
-        ink: "#0B0D12",
-        muted: "#5B6172",
+        base: "rgb(var(--base) / <alpha-value>)",
+        subtle: "rgb(var(--subtle) / <alpha-value>)",
+        hairline: "rgb(var(--hairline) / <alpha-value>)",
+        ink: "rgb(var(--ink) / <alpha-value>)",
+        muted: "rgb(var(--muted) / <alpha-value>)",
         nyx: "#6D4AFF",
         solana: "#9945FF",
         verify: "#0BB5D6",
