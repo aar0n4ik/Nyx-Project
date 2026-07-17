@@ -1,15 +1,21 @@
-import type { Metadata, Viewport } from "next"
+import type { Metadata } from "next";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const display = Space_Grotesk({ subsets: ["latin"], variable: "--font-display", display: "swap" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
+
 export const metadata: Metadata = {
-  title: "Nyx — Verifiable Sports Intelligence",
-  description: "Nyx is an on-device AI agent for verifiable World Cup markets. Offline-first with Tether QVAC, settled at Solana speed. The invisible Web3 layer for football.",
-  applicationName: "Nyx",
-  metadataBase: new URL("https://nyx-project-roan.vercel.app"),
-  openGraph: { title: "Nyx — Verifiable Sports Intelligence", description: "On-device AI agent for verifiable World Cup markets. Tether QVAC + Solana.", type: "website", images: ["/nyx/icon-512.png"] },
-  twitter: { card: "summary_large_image", title: "Nyx — Verifiable Sports Intelligence", description: "On-device AI + Solana settlement for football.", images: ["/nyx/icon-512.png"] },
-  icons: { icon: "/nyx/nyx-mark.svg", apple: "/nyx/icon-192.png" },
-  manifest: "/nyx/manifest.webmanifest",
-}
-export const viewport: Viewport = { themeColor: "#2563eb" }
+  title: "Nyx — Trustless prediction markets on Solana",
+  description:
+    "Zero-custody betting, on-chain settlement and verifiable AI inference. Every bet, every payout, every proof lives on-chain.",
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (<html lang="en"><body>{children}</body></html>)
+  return (
+    <html lang="en" className={`${inter.variable} ${display.variable} ${mono.variable}`}>
+      <body className="font-sans antialiased bg-base text-ink">{children}</body>
+    </html>
+  );
 }

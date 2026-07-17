@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+html { scroll-behavior: smooth; }
+body {
+  background: #ffffff;
+  color: #0b0d12;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+section[id] { scroll-margin-top: 5rem; }
+.nyx-scroll::-webkit-scrollbar { height: 6px; width: 6px; }
+.nyx-scroll::-webkit-scrollbar-thumb { background: rgba(109,74,255,0.3); border-radius: 9999px; }
