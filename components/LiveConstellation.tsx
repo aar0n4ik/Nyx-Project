@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useLang, pick } from "@/lib/i18n";
 
 type Point = { x: number; y: number; z: number };
 
@@ -21,6 +22,7 @@ function sphere(n: number): Point[] {
 }
 
 export default function LiveConstellation() {
+  const lang = useLang();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -147,13 +149,13 @@ export default function LiveConstellation() {
       </div>
       <div className="relative mx-auto max-w-content px-6 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
-          Live on Solana
+          {pick(lang, { en: "Live on Solana", ru: "Вживую на Solana", es: "En vivo en Solana", pt: "Ao vivo na Solana", fr: "En direct sur Solana", de: "Live auf Solana", zh: "在 Solana 上实时运行" })}
         </p>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-          Every bet, settled in the open
+          {pick(lang, { en: "Every bet, settled in the open", ru: "Каждая ставка рассчитана открыто", es: "Cada apuesta, liquidada a la vista", pt: "Cada aposta, liquidada à vista de todos", fr: "Chaque pari, réglé au grand jour", de: "Jede Wette, offen abgerechnet", zh: "每一注都公开结算" })}
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base text-muted">
-          A living map of on-chain activity — each pulse is a real transaction you can verify block by block.
+          {pick(lang, { en: "A living map of on-chain activity — each pulse is a real transaction you can verify block by block.", ru: "Живая карта ончейн-активности — каждый импульс это реальная транзакция, которую можно проверить блок за блоком.", es: "Un mapa vivo de la actividad on-chain: cada pulso es una transacción real que puedes verificar bloque a bloque.", pt: "Um mapa vivo da atividade on-chain — cada pulso é uma transação real que você pode verificar bloco a bloco.", fr: "Une carte vivante de l'activité on-chain — chaque impulsion est une vraie transaction que vous pouvez vérifier bloc par bloc.", de: "Eine lebendige Karte der On-chain-Aktivität — jeder Puls ist eine echte Transaktion, die du Block für Block überprüfen kannst.", zh: "链上活动的动态地图——每一次脉冲都是一笔可逐块验证的真实交易。" })}
         </p>
       </div>
     </section>

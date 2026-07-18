@@ -108,3 +108,22 @@ export function useT() {
 
   return { lang, setLang, t: (key: string) => translate(lang, key) };
 }
+
+export function useLang(): Lang {
+  const [l, setL] = useState<Lang>("en");
+  useEffect(() => {
+    setL(getLang());
+    const on = () => setL(getLang());
+    window.addEventListener("nyx-lang-change", on);
+    window.addEventListener("storage", on);
+    return () => {
+      window.removeEventListener("nyx-lang-change", on);
+      window.removeEventListener("storage", on);
+    };
+  }, []);
+  return l;
+}
+
+export function pick<T>(lang: Lang, map: Partial<Record<Lang, T>> & { en: T }): T {
+  return map[lang] ?? map.en;
+}

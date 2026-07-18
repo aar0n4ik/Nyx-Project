@@ -10,6 +10,10 @@ import {
   Check,
   AlertTriangle,
 } from "lucide-react";
+import { useLang, pick } from "@/lib/i18n";
+import type { Lang } from "@/lib/i18n";
+
+type L = Record<Lang, string>;
 
 type Cluster = "devnet" | "mainnet";
 
@@ -19,7 +23,7 @@ const RPC: Record<Cluster, string> = {
 };
 
 type Receipt = {
-  label: string;
+  label: L;
   kind: string;
   sig: string;
   cluster: Cluster;
@@ -28,27 +32,27 @@ type Receipt = {
 
 const RECEIPTS: Receipt[] = [
   {
-    label: "Proof-of-Inference · devnet anchor",
+    label: { en: "Proof-of-Inference · devnet anchor", ru: "Proof-of-Inference · якорь в devnet", es: "Proof-of-Inference · ancla en devnet", pt: "Proof-of-Inference · âncora na devnet", fr: "Proof-of-Inference · ancre devnet", de: "Proof-of-Inference · Devnet-Anker", zh: "Proof-of-Inference · devnet 锚点" },
     kind: "PoI",
     cluster: "devnet",
     sig: "4cHmiwceMJ4DbNQsHupQVUdyL4EwA5SEv425M3yFkfksVLCT128ieutsVpeChNiRuRuZyfMYhmhinEnm8ESdMUeR",
     digest: "38d667dd86c40d94f74d0b214cd6bdaf6dc3926eed8657b91fdde54d71e8310c",
   },
   {
-    label: "Proof-of-Inference · mainnet anchor",
+    label: { en: "Proof-of-Inference · mainnet anchor", ru: "Proof-of-Inference · якорь в mainnet", es: "Proof-of-Inference · ancla en mainnet", pt: "Proof-of-Inference · âncora na mainnet", fr: "Proof-of-Inference · ancre mainnet", de: "Proof-of-Inference · Mainnet-Anker", zh: "Proof-of-Inference · mainnet 锚点" },
     kind: "PoI",
     cluster: "mainnet",
     sig: "2SDKgy1AGbosRkXbvDitxLLsyysbDY32RsA7wJsX2Bs4Tcc4iZMkADmqKDzxYGkAzPiWbQmPE3W2zoXD9TaaH7Vn",
     digest: "4331d8b7c75bac406fe8e7aa09605db63f6f809e6919fd48b0f042ff9f2664d8",
   },
   {
-    label: "Trustless settlement",
+    label: { en: "Trustless settlement", ru: "Бездоверительный расчёт", es: "Liquidación sin confianza", pt: "Liquidação sem confiança", fr: "Règlement sans confiance", de: "Vertrauenslose Abrechnung", zh: "无需信任的结算" },
     kind: "Settle",
     cluster: "devnet",
     sig: "65r1WhdDMuyU479caqWLjEskBrTGbZedNP6rDbgBh259MnRQo7PzCgcC1aPbVhsRNZji1FfPTD8AY7VBGaMXfV9v",
   },
   {
-    label: "Dispute resolved on-chain",
+    label: { en: "Dispute resolved on-chain", ru: "Спор разрешён ончейн", es: "Disputa resuelta on-chain", pt: "Disputa resolvida on-chain", fr: "Litige résolu on-chain", de: "Streit on-chain gelöst", zh: "链上已解决的争议" },
     kind: "Dispute",
     cluster: "devnet",
     sig: "q9yZGMJbHgfSqKmrqWyhHJZ6PRNW89b2ZEJG6icVV2dEGDHRdAzYxnheS9aix9c14CEzBTERqYrPgvSjbMfWAkQ",
@@ -102,11 +106,14 @@ function extractMemo(tx: unknown): string | undefined {
   return undefined;
 }
 
-async function runVerify(r: {
-  sig: string;
-  cluster: Cluster;
-  digest?: string;
-}): Promise<VerifyResult> {
+async function runVerify(
+  r: {
+    sig: string;
+    cluster: Cluster;
+    digest?: string;
+  },
+  t: { notFound: string; rpcError: string }
+): Promise<VerifyResult> {
   const endpoint = RPC[r.cluster];
   const t0 = performance.now();
   const res = await fetch(endpoint, {
@@ -141,14 +148,14 @@ async function runVerify(r: {
   const ms = Math.round(performance.now() - t0);
 
   if (json.error) {
-    return { ok: false, found: false, err: json.error.message || "RPC error", ms, endpoint };
+    return { ok: false, found: false, err: json.error.message || t.rpcError, ms, endpoint };
   }
   const tx = json.result;
   if (!tx) {
     return {
       ok: false,
       found: false,
-      err: "Transaction not found on " + r.cluster,
+      err: t.notFound + r.cluster,
       ms,
       endpoint,
     };
@@ -176,6 +183,7 @@ async function runVerify(r: {
 }
 
 export default function ProofVerifier() {
+  const lang = useLang();
   const [selected, setSelected] = useState<Receipt>(RECEIPTS[0]);
   const [custom, setCustom] = useState("");
   const [cluster, setCluster] = useState<Cluster>("devnet");
@@ -190,18 +198,25 @@ export default function ProofVerifier() {
   const verify = async () => {
     setLoading(true);
     setResult(null);
+    const errMsgs = {
+      notFound: pick(lang, { en: "Transaction not found on ", ru: "Транзакция не найдена в ", es: "Transacción no encontrada en ", pt: "Transação não encontrada em ", fr: "Transaction introuvable sur ", de: "Transaktion nicht gefunden auf ", zh: "未在以下网络找到交易：" }),
+      rpcError: pick(lang, { en: "RPC error", ru: "Ошибка RPC", es: "Error de RPC", pt: "Erro de RPC", fr: "Erreur RPC", de: "RPC-Fehler", zh: "RPC 错误" }),
+    };
     try {
-      const r = await runVerify({
-        sig: activeSig,
-        cluster: activeCluster,
-        digest: activeDigest,
-      });
+      const r = await runVerify(
+        {
+          sig: activeSig,
+          cluster: activeCluster,
+          digest: activeDigest,
+        },
+        errMsgs
+      );
       setResult(r);
     } catch (e) {
       setResult({
         ok: false,
         found: false,
-        err: (e as Error).message || "Network error",
+        err: (e as Error).message || pick(lang, { en: "Network error", ru: "Ошибка сети", es: "Error de red", pt: "Erro de rede", fr: "Erreur réseau", de: "Netzwerkfehler", zh: "网络错误" }),
         ms: 0,
         endpoint: RPC[activeCluster],
       });
@@ -225,15 +240,13 @@ export default function ProofVerifier() {
       <div className="mx-auto max-w-2xl text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-hairline px-3 py-1 text-xs text-muted">
           <ShieldCheck className="h-3.5 w-3.5 text-verify" />
-          Verify, don&apos;t trust
+          {pick(lang, { en: "Verify, don't trust", ru: "Проверяй, а не доверяй", es: "Verifica, no confíes", pt: "Verifique, não confie", fr: "Vérifiez, ne faites pas confiance", de: "Prüfen, nicht vertrauen", zh: "验证，而非信任" })}
         </div>
         <h2 className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          Check the chain yourself
+          {pick(lang, { en: "Check the chain yourself", ru: "Проверь цепочку сам", es: "Comprueba la cadena tú mismo", pt: "Verifique a chain você mesmo", fr: "Vérifiez la chaîne vous-même", de: "Prüfe die Chain selbst", zh: "自己检查链上数据" })}
         </h2>
         <p className="mt-3 text-muted">
-          This runs entirely in your browser. It calls a public Solana RPC live,
-          pulls the transaction, and cross-checks the Proof-of-Inference digest
-          anchored on-chain. No backend of ours in the loop.
+          {pick(lang, { en: "This runs entirely in your browser. It calls a public Solana RPC live, pulls the transaction, and cross-checks the Proof-of-Inference digest anchored on-chain. No backend of ours in the loop.", ru: "Это работает целиком в твоём браузере. Вживую вызывает публичный Solana RPC, вытягивает транзакцию и сверяет дайджест Proof-of-Inference, закреплённый ончейн. Нашего бэкенда в цепочке нет.", es: "Esto se ejecuta íntegramente en tu navegador. Llama en vivo a un RPC público de Solana, obtiene la transacción y coteja el digest de Proof-of-Inference anclado on-chain. Ningún backend nuestro en el proceso.", pt: "Isto roda inteiramente no seu navegador. Chama ao vivo um RPC público da Solana, busca a transação e confere o digest de Proof-of-Inference ancorado on-chain. Nenhum backend nosso no meio.", fr: "Tout s'exécute dans votre navigateur. Il appelle en direct un RPC Solana public, récupère la transaction et recoupe le digest Proof-of-Inference ancré on-chain. Aucun backend de notre part dans la boucle.", de: "Das läuft komplett in deinem Browser. Es ruft live einen öffentlichen Solana-RPC auf, holt die Transaktion und gleicht den on-chain verankerten Proof-of-Inference-Digest ab. Kein Backend von uns im Spiel.", zh: "这完全在你的浏览器中运行。它实时调用公共 Solana RPC，拉取交易，并交叉核对锚定在链上的 Proof-of-Inference 摘要。全程没有我们的后端参与。" })}
         </p>
       </div>
 
@@ -256,7 +269,7 @@ export default function ProofVerifier() {
                     : "border-hairline text-muted hover:text-ink")
                 }
               >
-                {r.label}
+                {pick(lang, r.label)}
               </button>
             );
           })}
@@ -266,7 +279,7 @@ export default function ProofVerifier() {
           <input
             value={custom}
             onChange={(e) => setCustom(e.target.value)}
-            placeholder="…or paste any Solana signature"
+            placeholder={pick(lang, { en: "…or paste any Solana signature", ru: "…или вставь любую подпись Solana", es: "…o pega cualquier firma de Solana", pt: "…ou cole qualquer assinatura Solana", fr: "…ou collez n'importe quelle signature Solana", de: "…oder füge eine beliebige Solana-Signatur ein", zh: "…或粘贴任意 Solana 签名" })}
             className="flex-1 rounded-xl border border-hairline bg-base px-3 py-2.5 font-mono text-sm text-ink outline-none focus:border-nyx"
           />
           {custom.trim() ? (
@@ -300,7 +313,9 @@ export default function ProofVerifier() {
           ) : (
             <ShieldCheck className="h-5 w-5" />
           )}
-          {loading ? "Querying Solana…" : "Verify on-chain"}
+          {loading
+            ? pick(lang, { en: "Querying Solana…", ru: "Запрос к Solana…", es: "Consultando Solana…", pt: "Consultando a Solana…", fr: "Interrogation de Solana…", de: "Solana wird abgefragt…", zh: "正在查询 Solana…" })
+            : pick(lang, { en: "Verify on-chain", ru: "Проверить ончейн", es: "Verificar on-chain", pt: "Verificar on-chain", fr: "Vérifier on-chain", de: "On-chain überprüfen", zh: "链上验证" })}
         </button>
 
         <AnimatePresence mode="wait">
@@ -322,7 +337,9 @@ export default function ProofVerifier() {
                       <AlertTriangle className="h-5 w-5 text-amber-500" />
                     )}
                     <span className="text-sm font-medium text-ink">
-                      {result.ok ? "Confirmed on-chain" : "Found, but tx reverted"}
+                      {result.ok
+                        ? pick(lang, { en: "Confirmed on-chain", ru: "Подтверждено ончейн", es: "Confirmado on-chain", pt: "Confirmado on-chain", fr: "Confirmé on-chain", de: "On-chain bestätigt", zh: "已在链上确认" })
+                        : pick(lang, { en: "Found, but tx reverted", ru: "Найдено, но транзакция откатилась", es: "Encontrada, pero la tx revirtió", pt: "Encontrada, mas a tx reverteu", fr: "Trouvée, mais la tx a échoué", de: "Gefunden, aber tx zurückgesetzt", zh: "已找到，但交易已回滚" })}
                     </span>
                     <span className="ml-auto font-mono text-xs text-muted">
                       {result.ms}ms
@@ -335,17 +352,17 @@ export default function ProofVerifier() {
                       <div className="font-mono text-ink">{result.slot}</div>
                     </div>
                     <div className="rounded-xl bg-base px-3 py-2">
-                      <div className="text-xs text-muted">Fee</div>
+                      <div className="text-xs text-muted">{pick(lang, { en: "Fee", ru: "Комиссия", es: "Comisión", pt: "Taxa", fr: "Frais", de: "Gebühr", zh: "手续费" })}</div>
                       <div className="font-mono text-ink">{result.feeSol} SOL</div>
                     </div>
                     <div className="rounded-xl bg-base px-3 py-2">
-                      <div className="text-xs text-muted">Compute units</div>
+                      <div className="text-xs text-muted">{pick(lang, { en: "Compute units", ru: "Compute units", es: "Compute units", pt: "Compute units", fr: "Compute units", de: "Compute Units", zh: "计算单元" })}</div>
                       <div className="font-mono text-ink">
                         {result.computeUnits ?? "—"}
                       </div>
                     </div>
                     <div className="rounded-xl bg-base px-3 py-2">
-                      <div className="text-xs text-muted">Block time</div>
+                      <div className="text-xs text-muted">{pick(lang, { en: "Block time", ru: "Время блока", es: "Hora del bloque", pt: "Hora do bloco", fr: "Heure du bloc", de: "Blockzeit", zh: "区块时间" })}</div>
                       <div className="font-mono text-ink">
                         {result.blockTime
                           ? new Date(result.blockTime * 1000)
@@ -372,14 +389,14 @@ export default function ProofVerifier() {
                         <AlertTriangle className="h-4 w-4" />
                       )}
                       {result.digestMatch
-                        ? "Anchored inference digest matches the receipt"
-                        : "Digest not found in this tx memo"}
+                        ? pick(lang, { en: "Anchored inference digest matches the receipt", ru: "Закреплённый дайджест инференса совпадает с квитанцией", es: "El digest de inferencia anclado coincide con el recibo", pt: "O digest de inferência ancorado corresponde ao recibo", fr: "Le digest d'inférence ancré correspond au reçu", de: "Verankerter Inferenz-Digest stimmt mit dem Beleg überein", zh: "锚定的推理摘要与回执匹配" })
+                        : pick(lang, { en: "Digest not found in this tx memo", ru: "Дайджест не найден в memo этой транзакции", es: "Digest no encontrado en el memo de esta tx", pt: "Digest não encontrado no memo desta tx", fr: "Digest introuvable dans le memo de cette tx", de: "Digest im Memo dieser tx nicht gefunden", zh: "该交易 memo 中未找到摘要" })}
                     </div>
                   ) : null}
 
                   {result.memo ? (
                     <div className="rounded-xl bg-base px-3 py-2">
-                      <div className="mb-1 text-xs text-muted">On-chain memo</div>
+                      <div className="mb-1 text-xs text-muted">{pick(lang, { en: "On-chain memo", ru: "Memo ончейн", es: "Memo on-chain", pt: "Memo on-chain", fr: "Memo on-chain", de: "On-chain-Memo", zh: "链上 memo" })}</div>
                       <div className="break-all font-mono text-xs text-ink">
                         {result.memo}
                       </div>
@@ -396,7 +413,7 @@ export default function ProofVerifier() {
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-1.5 text-sm text-verify hover:underline"
                   >
-                    Open in Solana Explorer
+                    {pick(lang, { en: "Open in Solana Explorer", ru: "Открыть в Solana Explorer", es: "Abrir en Solana Explorer", pt: "Abrir no Solana Explorer", fr: "Ouvrir dans Solana Explorer", de: "In Solana Explorer öffnen", zh: "在 Solana Explorer 中打开" })}
                     <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 </div>

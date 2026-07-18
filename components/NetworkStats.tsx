@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Gauge } from "lucide-react";
+import { useLang, pick } from "@/lib/i18n";
 
 const RPC_DEVNET = "https://api.devnet.solana.com";
 const SETTLEMENT = "AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3";
@@ -62,6 +63,7 @@ function Metric(props: { label: string; value: number; suffix?: string; decimals
 }
 
 export default function NetworkStats() {
+  const lang = useLang();
   const [s, setS] = useState<Stats>({
     slot: 0,
     sigs: 0,
@@ -118,7 +120,7 @@ export default function NetworkStats() {
       <div className="mx-auto max-w-4xl rounded-3xl border border-hairline bg-subtle p-2">
         <div className="flex items-center gap-2 px-4 pt-3 text-xs text-muted">
           <Gauge className="h-3.5 w-3.5 text-nyx" />
-          Solana devnet · live
+          {pick(lang, { en: "Solana devnet · live", ru: "Solana devnet · в эфире", es: "Solana devnet · en vivo", pt: "Solana devnet · ao vivo", fr: "Solana devnet · en direct", de: "Solana devnet · live", zh: "Solana devnet · 实时" })}
           <span
             className={
               "ml-auto flex items-center gap-1.5 " +
@@ -131,14 +133,18 @@ export default function NetworkStats() {
                 (s.live ? "animate-pulse bg-payout" : "bg-muted")
               }
             />
-            {s.loading ? "syncing" : s.live ? "connected" : "offline"}
+            {s.loading
+              ? pick(lang, { en: "syncing", ru: "синхронизация", es: "sincronizando", pt: "sincronizando", fr: "synchronisation", de: "synchronisiert…", zh: "同步中" })
+              : s.live
+                ? pick(lang, { en: "connected", ru: "подключено", es: "conectado", pt: "conectado", fr: "connecté", de: "verbunden", zh: "已连接" })
+                : pick(lang, { en: "offline", ru: "офлайн", es: "sin conexión", pt: "offline", fr: "hors ligne", de: "offline", zh: "离线" })}
           </span>
         </div>
         <div className="grid grid-cols-2 divide-x divide-y divide-hairline sm:grid-cols-4 sm:divide-y-0">
-          <Metric label="Current slot" value={s.slot} />
-          <Metric label="Settlements indexed" value={s.sigs} />
-          <Metric label="Treasury balance" value={s.balance} suffix="SOL" decimals={3} />
-          <Metric label="Network epoch" value={s.epoch} />
+          <Metric label={pick(lang, { en: "Current slot", ru: "Текущий слот", es: "Slot actual", pt: "Slot atual", fr: "Slot actuel", de: "Aktueller Slot", zh: "当前 slot" })} value={s.slot} />
+          <Metric label={pick(lang, { en: "Settlements indexed", ru: "Расчётов проиндексировано", es: "Liquidaciones indexadas", pt: "Liquidações indexadas", fr: "Règlements indexés", de: "Indexierte Settlements", zh: "已索引结算数" })} value={s.sigs} />
+          <Metric label={pick(lang, { en: "Treasury balance", ru: "Баланс казны", es: "Saldo de tesorería", pt: "Saldo do tesouro", fr: "Solde de trésorerie", de: "Treasury-Guthaben", zh: "金库余额" })} value={s.balance} suffix="SOL" decimals={3} />
+          <Metric label={pick(lang, { en: "Network epoch", ru: "Эпоха сети", es: "Época de red", pt: "Época da rede", fr: "Époque réseau", de: "Netzwerk-Epoche", zh: "网络纪元" })} value={s.epoch} />
         </div>
       </div>
     </section>

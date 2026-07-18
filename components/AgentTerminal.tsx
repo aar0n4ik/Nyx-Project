@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Reveal from "@/components/Reveal";
+import { useLang, pick } from "@/lib/i18n";
 
 const LINES = [
   "$ nyx agent resolve --market btc-80k",
@@ -13,6 +14,7 @@ const LINES = [
 ];
 
 export default function AgentTerminal() {
+  const lang = useLang();
   const [visible, setVisible] = useState(0);
   const [run, setRun] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -31,8 +33,8 @@ export default function AgentTerminal() {
   return (
     <section className="mx-auto max-w-content px-6 py-24">
       <Reveal>
-        <div className="mb-3 text-center text-xs font-mono uppercase tracking-widest text-nyx">Autonomous resolution</div>
-        <h2 className="text-center font-display text-3xl font-bold text-ink md:text-5xl">Watch an agent settle a market</h2>
+        <div className="mb-3 text-center text-xs font-mono uppercase tracking-widest text-nyx">{pick(lang, { en: "Autonomous resolution", ru: "Автономное разрешение исходов", es: "Resolución autónoma", pt: "Resolução autônoma", fr: "Résolution autonome", de: "Autonome Auflösung", zh: "自主判定结算" })}</div>
+        <h2 className="text-center font-display text-3xl font-bold text-ink md:text-5xl">{pick(lang, { en: "Watch an agent settle a market", ru: "Смотри, как агент рассчитывает рынок", es: "Mira a un agente liquidar un mercado", pt: "Veja um agente liquidar um mercado", fr: "Regardez un agent régler un marché", de: "Sieh zu, wie ein Agent einen Markt abrechnet", zh: "看智能体如何结算一个市场" })}</h2>
       </Reveal>
       <div ref={ref} className="mx-auto mt-10 max-w-2xl overflow-hidden rounded-2xl border border-hairline bg-[#0B0B14] shadow-xl">
         <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">

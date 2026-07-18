@@ -3,14 +3,13 @@ import Hero from "@/components/Hero";
 import NyxEdge from "@/components/NyxEdge";
 import PerTrackFaq from "@/components/PerTrackFaq";
 import NetworkStats from "@/components/NetworkStats";
-import CardSpotlight from "@/components/CardSpotlight";
-import CursorGlow from "@/components/CursorGlow";
 import LiveStream from "@/components/LiveStream";
 import AmmVisualizer from "@/components/AmmVisualizer";
 import CommandPalette from "@/components/CommandPalette";
 import ProofVerifier from "@/components/ProofVerifier";
 import PWA from "@/components/PWA";
-import TrackSwitcher from "@/components/TrackSwitcher";
+import TrackModal from "@/components/TrackModal";
+import TrackSpotlight from "@/components/TrackSpotlight";
 import Tracks from "@/components/Tracks";
 import LiveFeed from "@/components/LiveFeed";
 import Founder from "@/components/Founder";
@@ -33,12 +32,11 @@ export default function Page() {
     <main className="min-h-screen bg-base">
       <Navbar />
       <CommandPalette />
-      <CursorGlow />
-      <CardSpotlight />
       <PWA />
-      <TrackSwitcher />
+      <TrackModal />
       <Hero />
       <Tracks />
+      <TrackSpotlight />
       <Roadmap />
       <LiveStats />
       <WhyDifferent />

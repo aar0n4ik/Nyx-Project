@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Activity, Cpu } from "lucide-react";
+import { useLang, pick } from "@/lib/i18n";
 
 const RPC_DEVNET = "https://api.devnet.solana.com";
 const MARKET_ACCOUNT = "FAzwcBzofAQQfVFUKKF4ZG5LF2XT1g9BCiu7zYb4QSW4";
@@ -33,6 +34,7 @@ type Chain = {
 };
 
 export default function AmmVisualizer() {
+  const lang = useLang();
   const [b, setB] = useState(500);
   const [buy, setBuy] = useState(120);
   const [chain, setChain] = useState<Chain>({ loading: true, found: false });
@@ -164,15 +166,13 @@ export default function AmmVisualizer() {
       <div className="mx-auto max-w-2xl text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-hairline px-3 py-1 text-xs text-muted">
           <Cpu className="h-3.5 w-3.5 text-nyx" />
-          Recentred-LMSR market maker
+          {pick(lang, { en: "Recentred-LMSR market maker", ru: "Маркет-мейкер на рецентрированном LMSR", es: "Creador de mercado LMSR recentrado", pt: "Formador de mercado LMSR recentrado", fr: "Teneur de marché LMSR recentré", de: "Recentred-LMSR-Market-Maker", zh: "重心校正 LMSR 做市商" })}
         </div>
         <h2 className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          Watch the price form
+          {pick(lang, { en: "Watch the price form", ru: "Смотри, как формируется цена", es: "Mira cómo se forma el precio", pt: "Veja o preço se formar", fr: "Regardez le prix se former", de: "Sieh, wie sich der Preis bildet", zh: "看价格如何形成" })}
         </h2>
         <p className="mt-3 text-muted">
-          The exact automated market maker that prices Nyx markets on-chain. Move
-          the stake and see the odds, cost and slippage update live — bounded LP
-          loss of b·ln(n), by construction.
+          {pick(lang, { en: "The exact automated market maker that prices Nyx markets on-chain. Move the stake and see the odds, cost and slippage update live — bounded LP loss of b·ln(n), by construction.", ru: "Тот самый автоматический маркет-мейкер, который оценивает рынки Nyx ончейн. Двигай ставку и смотри, как вживую меняются коэффициенты, стоимость и проскальзывание — с ограниченным убытком LP b·ln(n) по построению.", es: "El mismo creador de mercado automático que fija los precios de los mercados de Nyx on-chain. Mueve la apuesta y observa cómo las cuotas, el costo y el deslizamiento se actualizan en vivo, con una pérdida de LP acotada a b·ln(n) por construcción.", pt: "O mesmo formador de mercado automático que precifica os mercados da Nyx on-chain. Mova a aposta e veja as odds, o custo e o slippage atualizarem ao vivo — com perda de LP limitada a b·ln(n), por construção.", fr: "Le teneur de marché automatique exact qui tarifie les marchés Nyx on-chain. Déplacez la mise et voyez les cotes, le coût et le slippage se mettre à jour en direct — perte de LP bornée à b·ln(n), par construction.", de: "Genau der automatische Market-Maker, der Nyx-Märkte on-chain bepreist. Verschiebe den Einsatz und sieh, wie sich Quoten, Kosten und Slippage live aktualisieren — mit begrenztem LP-Verlust von b·ln(n), konstruktionsbedingt.", zh: "正是为 Nyx 市场在链上定价的自动做市商。移动下注额，实时查看赔率、成本和滑点的变化——LP 亏损在构造上被限定为 b·ln(n)。" })}
         </p>
       </div>
 
@@ -180,12 +180,12 @@ export default function AmmVisualizer() {
         <div className="rounded-2xl border border-hairline bg-base px-3 py-2 text-xs">
           <div className="flex items-center gap-2 text-muted">
             <Activity className="h-3.5 w-3.5 text-verify" />
-            Live market account
+            {pick(lang, { en: "Live market account", ru: "Живой рыночный аккаунт", es: "Cuenta de mercado en vivo", pt: "Conta de mercado ao vivo", fr: "Compte de marché en direct", de: "Live-Marktkonto", zh: "实时市场账户" })}
             <span className="ml-auto font-mono">{shorten(MARKET_ACCOUNT)}</span>
           </div>
           <div className="mt-2 grid grid-cols-3 gap-2 font-mono">
             <div>
-              <div className="text-muted">Rent</div>
+              <div className="text-muted">{pick(lang, { en: "Rent", ru: "Рента", es: "Renta", pt: "Aluguel", fr: "Loyer", de: "Miete", zh: "租金" })}</div>
               <div className="text-ink">
                 {chain.loading
                   ? "…"
@@ -195,13 +195,13 @@ export default function AmmVisualizer() {
               </div>
             </div>
             <div>
-              <div className="text-muted">Owner</div>
+              <div className="text-muted">{pick(lang, { en: "Owner", ru: "Владелец", es: "Propietario", pt: "Proprietário", fr: "Propriétaire", de: "Eigentümer", zh: "所有者" })}</div>
               <div className="text-ink">
                 {chain.found && chain.owner ? shorten(chain.owner) : "—"}
               </div>
             </div>
             <div>
-              <div className="text-muted">Size</div>
+              <div className="text-muted">{pick(lang, { en: "Size", ru: "Размер", es: "Tamaño", pt: "Tamanho", fr: "Taille", de: "Größe", zh: "大小" })}</div>
               <div className="text-ink">
                 {chain.found && chain.space != null ? chain.space + " B" : "—"}
               </div>
@@ -213,25 +213,25 @@ export default function AmmVisualizer() {
 
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-xl border border-hairline bg-base px-3 py-2">
-            <div className="text-xs text-muted">YES price now</div>
+            <div className="text-xs text-muted">{pick(lang, { en: "YES price now", ru: "Цена ДА сейчас", es: "Precio SÍ ahora", pt: "Preço SIM agora", fr: "Prix OUI maintenant", de: "JA-Preis jetzt", zh: "当前 是 价格" })}</div>
             <div className="font-mono text-lg text-ink">
               {Math.round(stats.before * 100)}¢
             </div>
           </div>
           <div className="rounded-xl border border-hairline bg-base px-3 py-2">
-            <div className="text-xs text-muted">YES price after</div>
+            <div className="text-xs text-muted">{pick(lang, { en: "YES price after", ru: "Цена ДА после", es: "Precio SÍ después", pt: "Preço SIM depois", fr: "Prix OUI après", de: "JA-Preis danach", zh: "之后 是 价格" })}</div>
             <div className="font-mono text-lg text-ink">
               {Math.round(stats.after * 100)}¢
             </div>
           </div>
           <div className="rounded-xl border border-hairline bg-base px-3 py-2">
-            <div className="text-xs text-muted">Cost</div>
+            <div className="text-xs text-muted">{pick(lang, { en: "Cost", ru: "Стоимость", es: "Costo", pt: "Custo", fr: "Coût", de: "Kosten", zh: "成本" })}</div>
             <div className="font-mono text-lg text-ink">
               {stats.cost.toFixed(1)} USD₮
             </div>
           </div>
           <div className="rounded-xl border border-hairline bg-base px-3 py-2">
-            <div className="text-xs text-muted">Avg fill · slippage</div>
+            <div className="text-xs text-muted">{pick(lang, { en: "Avg fill · slippage", ru: "Средняя цена · проскальзывание", es: "Precio medio · deslizamiento", pt: "Preço médio · slippage", fr: "Prix moyen · slippage", de: "Ø-Ausführung · Slippage", zh: "平均成交 · 滑点" })}</div>
             <div className="font-mono text-lg text-ink">
               {Math.round(stats.avg * 100)}¢ · +{Math.round(stats.slip * 100)}¢
             </div>
@@ -240,7 +240,7 @@ export default function AmmVisualizer() {
 
         <div>
           <div className="mb-1 flex justify-between text-xs text-muted">
-            <span>Buy YES shares</span>
+            <span>{pick(lang, { en: "Buy YES shares", ru: "Купить доли ДА", es: "Comprar acciones SÍ", pt: "Comprar cotas SIM", fr: "Acheter des parts OUI", de: "JA-Anteile kaufen", zh: "买入 是 份额" })}</span>
             <span className="font-mono text-ink">{buy}</span>
           </div>
           <input
@@ -256,7 +256,7 @@ export default function AmmVisualizer() {
 
         <div>
           <div className="mb-1 flex justify-between text-xs text-muted">
-            <span>Liquidity b — max LP loss {stats.maxLoss.toFixed(0)} USD₮</span>
+            <span>{pick(lang, { en: "Liquidity b — max LP loss", ru: "Ликвидность b — макс. убыток LP", es: "Liquidez b — pérdida máx. de LP", pt: "Liquidez b — perda máx. de LP", fr: "Liquidité b — perte max. LP", de: "Liquidität b — max. LP-Verlust", zh: "流动性 b — LP 最大亏损" })} {stats.maxLoss.toFixed(0)} USD₮</span>
             <span className="font-mono text-ink">{b}</span>
           </div>
           <input
