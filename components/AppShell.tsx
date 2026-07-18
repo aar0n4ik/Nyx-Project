@@ -10,6 +10,8 @@ import type { Lang } from "@/lib/i18n";
 type L = Record<Lang, string>;
 
 const BLINK_ACTION = "https://nyx-project-roan.vercel.app/api/actions/bet";
+function openBlink(e:any){ haptic(); if(e&&e.preventDefault)e.preventDefault(); if(typeof window!=="undefined") window.dispatchEvent(new CustomEvent("nyx-open-blink",{detail:{url:BLINK_ACTION}})); }
+
 const BLINK_URL =
   "https://dial.to/?action=solana-action:" + encodeURIComponent(BLINK_ACTION + (BLINK_ACTION.includes("?")?"&":"?") + "cb=" + (process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA||"dev"));
 
@@ -128,7 +130,7 @@ function MarketsPanel() {
           <div className="flex items-center justify-between">
             <div className="text-xs text-muted">{pick(lang, { en: "Vol", ru: "Объём", es: "Vol", pt: "Vol", fr: "Vol", de: "Vol", zh: "成交量" })} {m.vol} USD₮</div>
             <a
-              href={BLINK_URL}
+              href="#" onClick={openBlink}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-full bg-nyx px-4 py-1.5 text-sm font-medium text-white"
@@ -151,10 +153,9 @@ function BetPanel({ track }: { track: TrackId }) {
         <div className="text-lg font-semibold text-ink">{copy.title}</div>
         <div className="mt-1 text-sm text-muted">{pick(lang, copy.sub)}</div>
         <a
-          href={BLINK_URL}
+          href="#" onClick={openBlink}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={haptic}
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-nyx px-5 py-3 text-base font-semibold text-white"
         >
           <Zap className="h-5 w-5" />
