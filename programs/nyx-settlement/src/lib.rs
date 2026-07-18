@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
-declare_id!("2FQvp8eSWhiCT92sfSg8NpqWLiMYBRXR3F5quDBz7W5Z");
+declare_id!("AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3");
 /// Nyx settlement program - parimutuel, oracle-settled markets. Real escrow, no house risk.
 #[program]
 pub mod nyx_settlement {
@@ -28,7 +28,6 @@ pub mod nyx_settlement {
     }
     /// Delegated bet: an agent (signer) bets FOR `owner`, funding it from the agent's own
     /// token account (filled via a capped Subscriptions & Allowances delegation).
-    /// The position and any winnings belong to `owner`, not the agent.
     pub fn place_bet_for(ctx: Context<PlaceBetFor>, side_yes: bool, amount: u64) -> Result<()> {
         require!(amount > 0, NyxError::ZeroAmount);
         let now = Clock::get()?.unix_timestamp;
@@ -42,30 +41,21 @@ pub mod nyx_settlement {
         pos.amount = pos.amount.checked_add(amount).unwrap(); pos.claimed = false; pos.bump = ctx.bumps.position;
         Ok(())
     }
-    /// Affiliate bet with a PROTOCOL-ENFORCED referral split.
-    /// The program itself computes the cut, enforces the 5% ceiling, and pays the
-    /// affiliate inside the same instruction. The client cannot change the split,
-    /// skip the referrer, or exceed the cap — this is what makes
-    /// "earn an automatic on-chain split" literally true, not client-composed.
+    /// Affiliate bet with a PROTOCOL-ENFORCED referral split. The program itself
+    /// computes the cut, enforces the 5% ceiling, and pays the affiliate inside the
+    /// same instruction. The client cannot change the split or exceed the cap.
     pub fn place_bet_with_ref(ctx: Context<PlaceBetWithRef>, side_yes: bool, amount: u64, ref_bps: u16) -> Result<()> {
         require!(amount > 0, NyxError::ZeroAmount);
-        require!(ref_bps <= 500, NyxError::RefTooHigh); // hard protocol cap: 5%
+        require!(ref_bps <= 500, NyxError::RefTooHigh);
         let now = Clock::get()?.unix_timestamp;
         require!(now < ctx.accounts.market.close_ts, NyxError::MarketClosed);
         require!(!ctx.accounts.market.resolved, NyxError::AlreadyResolved);
-
-        let ref_cut = (amount as u128)
-            .checked_mul(ref_bps as u128).unwrap()
-            .checked_div(10_000).unwrap() as u64;
+        let ref_cut = (amount as u128).checked_mul(ref_bps as u128).unwrap().checked_div(10_000).unwrap() as u64;
         let stake = amount.checked_sub(ref_cut).unwrap();
-
-        // Affiliate cut — enforced by the program, paid before the stake is escrowed.
         if ref_cut > 0 {
             token::transfer(CpiContext::new(ctx.accounts.token_program.to_account_info(), Transfer { from: ctx.accounts.bettor_ata.to_account_info(), to: ctx.accounts.affiliate_ata.to_account_info(), authority: ctx.accounts.bettor.to_account_info() }), ref_cut)?;
         }
-        // Remaining stake into the market escrow vault.
         token::transfer(CpiContext::new(ctx.accounts.token_program.to_account_info(), Transfer { from: ctx.accounts.bettor_ata.to_account_info(), to: ctx.accounts.vault.to_account_info(), authority: ctx.accounts.bettor.to_account_info() }), stake)?;
-
         let m = &mut ctx.accounts.market;
         if side_yes { m.pool_yes = m.pool_yes.checked_add(stake).unwrap(); } else { m.pool_no = m.pool_no.checked_add(stake).unwrap(); }
         let pos = &mut ctx.accounts.position;

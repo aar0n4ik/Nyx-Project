@@ -1,0 +1,8 @@
+{
+  "name": "Nyx Solana Dev",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": { "ghcr.io/devcontainers/features/rust:1": { "version": "stable" } },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "forwardPorts": [3000],
+  "remoteUser": "codespace"
+}

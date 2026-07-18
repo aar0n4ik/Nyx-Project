@@ -12,8 +12,8 @@ const SYS     = SystemProgram.programId;
 const MINT    = new PublicKey("5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS");
 const ONE = 1_000_000;
 const STAKE = 10 * ONE;
-const REF_BPS = 500;      // 5% — the program enforces this ceiling
-const OVER_BPS = 600;     // 6% — must be rejected on-chain
+const REF_BPS = 500;
+const OVER_BPS = 600;
 
 const conn = new Connection(process.env.SOLANA_RPC || clusterApiUrl("devnet"), "confirmed");
 const link = (s) => "https://explorer.solana.com/tx/" + s + "?cluster=devnet";
@@ -41,7 +41,6 @@ const [vault]    = PublicKey.findProgramAddressSync([Buffer.from("vault"), marke
 const [position] = PublicKey.findProgramAddressSync([Buffer.from("pos"), market.toBuffer(), user.publicKey.toBuffer()], PROGRAM);
 const closeTs = Math.floor(Date.now()/1000) + 3600;
 
-// create_market(fixture_id u64, market_key [8], close_ts i64)
 const createMarketIx = new TransactionInstruction({ programId: PROGRAM,
   data: Buffer.concat([disc("create_market"), u64(fixtureId), marketKey, i64(closeTs)]),
   keys: [ m(market,false,true), m(user.publicKey,true,true), m(MINT,false,false), m(vault,false,true),
@@ -61,13 +60,12 @@ const mkSig = await send([createMarketIx], [user]);
 console.log("market created:", link(mkSig));
 
 const sig = await send([...pre, betIx(REF_BPS)], [user]);
-console.log("bet + protocol-enforced split in ONE program instruction:", link(sig));
+console.log("bet + protocol-enforced split in ONE instruction:", link(sig));
 const affAfter = await bal(affiliate.publicKey);
 const expected = Math.floor(STAKE * REF_BPS / 10000);
-console.log(`affiliate earned: ${(affAfter-affBefore)/ONE} USD₮ (expected ${expected/ONE}) — decided by the PROGRAM, not the client`);
+console.log(`affiliate earned: ${(affAfter-affBefore)/ONE} USD (expected ${expected/ONE}) — decided by the PROGRAM`);
 
-// Proof the cap is real: 6% must revert on-chain.
 let rejected = false;
 try { await send([betIx(OVER_BPS)], [user]); } catch { rejected = true; }
-console.log(rejected ? "cap enforced: 6% referral REJECTED on-chain (RefTooHigh) ✓" : "WARNING: 6% was NOT rejected — check deploy");
+console.log(rejected ? "cap enforced: 6% referral REJECTED on-chain (RefTooHigh)" : "WARNING: 6% NOT rejected");
 console.log((affAfter-affBefore) === expected && rejected ? "REF-SPLIT-ONCHAIN-OK" : "REF-SPLIT-ONCHAIN-CHECK");
