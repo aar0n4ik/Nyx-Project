@@ -8,7 +8,7 @@ import { useLang, pick } from "@/lib/i18n";
 
 const BLINK_ACTION = "https://nyx-project-roan.vercel.app/api/actions/bet";
 const BLINK_URL =
-  "https://dial.to/?action=solana-action:" + encodeURIComponent(BLINK_ACTION);
+  "https://dial.to/?action=solana-action:" + encodeURIComponent(BLINK_ACTION + (BLINK_ACTION.includes("?")?"&":"?") + "cb=" + (process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA||"dev"));
 const GITHUB_URL = "https://github.com/aar0n4ik/Nyx-Project";
 const LIVE_URL = "https://nyx-project-roan.vercel.app";
 

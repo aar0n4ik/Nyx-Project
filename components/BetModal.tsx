@@ -52,7 +52,7 @@ export default function BetModal({ open, onClose, question, startProb = 62 }: { 
                 <div className="mt-1 flex justify-between text-sm"><span className="text-muted">{pick(lang, { en: "Net profit", ru: "Чистая прибыль", es: "Ganancia neta", pt: "Lucro líquido", fr: "Profit net", de: "Nettogewinn", zh: "净利润" })}</span><span className="font-mono font-semibold text-ink">+{profit} USD₮</span></div>
               </div>
               <a
-        href={"https://dial.to/?action=solana-action:" + encodeURIComponent("https://nyx-project-roan.vercel.app/api/actions/delegate")}
+        href={"https://dial.to/?action=solana-action:" + encodeURIComponent("https://nyx-project-roan.vercel.app/api/actions/delegate?cb=" + (process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA||"dev"))}
         target="_blank"
         rel="noopener noreferrer"
         className="mt-5 block w-full rounded-xl bg-gradient-to-r from-nyx to-solana px-5 py-3.5 text-center text-sm font-semibold text-white transition hover:opacity-90"
