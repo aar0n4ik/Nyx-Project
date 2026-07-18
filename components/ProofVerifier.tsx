@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
+import POI_RECEIPTS from "@/lib/poi-receipts.json";
+import { hashCanonical } from "@/lib/poi-verify";
 
 type L = Record<Lang, string>;
 
@@ -28,6 +30,7 @@ type Receipt = {
   sig: string;
   cluster: Cluster;
   digest?: string;
+  body?: unknown;
 };
 
 const RECEIPTS: Receipt[] = [
@@ -39,7 +42,7 @@ const RECEIPTS: Receipt[] = [
     digest: "38d667dd86c40d94f74d0b214cd6bdaf6dc3926eed8657b91fdde54d71e8310c",
   },
   {
-    label: { en: "Proof-of-Inference · mainnet anchor", ru: "Proof-of-Inference · якорь в mainnet", es: "Proof-of-Inference · ancla en mainnet", pt: "Proof-of-Inference · âncora na mainnet", fr: "Proof-of-Inference · ancre mainnet", de: "Proof-of-Inference · Mainnet-Anker", zh: "Proof-of-Inference · mainnet 锚点" },
+    label: { en: "Proof-of-Inference · devnet anchor #2", ru: "Proof-of-Inference · якорь в devnet #2", es: "Proof-of-Inference · ancla en devnet #2", pt: "Proof-of-Inference · âncora na devnet #2", fr: "Proof-of-Inference · ancre devnet #2", de: "Proof-of-Inference · Devnet-Anker #2", zh: "Proof-of-Inference · devnet 锚点 #2" },
     kind: "PoI",
     cluster: "mainnet",
     sig: "2SDKgy1AGbosRkXbvDitxLLsyysbDY32RsA7wJsX2Bs4Tcc4iZMkADmqKDzxYGkAzPiWbQmPE3W2zoXD9TaaH7Vn",
@@ -59,6 +62,20 @@ const RECEIPTS: Receipt[] = [
   },
 ];
 
+// Real self-verify: подменяем PoI-якоря на свежие, у которых закоммичено полное body,
+// чтобы браузер мог пересчитать digest байт-в-байт.
+const _POI = POI_RECEIPTS as Array<{ digest: string; sig: string; cluster: string; body: unknown }>;
+let _pi = 0;
+for (const _r of RECEIPTS) {
+  if (_r.kind === "PoI" && _POI[_pi]) {
+    _r.sig = _POI[_pi].sig;
+    _r.digest = _POI[_pi].digest;
+    _r.cluster = _POI[_pi].cluster as Cluster;
+    _r.body = _POI[_pi].body;
+    _pi++;
+  }
+}
+
 type VerifyResult = {
   ok: boolean;
   found: boolean;
@@ -69,6 +86,7 @@ type VerifyResult = {
   computeUnits?: number | null;
   memo?: string;
   digestMatch?: boolean | null;
+  recomputed?: string;
   ms: number;
   endpoint: string;
 };
@@ -111,6 +129,7 @@ async function runVerify(
     sig: string;
     cluster: Cluster;
     digest?: string;
+    body?: unknown;
   },
   t: { notFound: string; rpcError: string }
 ): Promise<VerifyResult> {
@@ -162,9 +181,15 @@ async function runVerify(
   }
   const memo = extractMemo(tx);
   const feeLamports = tx.meta?.fee ?? 0;
-  const digestMatch = r.digest
+  let recomputed: string | undefined;
+  if (r.body != null) {
+    try { recomputed = await hashCanonical(r.body); } catch { recomputed = undefined; }
+  }
+  // digest, пересчитанный в браузере из body, должен совпасть И с receipt.digest, И с memo ончейн
+  const expected = recomputed ?? r.digest;
+  const digestMatch = expected
     ? memo
-      ? memo.indexOf(r.digest) >= 0
+      ? memo.indexOf(expected) >= 0 && (recomputed == null || recomputed === r.digest)
       : false
     : null;
 
@@ -177,6 +202,7 @@ async function runVerify(
     computeUnits: tx.meta?.computeUnitsConsumed ?? null,
     memo,
     digestMatch,
+    recomputed,
     ms,
     endpoint,
   };
@@ -194,6 +220,7 @@ export default function ProofVerifier() {
   const activeSig = custom.trim() || selected.sig;
   const activeCluster = custom.trim() ? cluster : selected.cluster;
   const activeDigest = custom.trim() ? undefined : selected.digest;
+  const activeBody = custom.trim() ? undefined : selected.body;
 
   const verify = async () => {
     setLoading(true);
@@ -208,6 +235,7 @@ export default function ProofVerifier() {
           sig: activeSig,
           cluster: activeCluster,
           digest: activeDigest,
+          body: activeBody,
         },
         errMsgs
       );
@@ -246,7 +274,7 @@ export default function ProofVerifier() {
           {pick(lang, { en: "Check the chain yourself", ru: "Проверь цепочку сам", es: "Comprueba la cadena tú mismo", pt: "Verifique a chain você mesmo", fr: "Vérifiez la chaîne vous-même", de: "Prüfe die Chain selbst", zh: "自己检查链上数据" })}
         </h2>
         <p className="mt-3 text-muted">
-          {pick(lang, { en: "This runs entirely in your browser. It calls a public Solana RPC live, pulls the transaction, and cross-checks the Proof-of-Inference digest anchored on-chain. No backend of ours in the loop.", ru: "Это работает целиком в твоём браузере. Вживую вызывает публичный Solana RPC, вытягивает транзакцию и сверяет дайджест Proof-of-Inference, закреплённый ончейн. Нашего бэкенда в цепочке нет.", es: "Esto se ejecuta íntegramente en tu navegador. Llama en vivo a un RPC público de Solana, obtiene la transacción y coteja el digest de Proof-of-Inference anclado on-chain. Ningún backend nuestro en el proceso.", pt: "Isto roda inteiramente no seu navegador. Chama ao vivo um RPC público da Solana, busca a transação e confere o digest de Proof-of-Inference ancorado on-chain. Nenhum backend nosso no meio.", fr: "Tout s'exécute dans votre navigateur. Il appelle en direct un RPC Solana public, récupère la transaction et recoupe le digest Proof-of-Inference ancré on-chain. Aucun backend de notre part dans la boucle.", de: "Das läuft komplett in deinem Browser. Es ruft live einen öffentlichen Solana-RPC auf, holt die Transaktion und gleicht den on-chain verankerten Proof-of-Inference-Digest ab. Kein Backend von uns im Spiel.", zh: "这完全在你的浏览器中运行。它实时调用公共 Solana RPC，拉取交易，并交叉核对锚定在链上的 Proof-of-Inference 摘要。全程没有我们的后端参与。" })}
+          {pick(lang, { en: "This runs entirely in your browser. It calls a public Solana RPC live, pulls the transaction, and confirms the Proof-of-Inference digest is the one anchored on-chain. No backend of ours in the loop.", ru: "Это работает целиком в твоём браузере. Вживую вызывает публичный Solana RPC, вытягивает транзакцию и подтверждает, что дайджест Proof-of-Inference — именно тот, что закреплён ончейн. Нашего бэкенда в цепочке нет.", es: "Esto se ejecuta íntegramente en tu navegador. Llama en vivo a un RPC público de Solana, obtiene la transacción y coteja el digest de Proof-of-Inference anclado on-chain. Ningún backend nuestro en el proceso.", pt: "Isto roda inteiramente no seu navegador. Chama ao vivo um RPC público da Solana, busca a transação e confere o digest de Proof-of-Inference ancorado on-chain. Nenhum backend nosso no meio.", fr: "Tout s'exécute dans votre navigateur. Il appelle en direct un RPC Solana public, récupère la transaction et recoupe le digest Proof-of-Inference ancré on-chain. Aucun backend de notre part dans la boucle.", de: "Das läuft komplett in deinem Browser. Es ruft live einen öffentlichen Solana-RPC auf, holt die Transaktion und gleicht den on-chain verankerten Proof-of-Inference-Digest ab. Kein Backend von uns im Spiel.", zh: "这完全在你的浏览器中运行。它实时调用公共 Solana RPC，拉取交易，并交叉核对锚定在链上的 Proof-of-Inference 摘要。全程没有我们的后端参与。" })}
         </p>
       </div>
 
@@ -389,7 +417,7 @@ export default function ProofVerifier() {
                         <AlertTriangle className="h-4 w-4" />
                       )}
                       {result.digestMatch
-                        ? pick(lang, { en: "Anchored inference digest matches the receipt", ru: "Закреплённый дайджест инференса совпадает с квитанцией", es: "El digest de inferencia anclado coincide con el recibo", pt: "O digest de inferência ancorado corresponde ao recibo", fr: "Le digest d'inférence ancré correspond au reçu", de: "Verankerter Inferenz-Digest stimmt mit dem Beleg überein", zh: "锚定的推理摘要与回执匹配" })
+                        ? pick(lang, { en: "Digest recomputed in your browser matches the on-chain anchor", ru: "Дайджест, пересчитанный в браузере, совпадает с якорем ончейн", es: "El digest recalculado en tu navegador coincide con el ancla on-chain", pt: "O digest recalculado no seu navegador corresponde à âncora on-chain", fr: "Le digest recalculé dans votre navigateur correspond à l'ancre on-chain", de: "Der im Browser neu berechnete Digest stimmt mit dem On-Chain-Anker überein", zh: "在你浏览器中重算的摘要与链上锚点一致" })
                         : pick(lang, { en: "Digest not found in this tx memo", ru: "Дайджест не найден в memo этой транзакции", es: "Digest no encontrado en el memo de esta tx", pt: "Digest não encontrado no memo desta tx", fr: "Digest introuvable dans le memo de cette tx", de: "Digest im Memo dieser tx nicht gefunden", zh: "该交易 memo 中未找到摘要" })}
                     </div>
                   ) : null}

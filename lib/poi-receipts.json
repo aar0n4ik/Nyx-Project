@@ -1,0 +1,44 @@
+[
+  {
+    "digest": "be92c16e8a165dca61a298c98d11040eb2783e20c2985594a2c924a34c4e2384",
+    "sig": "5vHC9Zfv2QNL9cF2hEWHEv6WJpNyDydiWfmvpaQq8eTf73J2yLhXeAo3gA6bXAGmkPoNRN3vjKmndCMMCTnRT6Ca",
+    "cluster": "devnet",
+    "body": {
+      "v": 1,
+      "provider": "cd06df938771f22acde7f1b6609a442b80350dabf97c1436e2a1808963cbb586",
+      "consumer": null,
+      "modelId": "qwen3-4b",
+      "modelHash": "b244c29354517de1e2edf12ab55de9866a5edc4f3c798b76cd07f5b22aee6369",
+      "promptHash": "0969b41712ae884c4ad8f479ec03d7d0e89bde8d99b86319f16ff7f879af74c1",
+      "outputHash": "67e3b178a5d1607f1ac1fb5df8ec87ebf2ee0e28598e8136c1e04232d08a9359",
+      "tokenCount": 128,
+      "pricePerKTokenUsdt": 0.02,
+      "costUsdt": 0.00256,
+      "payoutAddress": "5Ybj5JBMzoEp7UVQV1xWQQ5V7RVgBWarBfBdNuXShKBU",
+      "seed": null,
+      "nonce": "97f8ee513c5aedd5aca6a3cced57d5b0",
+      "ts": 1784417256936
+    }
+  },
+  {
+    "digest": "69f071f7a837fbb7c9e3276f9c87379c44b40ac9ca35420121c36ed2a796299d",
+    "sig": "4s9zo5DTLbvtNzePNC4g3xcjuAtJmSVGTMyjqeYMBDXhwrS341yeeW1Cswy5A3d6RenwdA52NwNT1n27uCwU4LHN",
+    "cluster": "devnet",
+    "body": {
+      "v": 1,
+      "provider": "4d8d6c26cb440f333fd056bcc9cd23e9f77ac266406620982f95e08d28c91b20",
+      "consumer": null,
+      "modelId": "qwen3-8b",
+      "modelHash": "f9b30c0d4656c565a598fbb588e7537c41bb25240e5a54a2c172117ca2ae21af",
+      "promptHash": "e6c4399800ba52d602b380e7fc4513bc33a2cb6a777a24dcc3ab13976ca4675c",
+      "outputHash": "f6e9972b3a2b75d50d52308c58351b33f2a16f2a0a23146d9ff61869b5b426d2",
+      "tokenCount": 128,
+      "pricePerKTokenUsdt": 0.02,
+      "costUsdt": 0.00256,
+      "payoutAddress": "5Ybj5JBMzoEp7UVQV1xWQQ5V7RVgBWarBfBdNuXShKBU",
+      "seed": null,
+      "nonce": "a5bbc1231f43d4b4469b848014891e4a",
+      "ts": 1784417257451
+    }
+  }
+]
