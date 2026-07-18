@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const fontVars = [inter.variable, display.variable, mono.variable].join(" ");
 const themeInit = {
   __html:
-    "try{var t=localStorage.getItem('nyx-theme');if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}",
+    "try{var t=localStorage.getItem('nyx-theme');if(t!=='light'){document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

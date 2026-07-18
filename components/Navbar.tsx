@@ -4,21 +4,41 @@ import Logo from "@/components/Logo";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeToggle from "@/components/ThemeToggle";
 import TrackNavSwitcher from "@/components/TrackNavSwitcher";
+import { useTrack, type TrackId } from "@/components/useTrack";
 import { useT, useLang, pick } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
 
 type L = Record<Lang, string>;
+type NavLink = { label: L; href: string };
 
-const LINKS: { label: L; href: string }[] = [
-  { href: "#why", label: { en: "Why Nyx", ru: "Почему Nyx", es: "Por qué Nyx", pt: "Por que Nyx", fr: "Pourquoi Nyx", de: "Warum Nyx", zh: "为什么选 Nyx" } },
-  { href: "#markets", label: { en: "Markets", ru: "Рынки", es: "Mercados", pt: "Mercados", fr: "Marchés", de: "Märkte", zh: "市场" } },
-  { href: "#verify", label: { en: "Proof", ru: "Доказательство", es: "Prueba", pt: "Prova", fr: "Preuve", de: "Nachweis", zh: "验证" } },
-  { href: "#faq", label: { en: "FAQ", ru: "FAQ", es: "FAQ", pt: "FAQ", fr: "FAQ", de: "FAQ", zh: "常见问题" } },
-];
+const MARKETS_L: L = { en: "Markets", ru: "Рынки", es: "Mercados", pt: "Mercados", fr: "Marchés", de: "Märkte", zh: "市场" };
+const EDGE_L: L = { en: "Nyx Edge", ru: "Nyx Edge", es: "Nyx Edge", pt: "Nyx Edge", fr: "Nyx Edge", de: "Nyx Edge", zh: "Nyx Edge" };
+const PROOF_L: L = { en: "Proof", ru: "Доказательство", es: "Prueba", pt: "Prova", fr: "Preuve", de: "Nachweis", zh: "验证" };
+const FAQ_L: L = { en: "FAQ", ru: "FAQ", es: "FAQ", pt: "FAQ", fr: "FAQ", de: "FAQ", zh: "常见问题" };
+
+const LINKS: Record<TrackId, NavLink[]> = {
+  settlement: [
+    { href: "#markets", label: MARKETS_L },
+    { href: "#verify", label: PROOF_L },
+    { href: "#faq", label: FAQ_L },
+  ],
+  agents: [
+    { href: "#edge", label: EDGE_L },
+    { href: "#verify", label: PROOF_L },
+    { href: "#faq", label: FAQ_L },
+  ],
+  fan: [
+    { href: "#markets", label: MARKETS_L },
+    { href: "#verify", label: PROOF_L },
+    { href: "#faq", label: FAQ_L },
+  ],
+};
 
 export default function Navbar() {
   const { t } = useT();
   const lang = useLang();
+  const [track] = useTrack();
+  const links = LINKS[track ?? "settlement"];
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -38,7 +58,7 @@ export default function Navbar() {
           <Logo />
         </a>
         <div className="hidden items-center gap-7 md:flex">
-          {LINKS.map((l) => (
+          {links.map((l) => (
             <a key={l.href} href={l.href} className="text-sm font-medium text-muted transition hover:text-ink">
               {pick(lang, l.label)}
             </a>
