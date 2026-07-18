@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
-declare_id!("AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3");
+declare_id!("5givnWMR71eqWPEFDfh1mdBuhZUCSpnj3MuHUuKhzoYb");
 /// Nyx settlement program - parimutuel, oracle-settled markets. Real escrow, no house risk.
 #[program]
 pub mod nyx_settlement {

@@ -9,7 +9,7 @@ skip-lint = false
 lop = "AF5GGw5ZMNLS3jWG14TgPGusj9USiiGu4hV8EXLbgGPd"
 nyx_dispute = "EmnQbU9cHP5WWX8Q1LufdgLC7Z8vuQbZyivoK9cWo7BA"
 nyx_oracle_bridge = "2nAAAhYY68Et9zoDv78GBB5zQMEawzCTZvNTg56JRkti"
-nyx_settlement = "2FQvp8eSWhiCT92sfSg8NpqWLiMYBRXR3F5quDBz7W5Z"
+nyx_settlement = "5givnWMR71eqWPEFDfh1mdBuhZUCSpnj3MuHUuKhzoYb"
 nyx_verifier = "4tX5SEqVYiE35X6WAa8wxGTqiGvNgH9xdZJMk2Zes8Vz"
 
 [registry]

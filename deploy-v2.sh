@@ -1,3 +1,26 @@
+#!/usr/bin/env bash
+set -e
+export PATH="$HOME/.cargo/bin:$HOME/.avm/bin:$HOME/.local/share/solana/install/active_release/bin:$PATH"
+cd "$(git rev-parse --show-toplevel)"
+solana config set --url devnet >/dev/null
+
+echo "== STAGE: preflight =="
+grep -q "place_bet_with_ref" programs/nyx-settlement/src/lib.rs || { echo "lib.rs без place_bet_with_ref"; exit 1; }
+test -f scripts/.agent.json || solana-keygen new -o scripts/.agent.json --no-bip39-passphrase
+BAL=$(solana balance | grep -oE '[0-9.]+' | head -1)
+echo "wallet $(solana address): $BAL SOL"
+awk "BEGIN{exit !($BAL >= 3)}" || { echo ">>> Мало SOL ($BAL). Долей через faucet и запусти: bash deploy-v2.sh"; exit 1; }
+
+echo "== STAGE: fresh program id (owned by your wallet) =="
+mkdir -p target/deploy
+test -f target/deploy/nyx_settlement-keypair.json || solana-keygen new -o target/deploy/nyx_settlement-keypair.json --no-bip39-passphrase
+PID=$(solana address -k target/deploy/nyx_settlement-keypair.json)
+echo "program id: $PID"
+sed -i "s#declare_id!(\"*\")#declare_id!(\"$PID\")#" programs/nyx-settlement/src/lib.rs
+sed -i "s#nyx_settlement = \"*\"#nyx_settlement = \"$PID\"#g" Anchor.toml
+
+echo "== STAGE: write self-provisioning demo script =="
+cat > scripts/ref-split-onchain.mjs <<'EOF'
 import fs from "fs";
 import crypto from "crypto";
 import {
@@ -58,3 +81,16 @@ let rejected = false;
 try { await send([betIx(OVER_BPS)], [user]); } catch { rejected = true; }
 console.log(rejected ? "cap enforced: 6% referral REJECTED on-chain (RefTooHigh)" : "WARNING: 6% NOT rejected");
 console.log((affAfter-affBefore) === expected && rejected ? "REF-SPLIT-ONCHAIN-OK" : "REF-SPLIT-ONCHAIN-CHECK");
+EOF
+
+echo "== STAGE: anchor build =="
+anchor build -p nyx_settlement
+echo "== STAGE: anchor deploy (devnet) =="
+anchor deploy -p nyx_settlement --provider.cluster devnet
+echo "== STAGE: run live split tx =="
+NYX_PROGRAM=$PID node scripts/ref-split-onchain.mjs
+echo "== STAGE: record + push =="
+printf '\n## Settlement v2 — protocol-enforced affiliate split (devnet, self-owned)\n- Program id: `%s`\n- place_bet_with_ref: on-chain 5%% referral cap; split enforced by the program, not the client.\n' "$PID" >> DEPLOYMENTS.md
+git add -A && git commit -m "feat(settlement v2): protocol-enforced affiliate split on devnet (self-owned program id)" || echo "нечего коммитить"
+git push
+echo "== ГОТОВО =="

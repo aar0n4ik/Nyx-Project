@@ -77,3 +77,7 @@ A full `node scripts/nyx-agent-loop.mjs` run in which the winning outcome is wri
 | Bound market created (oracle = bridge PDA) | `5moT3zX5fdZ4hCi9FTbTfcZdiGMVfUEVLhCFEt7qbpBNnoPLaUAQxFDtKKhZGEwymeFi5kFC2UYRKYhs9a4eJqrR` |
 | Trustless resolve (bridge PDA -> settlement via CPI; fee-payer is not the oracle) | `3DqcdD5T5LW7SSjar5jarNJ72cjqtxHdGi7TBB8pfahMQmyZa5VARGS8xY1jgivBw3zez8kEH3vnhpun1emGMaev` |
 | User claimed winnings to own wallet | `2Xs7NdN21SHWG3Muq57y34nF8zGrKVYbJPrgRNrAPuva3XMpfHuoKqoXwxsuAgshK7k6H14BBtT3j3gszcLpXf9X` |
+
+## Settlement v2 (devnet, self-owned) - protocol-enforced affiliate split
+- Program id: 5givnWMR71eqWPEFDfh1mdBuhZUCSpnj3MuHUuKhzoYb
+- place_bet_with_ref: on-chain 5% referral cap, split enforced by the program.
