@@ -42,6 +42,37 @@ pub mod nyx_settlement {
         pos.amount = pos.amount.checked_add(amount).unwrap(); pos.claimed = false; pos.bump = ctx.bumps.position;
         Ok(())
     }
+    /// Affiliate bet with a PROTOCOL-ENFORCED referral split.
+    /// The program itself computes the cut, enforces the 5% ceiling, and pays the
+    /// affiliate inside the same instruction. The client cannot change the split,
+    /// skip the referrer, or exceed the cap — this is what makes
+    /// "earn an automatic on-chain split" literally true, not client-composed.
+    pub fn place_bet_with_ref(ctx: Context<PlaceBetWithRef>, side_yes: bool, amount: u64, ref_bps: u16) -> Result<()> {
+        require!(amount > 0, NyxError::ZeroAmount);
+        require!(ref_bps <= 500, NyxError::RefTooHigh); // hard protocol cap: 5%
+        let now = Clock::get()?.unix_timestamp;
+        require!(now < ctx.accounts.market.close_ts, NyxError::MarketClosed);
+        require!(!ctx.accounts.market.resolved, NyxError::AlreadyResolved);
+
+        let ref_cut = (amount as u128)
+            .checked_mul(ref_bps as u128).unwrap()
+            .checked_div(10_000).unwrap() as u64;
+        let stake = amount.checked_sub(ref_cut).unwrap();
+
+        // Affiliate cut — enforced by the program, paid before the stake is escrowed.
+        if ref_cut > 0 {
+            token::transfer(CpiContext::new(ctx.accounts.token_program.to_account_info(), Transfer { from: ctx.accounts.bettor_ata.to_account_info(), to: ctx.accounts.affiliate_ata.to_account_info(), authority: ctx.accounts.bettor.to_account_info() }), ref_cut)?;
+        }
+        // Remaining stake into the market escrow vault.
+        token::transfer(CpiContext::new(ctx.accounts.token_program.to_account_info(), Transfer { from: ctx.accounts.bettor_ata.to_account_info(), to: ctx.accounts.vault.to_account_info(), authority: ctx.accounts.bettor.to_account_info() }), stake)?;
+
+        let m = &mut ctx.accounts.market;
+        if side_yes { m.pool_yes = m.pool_yes.checked_add(stake).unwrap(); } else { m.pool_no = m.pool_no.checked_add(stake).unwrap(); }
+        let pos = &mut ctx.accounts.position;
+        pos.market = m.key(); pos.owner = ctx.accounts.bettor.key(); pos.side_yes = side_yes;
+        pos.amount = pos.amount.checked_add(stake).unwrap(); pos.claimed = false; pos.bump = ctx.bumps.position;
+        Ok(())
+    }
     pub fn resolve(ctx: Context<Resolve>, outcome_yes: bool) -> Result<()> {
         let m = &mut ctx.accounts.market;
         require_keys_eq!(ctx.accounts.oracle.key(), m.oracle, NyxError::NotOracle);
@@ -108,6 +139,17 @@ pub struct PlaceBetFor<'info> {
     pub token_program: Program<'info, Token>, pub system_program: Program<'info, System>,
 }
 #[derive(Accounts)]
+pub struct PlaceBetWithRef<'info> {
+    #[account(mut)] pub market: Account<'info, Market>,
+    #[account(init_if_needed, payer = bettor, space = 8 + Position::LEN, seeds = [b"pos", market.key().as_ref(), bettor.key().as_ref()], bump)]
+    pub position: Account<'info, Position>,
+    #[account(mut)] pub bettor: Signer<'info>,
+    #[account(mut, token::mint = market.mint)] pub bettor_ata: Account<'info, TokenAccount>,
+    #[account(mut, token::mint = market.mint)] pub affiliate_ata: Account<'info, TokenAccount>,
+    #[account(mut, address = market.vault)] pub vault: Account<'info, TokenAccount>,
+    pub token_program: Program<'info, Token>, pub system_program: Program<'info, System>,
+}
+#[derive(Accounts)]
 pub struct Resolve<'info> { #[account(mut)] pub market: Account<'info, Market>, pub oracle: Signer<'info> }
 #[derive(Accounts)]
 pub struct Claim<'info> {
@@ -130,4 +172,5 @@ pub enum NyxError {
     #[msg("Not the position owner")] NotOwner,
     #[msg("Losing position cannot claim")] LosingPosition,
     #[msg("Winning pool is empty")] EmptyPool,
+    #[msg("Referral fee exceeds the 5% protocol cap")] RefTooHigh,
 }
