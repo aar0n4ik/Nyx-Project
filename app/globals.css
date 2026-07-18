@@ -178,3 +178,6 @@ select:focus-visible {
   .nyx-shimmer::after { animation: none; }
   .nyx-aurora { animation: none !important; }
 }
+
+/* audit-fix: kill the gradient hairline ring on nested cards (double thin borders) */
+.rounded-3xl.border.border-hairline .rounded-3xl.border.border-hairline::before { display: none; }

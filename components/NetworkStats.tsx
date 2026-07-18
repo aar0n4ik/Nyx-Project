@@ -50,8 +50,8 @@ function Metric(props: { label: string; value: number; suffix?: string; decimals
   const shown =
     props.decimals != null ? v.toFixed(props.decimals) : intFmt(v);
   return (
-    <div className="px-4 py-4 text-center">
-      <div className="font-mono text-2xl text-ink sm:text-3xl">
+    <div className="min-w-0 px-4 py-4 text-center">
+      <div className="truncate font-mono text-xl text-ink sm:text-2xl md:text-3xl">
         {shown}
         {props.suffix ? (
           <span className="ml-1 text-sm text-muted">{props.suffix}</span>

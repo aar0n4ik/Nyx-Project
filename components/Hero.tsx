@@ -23,8 +23,8 @@ export default function Hero() {
       <motion.div variants={containerV} initial="hidden" animate="show" className="relative mx-auto w-full max-w-content px-6 py-32 text-center">
         <motion.div variants={itemV} className="mx-auto flex w-fit items-center gap-2 rounded-full border border-hairline bg-subtle px-4 py-1.5 text-xs font-medium uppercase tracking-[0.18em] text-muted">
           <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-solana opacity-70" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-solana" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
           </span>
           {pick(lang, { en: "Live on Solana Devnet · PoI anchored on Mainnet", ru: "Вживую на Solana Devnet · PoI заякорен на Mainnet", es: "En vivo en Solana Devnet · PoI anclado en Mainnet", pt: "Ao vivo na Solana Devnet · PoI ancorado na Mainnet", fr: "En direct sur Solana Devnet · PoI ancré sur Mainnet", de: "Live auf Solana Devnet · PoI auf Mainnet verankert", zh: "在 Solana Devnet 上实时运行 · PoI 锚定于 Mainnet" })}
         </motion.div>
