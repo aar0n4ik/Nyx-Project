@@ -81,3 +81,11 @@ A full `node scripts/nyx-agent-loop.mjs` run in which the winning outcome is wri
 ## Settlement v2 (devnet, self-owned) - protocol-enforced affiliate split
 - Program id: 5givnWMR71eqWPEFDfh1mdBuhZUCSpnj3MuHUuKhzoYb
 - place_bet_with_ref: on-chain 5% referral cap, split enforced by the program.
+
+### Live devnet proof (2026-07-18T18:04Z)
+- Program: https://explorer.solana.com/address/5givnWMR71eqWPEFDfh1mdBuhZUCSpnj3MuHUuKhzoYb?cluster=devnet
+- test-USD mint: GP5fTCrphXRf38JfvqryvhaJz7wYh9bsgAgKJDx8ZETN
+- create_market: https://explorer.solana.com/tx/4UYMyE6Yfd5VDNXvwadQm2CQADPqKY2ek2W8cs8BzGScix4KGLZYCBPuMGff7AurKeAAge6i1HcY4EJ4aFKG3ES7?cluster=devnet
+- place_bet_with_ref (5% split, program-enforced, 6% reverts): https://explorer.solana.com/tx/5ET4gP9xS5qfoP9JkpuRtUuXJDn57CzUM2yk4vyaSmoif8Uk2TamLm4qJAzzWhfYZybkr4E3GThJKJRLrjmSDhLf?cluster=devnet
+- Bettor: 8Cdi74ccHUSnqE2deK1ejDNRQWzLGXkG4aKePQh5s3HZ
+- Affiliate: 6JvwWCW6ehRZ1ExHArdWBo9itt8U5XqqWqKnLwPAQyJw
