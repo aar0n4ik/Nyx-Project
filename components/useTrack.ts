@@ -16,8 +16,14 @@ export function useTrack(): [TrackId | null, (id: TrackId) => void] {
 
   useEffect(() => {
     try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (isTrackId(saved)) setTrackState(saved);
+      const fromUrl = new URLSearchParams(window.location.search).get("track");
+      if (isTrackId(fromUrl)) {
+        setTrackState(fromUrl);
+        try { window.localStorage.setItem(STORAGE_KEY, fromUrl); } catch (e) {}
+      } else {
+        const saved = window.localStorage.getItem(STORAGE_KEY);
+        if (isTrackId(saved)) setTrackState(saved);
+      }
     } catch (e) {
       // ignore storage errors
     }
