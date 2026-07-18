@@ -88,7 +88,7 @@ function LivePanel() {
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-2xl border border-hairline bg-subtle p-4">
-          <div className="text-2xl font-semibold text-ink">$1.24M</div>
+          <div className="text-2xl font-semibold text-ink">—</div>
           <div className="text-xs text-muted">{pick(lang, { en: "Settled on-chain", ru: "Рассчитано ончейн", es: "Liquidado on-chain", pt: "Liquidado on-chain", fr: "Réglé on-chain", de: "On-chain abgerechnet", zh: "链上已结算" })}</div>
         </div>
         <div className="rounded-2xl border border-hairline bg-subtle p-4">

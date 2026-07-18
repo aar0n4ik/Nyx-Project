@@ -192,3 +192,10 @@ select:focus-visible {
 .rounded-2xl.border.border-hairline { transition: border-color .3s ease, transform .3s ease; }
 .rounded-2xl.border.border-hairline:hover { border-color: rgba(153,69,255,.28); transform: translateY(-2px); }
 button:disabled, a[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+/* ===== audit: contrast safety net ===== */
+/* любая кнопка/ссылка с белым текстом гарантированно на тёмном фоне */
+a.text-white, button.text-white { text-shadow: 0 1px 2px rgba(0,0,0,.25); }
+:root:not(.dark) a:not([class*="bg-"]).text-white,
+:root:not(.dark) button:not([class*="bg-"]).text-white { color: rgb(var(--ink)); text-shadow: none; }
+button:disabled, a[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
