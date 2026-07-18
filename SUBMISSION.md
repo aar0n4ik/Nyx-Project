@@ -1,6 +1,6 @@
 # Nyx — Hackathon Submission
 
-**Superteam × TxODDS World Cup Hackathon — competing across all three tracks with one vertically integrated stack:** Prediction Markets & Settlement · Trading Tools & Agents · Consumer & Fan Experiences.
+**Superteam × TxODDS World Cup Hackathon.** Nyx ships three standalone products — one per track — each built specifically for that track's criteria on shared open-source Solana infrastructure: Prediction Markets & Settlement · Trading Tools & Agents · Consumer & Fan Experiences. Each is submitted separately, with its own demo entry point and its own guide under [tracks/](tracks/README.md).
 
 ## TL;DR
 One autonomous agent that **prices, bets, and settles** football markets on Solana in Tether USD₮ — with **zero custody** of user funds, **trust-minimized** on-chain outcomes, and **provable** AI inference. Live and verifiable on devnet; the on-chain Proof-of-Inference anchor also runs live on Solana mainnet.
@@ -23,8 +23,8 @@ Sports prediction markets need three things at once: a **trustworthy outcome**, 
 3. **Provable inference.** Every model call emits a signed ed25519 Proof-of-Inference receipt whose digest is **anchored on-chain** (Solana Memo) — public, timestamped, tamper-evident.
 4. **Distribution-native.** Bet and delegate from X/Discord via **Solana Blinks**, with a **zero-CAC affiliate** revenue split composed at the Action layer.
 
-## Three tracks, one stack
-Nyx is not three projects stapled together — it is one settlement rail whose layers each win a track.
+## Three products, one shared rail
+Each track is a distinct product with its own entry point, README, and demo deep-link, built specifically for that track. They share open-source Solana settlement infrastructure, but each stands on its own.
 
 | Track | What Nyx ships | Where it lives |
 | --- | --- | --- |
