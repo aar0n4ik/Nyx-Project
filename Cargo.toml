@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "programs/nyx_agent",
     "programs/*"
 ]
 resolver = "2"
