@@ -22,6 +22,7 @@ import AmmVisualizer from "@/components/AmmVisualizer";
 import PredictionAMM from "@/components/PredictionAMM";
 import Settlement from "@/components/Settlement";
 import Verify from "@/components/Verify";
+import SettlementReplay from "@/components/SettlementReplay";
 
 import AgentTerminal from "@/components/AgentTerminal";
 import NyxEdge from "@/components/NyxEdge";
@@ -47,6 +48,7 @@ export default function Page() {
           <PredictionAMM />
           <Settlement />
           <Verify />
+          <SettlementReplay />
         </>
       ) : null}
 
