@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLang, pick } from "@/lib/i18n";
+import InlineBlink from "@/components/InlineBlink";
 
 const overlayInit = { opacity: 0 } as const;
 const overlayAnim = { opacity: 1 } as const;
@@ -51,14 +52,7 @@ export default function BetModal({ open, onClose, question, startProb = 62 }: { 
                 <div className="flex justify-between text-sm"><span className="text-muted">{pick(lang, { en: "Potential payout", ru: "Потенциальная выплата", es: "Pago potencial", pt: "Pagamento potencial", fr: "Gain potentiel", de: "Mögliche Auszahlung", zh: "潜在赔付" })}</span><span className="font-mono font-bold text-payout">{payout} USD₮</span></div>
                 <div className="mt-1 flex justify-between text-sm"><span className="text-muted">{pick(lang, { en: "Net profit", ru: "Чистая прибыль", es: "Ganancia neta", pt: "Lucro líquido", fr: "Profit net", de: "Nettogewinn", zh: "净利润" })}</span><span className="font-mono font-semibold text-ink">+{profit} USD₮</span></div>
               </div>
-              <a
-        href={"https://dial.to/?action=solana-action:" + encodeURIComponent("https://nyx-project-roan.vercel.app/api/actions/delegate?cb=" + (process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA||"dev"))}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-5 block w-full rounded-xl bg-gradient-to-r from-nyx to-solana px-5 py-3.5 text-center text-sm font-semibold text-white transition hover:opacity-90"
-      >
-        {pick(lang, { en: "Sign allowance → place bet", ru: "Подписать разрешение → сделать ставку", es: "Firmar autorización → apostar", pt: "Assinar permissão → apostar", fr: "Signer l'autorisation → parier", de: "Freigabe signieren → Wette platzieren", zh: "签署授权额度 → 下注" })}
-      </a>
+              <InlineBlink url="https://nyx-project-roan.vercel.app/api/actions/delegate" />
               <p className="text-center text-xs text-muted">{pick(lang, { en: "Capped, expiring allowance. Revert on AmountExceedsLimit.", ru: "Ограниченное, истекающее разрешение. Откат при AmountExceedsLimit.", es: "Autorización limitada y con expiración. Revierte con AmountExceedsLimit.", pt: "Permissão limitada e com expiração. Reverte em AmountExceedsLimit.", fr: "Autorisation plafonnée et expirante. Revert sur AmountExceedsLimit.", de: "Begrenzte, ablaufende Freigabe. Revert bei AmountExceedsLimit.", zh: "有上限、会过期的授权额度。触发 AmountExceedsLimit 时回滚。" })}</p>
             </div>
           </motion.div>
