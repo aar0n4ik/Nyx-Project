@@ -11,7 +11,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 use pamm_math::pool::{Pool, MAX_OUTCOMES};
 
-declare_id!("8hxh836KRG4H6poU7oZ161AV71gpTLKKE1mYrEsuwpW3");
+declare_id!("HDZ1UZXFtLdc2AQ8GCqBYTD9GyTooRtWih6GwGve2nwu");
 
 /// fixed-point (9 decimals) -> USD₮ base units (6 decimals)
 const FX_PER_TOKEN: i128 = 1_000;

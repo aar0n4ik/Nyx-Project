@@ -6,11 +6,11 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-lop = "6k1LZGb8xWPwiZNhyk9p4AMdZRGeyYerDaxzPXmRRr83"
-nyx_dispute = "7bSmAPPAypVtWsRMvMhmT6bUrJyvmc76VKXinAgwc8vN"
-nyx_oracle_bridge = "BiJaXJ7kEXy8cohxf7NxfyqS2sLbxZSa3Fx4JjEZS9bk"
-nyx_settlement = "AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3"
-nyx_verifier = "GPiPk4ymC76uBntrxUXyr2rL4kWmxWRRZsBya5uxLNLY"
+lop = "AF5GGw5ZMNLS3jWG14TgPGusj9USiiGu4hV8EXLbgGPd"
+nyx_dispute = "EmnQbU9cHP5WWX8Q1LufdgLC7Z8vuQbZyivoK9cWo7BA"
+nyx_oracle_bridge = "2nAAAhYY68Et9zoDv78GBB5zQMEawzCTZvNTg56JRkti"
+nyx_settlement = "2FQvp8eSWhiCT92sfSg8NpqWLiMYBRXR3F5quDBz7W5Z"
+nyx_verifier = "4tX5SEqVYiE35X6WAa8wxGTqiGvNgH9xdZJMk2Zes8Vz"
 
 [registry]
 url = "https://api.apr.dev"

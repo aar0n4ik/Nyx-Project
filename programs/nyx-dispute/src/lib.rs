@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
 // Deployed devnet program id. Keep in sync via `anchor keys sync`.
-declare_id!("7bSmAPPAypVtWsRMvMhmT6bUrJyvmc76VKXinAgwc8vN");
+declare_id!("EmnQbU9cHP5WWX8Q1LufdgLC7Z8vuQbZyivoK9cWo7BA");
 
 /// Nyx optimistic dispute — an assert / challenge / slash layer on top of TxLINE.
 /// TxLINE proves data is the data it committed (Merkle root); it does NOT prove

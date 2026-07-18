@@ -4,7 +4,7 @@ use nyx_settlement::program::NyxSettlement;
 use nyx_settlement::cpi::accounts::{CreateMarket, Resolve};
 use nyx_dispute::Assertion;
 
-declare_id!("BiJaXJ7kEXy8cohxf7NxfyqS2sLbxZSa3Fx4JjEZS9bk");
+declare_id!("2nAAAhYY68Et9zoDv78GBB5zQMEawzCTZvNTg56JRkti");
 
 /// Nyx oracle bridge — the trustless adapter between dispute and settlement.
 /// A market created here is owned by THIS program's PDA as its oracle, so no

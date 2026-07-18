@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{instruction::{Instruction, AccountMeta}, program::{invoke, get_return_data}};
 
-declare_id!("GPiPk4ymC76uBntrxUXyr2rL4kWmxWRRZsBya5uxLNLY");
+declare_id!("4tX5SEqVYiE35X6WAa8wxGTqiGvNgH9xdZJMk2Zes8Vz");
 
 #[program]
 pub mod nyx_verifier {
