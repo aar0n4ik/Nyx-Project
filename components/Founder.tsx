@@ -45,7 +45,7 @@ export default function Founder() {
         </blockquote>
 
         <p className="mt-6 text-sm font-semibold uppercase tracking-[0.18em] text-muted">
-          {pick(lang, { en: "— Aaron, founder of Nyx", ru: "— Аарон, основатель Nyx", es: "— Aaron, fundador de Nyx", pt: "— Aaron, fundador do Nyx", fr: "— Aaron, fondateur de Nyx", de: "— Aaron, Gründer von Nyx", zh: "——Aaron，Nyx 创始人" })}
+          {pick(lang, { en: "— Bohdan, founder of Nyx", ru: "— Богдан, основатель Nyx", es: "— Bohdan, fundador de Nyx", pt: "— Bohdan, fundador do Nyx", fr: "— Bohdan, fondateur de Nyx", de: "— Bohdan, Gründer von Nyx", zh: "——Bohdan，Nyx 创始人" })}
         </p>
       </motion.div>
     </section>

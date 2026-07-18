@@ -25,3 +25,5 @@ id*.json
 **/.npmrc
 tsconfig.tsbuildinfo
 scripts/.agent.json
+.vercel
+.env*

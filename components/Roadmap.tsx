@@ -27,33 +27,33 @@ type Phase = {
 
 const PHASES: Phase[] = [
   {
-    tag: { en: "Q2 2026 · Devnet", ru: "Q2 2026 · Devnet", es: "Q2 2026 · Devnet", pt: "Q2 2026 · Devnet", fr: "Q2 2026 · Devnet", de: "Q2 2026 · Devnet", zh: "Q2 2026 · Devnet" },
-    title: { en: "The trustless core, live", ru: "Бездоверительное ядро — вживую", es: "El núcleo sin confianza, en vivo", pt: "O núcleo sem confiança, no ar", fr: "Le cœur sans confiance, en direct", de: "Der vertrauenslose Kern, live", zh: "无需信任的内核，已上线" },
-    state: "done",
-    points: [
-      { en: "Settlement with no admin key", ru: "Расчёт без админ-ключа", es: "Liquidación sin clave de administrador", pt: "Liquidação sem chave de administrador", fr: "Règlement sans clé admin", de: "Abrechnung ohne Admin-Key", zh: "无管理员密钥的结算" },
-      { en: "AI resolution + on-chain dispute & slashing", ru: "ИИ-разрешение + ончейн-спор и слэшинг", es: "Resolución con IA + disputa on-chain y slashing", pt: "Resolução por IA + disputa on-chain e slashing", fr: "Résolution par IA + litige on-chain et slashing", de: "KI-Auflösung + On-chain-Streit & Slashing", zh: "AI 判定 + 链上争议与罚没" },
-      { en: "Zero-custody agent betting via capped allowances", ru: "Ставки агентов без кастодиана через ограниченные разрешения", es: "Apuestas de agentes sin custodia mediante autorizaciones limitadas", pt: "Apostas de agentes sem custódia via permissões limitadas", fr: "Paris d'agents sans garde via des autorisations plafonnées", de: "Zero-Custody-Agentenwetten über begrenzte Freigaben", zh: "通过限额授权实现零托管的智能体下注" },
-    ],
-  },
-  {
     tag: { en: "Now · World Cup Hackathon", ru: "Сейчас · World Cup Hackathon", es: "Ahora · World Cup Hackathon", pt: "Agora · World Cup Hackathon", fr: "Maintenant · World Cup Hackathon", de: "Jetzt · World Cup Hackathon", zh: "进行中 · World Cup Hackathon" },
     title: { en: "Flagship product & real football markets", ru: "Флагманский продукт и реальные футбольные рынки", es: "Producto insignia y mercados de fútbol reales", pt: "Produto principal e mercados reais de futebol", fr: "Produit phare et vrais marchés de football", de: "Flaggschiff-Produkt & echte Fußballmärkte", zh: "旗舰产品与真实足球市场" },
     state: "now",
     points: [
       { en: "TxLINE live football feed wired in", ru: "Подключён живой футбольный фид TxLINE", es: "Feed de fútbol en vivo de TxLINE integrado", pt: "Feed de futebol ao vivo do TxLINE integrado", fr: "Flux de football en direct TxLINE intégré", de: "TxLINE-Live-Fußballfeed integriert", zh: "接入 TxLINE 实时足球数据流" },
       { en: "Proof-of-Inference anchored on mainnet", ru: "Proof-of-Inference закреплён в mainnet", es: "Proof-of-Inference anclado en mainnet", pt: "Proof-of-Inference ancorado na mainnet", fr: "Proof-of-Inference ancré sur le mainnet", de: "Proof-of-Inference auf dem Mainnet verankert", zh: "Proof-of-Inference 锚定在主网" },
-      { en: "Premium site, Blinks, verifiable feed", ru: "Премиальный сайт, Blinks, проверяемый фид", es: "Sitio premium, Blinks, feed verificable", pt: "Site premium, Blinks, feed verificável", fr: "Site premium, Blinks, flux vérifiable", de: "Premium-Site, Blinks, verifizierbarer Feed", zh: "高端站点、Blinks、可验证数据流" },
+      { en: "Trustless settlement live across all three tracks", ru: "Бездоверительный расчёт вживую по всем трём трекам", es: "Liquidación sin confianza en los tres tracks", pt: "Liquidação sem confiança nos três tracks", fr: "Règlement sans confiance sur les trois tracks", de: "Vertrauensloses Settlement über alle drei Tracks", zh: "三条赛道全部上线无信任结算" },
     ],
   },
   {
-    tag: { en: "Next · Mainnet", ru: "Дальше · Mainnet", es: "Próximo · Mainnet", pt: "Próximo · Mainnet", fr: "Ensuite · Mainnet", de: "Als Nächstes · Mainnet", zh: "接下来 · Mainnet" },
-    title: { en: "Real money, real payouts", ru: "Реальные деньги, реальные выплаты", es: "Dinero real, pagos reales", pt: "Dinheiro real, pagamentos reais", fr: "Argent réel, gains réels", de: "Echtes Geld, echte Auszahlungen", zh: "真金白银，真实赔付" },
+    tag: { en: "The horizon", ru: "Горизонт", es: "El horizonte", pt: "O horizonte", fr: "L'horizon", de: "Der Horizont", zh: "地平线" },
+    title: { en: "A trust-minimized layer for every market on Earth", ru: "Бездоверительный слой для любого рынка на Земле", es: "Una capa sin confianza para cada mercado del mundo", pt: "Uma camada sem confiança para cada mercado do mundo", fr: "Une couche sans confiance pour chaque marché du monde", de: "Eine vertrauensminimierte Schicht für jeden Markt der Welt", zh: "面向全球每个市场的无信任层" },
     state: "next",
     points: [
-      { en: "USD₮ settlement on mainnet", ru: "Расчёт в USD₮ в mainnet", es: "Liquidación en USD₮ en mainnet", pt: "Liquidação em USD₮ na mainnet", fr: "Règlement en USD₮ sur le mainnet", de: "USD₮-Abrechnung auf dem Mainnet", zh: "主网上的 USD₮ 结算" },
-      { en: "Creator & fan Blinks with automatic splits", ru: "Blinks для авторов и фанатов с автоматическим сплитом", es: "Blinks para creadores y fans con reparto automático", pt: "Blinks para criadores e fãs com divisão automática", fr: "Blinks créateurs & fans avec répartition automatique", de: "Creator- & Fan-Blinks mit automatischer Aufteilung", zh: "面向创作者与粉丝、自动分成的 Blinks" },
-      { en: "Multi-sport, mobile PWA, global access", ru: "Мультиспорт, мобильное PWA, глобальный доступ", es: "Multideporte, PWA móvil, acceso global", pt: "Multiesporte, PWA móvel, acesso global", fr: "Multisport, PWA mobile, accès mondial", de: "Multisport, mobile PWA, globaler Zugang", zh: "多项运动、移动 PWA、全球可用" },
+      { en: "Massive mainnet deployment", ru: "Массовый выход в mainnet", es: "Despliegue masivo en mainnet", pt: "Implantação massiva na mainnet", fr: "Déploiement massif sur le mainnet", de: "Massives Mainnet-Deployment", zh: "大规模主网部署" },
+      { en: "Any sport, any event, any outcome", ru: "Любой спорт, любое событие, любой исход", es: "Cualquier deporte, evento y resultado", pt: "Qualquer esporte, evento e resultado", fr: "Tout sport, tout événement, tout résultat", de: "Jeder Sport, jedes Event, jedes Ergebnis", zh: "任意运动、任意事件、任意结果" },
+      { en: "Explore advanced settlement topologies", ru: "Исследование продвинутых топологий расчёта", es: "Explorar topologías de liquidación avanzadas", pt: "Explorar topologias avançadas de liquidação", fr: "Explorer des topologies de règlement avancées", de: "Fortgeschrittene Settlement-Topologien erforschen", zh: "探索先进的结算拓扑" },
+    ],
+  },
+  {
+    tag: { en: "The mission", ru: "Миссия", es: "La misión", pt: "A missão", fr: "La mission", de: "Die Mission", zh: "使命" },
+    title: { en: "Make trust optional, everywhere", ru: "Сделать доверие необязательным — везде", es: "Hacer que la confianza sea opcional, en todas partes", pt: "Tornar a confiança opcional, em todo lugar", fr: "Rendre la confiance optionnelle, partout", de: "Vertrauen überall optional machen", zh: "让信任在任何地方都成为可选项" },
+    state: "next",
+    points: [
+      { en: "Scale globally", ru: "Глобальное масштабирование", es: "Escalar globalmente", pt: "Escalar globalmente", fr: "Passer à l'échelle mondiale", de: "Global skalieren", zh: "全球扩张" },
+      { en: "Open settlement infrastructure for builders", ru: "Открытая инфраструктура расчёта для билдеров", es: "Infraestructura de liquidación abierta para builders", pt: "Infraestrutura de liquidação aberta para builders", fr: "Infrastructure de règlement ouverte pour les builders", de: "Offene Settlement-Infrastruktur für Builder", zh: "面向开发者的开放结算基础设施" },
+      { en: "Relentless, long-term commitment", ru: "Бескомпромиссная приверженность вдолгую", es: "Compromiso implacable a largo plazo", pt: "Compromisso implacável de longo prazo", fr: "Engagement acharné sur le long terme", de: "Unermüdliches, langfristiges Engagement", zh: "长期主义，永不止步" },
     ],
   },
 ];
