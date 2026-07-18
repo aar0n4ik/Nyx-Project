@@ -10,7 +10,6 @@ import ProofVerifier from "@/components/ProofVerifier";
 import PWA from "@/components/PWA";
 import TrackModal from "@/components/TrackModal";
 import TrackSpotlight from "@/components/TrackSpotlight";
-import Tracks from "@/components/Tracks";
 import LiveFeed from "@/components/LiveFeed";
 import Founder from "@/components/Founder";
 import Roadmap from "@/components/Roadmap";
@@ -35,7 +34,6 @@ export default function Page() {
       <PWA />
       <TrackModal />
       <Hero />
-      <Tracks />
       <TrackSpotlight />
       <Roadmap />
       <LiveStats />
