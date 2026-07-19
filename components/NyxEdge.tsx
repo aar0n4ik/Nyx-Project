@@ -82,6 +82,7 @@ export default function NyxEdge() {
       }
       setStatus("ready");
     } catch (e) {
+      engineRef.current = null;
       setOutput(pick(lang, { en: "Local run failed: ", ru: "Локальный запуск не удался: ", es: "La ejecución local falló: ", pt: "A execução local falhou: ", fr: "L'exécution locale a échoué : ", de: "Lokaler Lauf fehlgeschlagen: ", zh: "本地运行失败：" }) + ((e as Error).message || "unknown error"));
       setStatus("ready");
     }
