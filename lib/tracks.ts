@@ -53,7 +53,7 @@ export const TRACK_META: Record<TrackId, TrackMeta> = {
   },
   fan: {
     id: "fan",
-    ctaHref: "#markets",
+    ctaHref: "#blink",
     name: { en: "Consumer & Fan Experiences", ru: "Потребительский и фан-опыт", es: "Experiencias para consumidores y fans", pt: "Experiências para consumidores e fãs", fr: "Expériences grand public et fans", de: "Consumer- & Fan-Erlebnisse", zh: "消费者与球迷体验" },
     eyebrow: { en: "Consumer & Fan Experiences", ru: "Потребительский и фан-опыт", es: "Experiencias para consumidores y fans", pt: "Experiências para consumidores e fãs", fr: "Expériences grand public et fans", de: "Consumer- & Fan-Erlebnisse", zh: "消费者与球迷体验" },
     headA: { en: "Bet from any post. Creators ", ru: "Ставь из любого поста. Авторы ", es: "Apuesta desde cualquier post. Los creadores ", pt: "Aposte de qualquer post. Os criadores ", fr: "Pariez depuis n'importe quel post. Les créateurs ", de: "Wette aus jedem Post. Creator ", zh: "从任意帖子下注。创作者" },
