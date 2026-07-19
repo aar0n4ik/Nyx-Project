@@ -36,6 +36,8 @@ export type RunInput = {
   sessionId: string; account: string; fixtureId: string; market: string;
   cryptoSymbol?: string; desiredStake: number; allowanceRemaining: number;
   execMode: "unsigned" | "delegated"; lang?: string;
+  // Sandbox persona knobs (optional; when absent, pipeline behaves exactly as before)
+  persona?: string; riskAppetite?: number; oracleTrust?: number;
 };
 export type RunResult = {
   ok: boolean; reason?: string; cotDigest: string;

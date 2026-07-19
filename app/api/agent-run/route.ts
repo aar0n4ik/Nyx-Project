@@ -19,6 +19,9 @@ export async function POST(req: Request) {
     allowanceRemaining: Number(body.allowanceRemaining || 100),
     execMode: body.execMode === "delegated" ? "delegated" : "unsigned",
     lang: body.lang || "en",
+    persona: body.persona ? String(body.persona) : undefined,
+    riskAppetite: body.riskAppetite != null ? Number(body.riskAppetite) : undefined,
+    oracleTrust: body.oracleTrust != null ? Number(body.oracleTrust) : undefined,
   };
   const enc = new TextEncoder();
   const stream = new ReadableStream({
