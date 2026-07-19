@@ -49,6 +49,7 @@ export default function InlineBlink({ url }: { url: string }) {
   const adapter = useMemo<BlinkAdapter>(
     () => ({
       metadata: { supportedBlockchainIds: ["solana:devnet"] },
+      signMessage: async () => ({ error: "Message signing is not supported by this Blink." }),
       connect: async () => {
         const s = stateRef.current;
         if (s.isConnected && s.address) return s.address;

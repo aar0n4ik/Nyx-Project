@@ -41,8 +41,6 @@ const PROMPTS: L[] = [
 
 type Status = "idle" | "loading" | "ready" | "running";
 
-// Escape HTML, then render a tiny safe subset of markdown (bold/italic/code)
-// so the model's ** ** markers never leak as raw asterisks.
 function formatOutput(raw: string): string {
   const esc = raw
     .replace(/&/g, "&amp;")

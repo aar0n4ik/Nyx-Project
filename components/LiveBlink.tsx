@@ -2,7 +2,7 @@
 import InlineBlink from "@/components/InlineBlink";
 import { useLang, pick } from "@/lib/i18n";
 
-const BLINK_URL = "/api/actions/bet?match=88008802&market=h&odds=2.00";
+const BLINK_URL = "https://nyx-project-roan.vercel.app/api/actions/bet?match=88008802&market=h&odds=2.00";
 
 export default function LiveBlink() {
   const lang = useLang();
