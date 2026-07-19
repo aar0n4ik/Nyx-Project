@@ -4,7 +4,7 @@ import InlineBlink from "@/components/InlineBlink";
 import "@dialectlabs/blinks/index.css";
 
 const BLINK_URL =
-  "https://nyx-project-roan.vercel.app/api/actions/bet?match=88008801&market=h&odds=2.00";
+  "https://nyx-project-roan.vercel.app/api/actions/bet?match=88008802&market=h&odds=2.00";
 
 export default function BlinkModal() {
   const [open, setOpen] = useState(false);
