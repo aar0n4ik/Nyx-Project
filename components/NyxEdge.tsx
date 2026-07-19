@@ -137,7 +137,7 @@ export default function NyxEdge() {
   const busy = status === "loading" || status === "running";
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-4 py-16">
+    <section id="edge" className="scroll-mt-24 mx-auto w-full max-w-3xl px-4 py-16">
       <div className="rounded-3xl border border-hairline bg-base p-6 sm:p-8">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-nyx">
           <Cpu className="h-4 w-4" />
