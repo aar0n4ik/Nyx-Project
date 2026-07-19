@@ -70,6 +70,7 @@ export default function BetModal({ open, onClose, data }: { open: boolean; onClo
   ] : [];
 
   const placeBet = async () => {
+    if (busy || status === "done") return;
     if (!m || !active) return;
     if (!isConnected || !address) { openWallet(); return; }
     if (!connection || !walletProvider) { setErr("Wallet not ready"); setStatus("error"); return; }
