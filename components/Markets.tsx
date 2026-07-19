@@ -40,8 +40,9 @@ export default function Markets() {
   };
 
   return (
-    <section id="markets" className="nyx-stadium relative mx-auto max-w-content px-6 py-20">
-      <div className="relative z-10">
+    <section id="markets" className="relative overflow-hidden px-6 py-20">
+      <div className="nyx-stadium" aria-hidden="true" />
+      <div className="relative z-10 mx-auto max-w-content">
         <div className="mb-8 text-center">
           <h2 className="nyx-gradient-text text-3xl font-bold sm:text-4xl">{t(L.title)}</h2>
           <p className="mt-2 text-muted">{t(L.sub)}</p>
