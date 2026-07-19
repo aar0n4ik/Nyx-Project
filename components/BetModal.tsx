@@ -26,7 +26,7 @@ const L = {
   place: { en: "Place bet · sign", ru: "Сделать ставку · подпись" },
   connect: { en: "Connect wallet", ru: "Подключить кошелёк" },
   building: { en: "Building…", ru: "Собираю…" }, signing: { en: "Sign in wallet…", ru: "Подпиши в кошельке…" },
-  confirming: { en: "Confirming…", ru: "Подтверждаю…" }, done: { en: "Bet placed on-chain", ru: "Ставка размещена ончейн" },
+  confirming: { en: "Confirming…", ru: "Подтверждаю…" }, done: { en: "Position opened successfully", ru: "Сделка успешно открыта", es: "Posición abierta con éxito", pt: "Posição aberta com sucesso", fr: "Position ouverte avec succès", de: "Position erfolgreich eröffnet", zh: "持仓开启成功" },
   retry: { en: "Try again", ru: "Повторить" }, explorer: { en: "View on Explorer →", ru: "Открыть в Explorer →" },
   hint: { en: "Program-escrowed. No admin key can touch your stake.", ru: "Эскроу программой. Ни один админ-ключ не тронет ставку." },
   demoTitle: { en: "Nyx demo market", ru: "Демо-рынок Nyx" },
