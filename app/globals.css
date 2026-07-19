@@ -199,3 +199,32 @@ a.text-white, button.text-white { text-shadow: 0 1px 2px rgba(0,0,0,.25); }
 :root:not(.dark) a:not([class*="bg-"]).text-white,
 :root:not(.dark) button:not([class*="bg-"]).text-white { color: rgb(var(--ink)); text-shadow: none; }
 button:disabled, a[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+/* ===== FAQ: тем-зависимый, всегда читаемый текст (фикс белого-на-белом / чёрного-на-чёрном) ===== */
+#faq :is(h1, h2, h3, h4, button, summary, dt, strong) { color: rgb(var(--ink)); }
+#faq :is(p, li, dd, span:not([class*="bg-"])) { color: rgb(var(--muted)); }
+#faq svg { color: rgb(var(--muted)); opacity: 0.85; }
+
+/* ===== Wallet modal — флагманская тема под Nyx ===== */
+.wallet-adapter-modal-overlay { background: rgba(3, 3, 8, 0.6); backdrop-filter: blur(6px); }
+.wallet-adapter-modal-wrapper {
+  background: rgb(var(--base));
+  border: 1px solid rgb(var(--hairline));
+  border-radius: 20px;
+  box-shadow: 0 40px 120px -30px rgba(109, 74, 255, 0.45);
+}
+.wallet-adapter-modal-title { color: rgb(var(--ink)); font-family: var(--font-display), sans-serif; }
+.wallet-adapter-modal-list .wallet-adapter-button {
+  background: rgb(var(--subtle));
+  color: rgb(var(--ink));
+  border-radius: 12px;
+  transition: background 0.2s ease;
+}
+.wallet-adapter-modal-list .wallet-adapter-button:hover { background: rgba(109, 74, 255, 0.14); }
+.wallet-adapter-modal-list-more { color: rgb(var(--muted)); }
+.wallet-adapter-button-trigger {
+  background: linear-gradient(120deg, #6d4aff, #9945ff) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  font-weight: 600;
+}

@@ -77,7 +77,7 @@ export default function BetModal({ open, onClose, match, market, odds, title }: 
     building: { en: "Building transaction…", ru: "Собираю транзакцию…" },
     signing: { en: "Sign in your wallet…", ru: "Подпиши в кошельке…" },
     confirming: { en: "Confirming on-chain…", ru: "Подтверждаю в сети…" },
-    done: { en: "Bet placed on-chain ✓", ru: "Ставка размещена ончейн ✓" },
+    done: { en: "Bet placed on-chain ", ru: "Ставка размещена ончейн " },
     error: { en: "Try again", ru: "Повторить" },
   };
 

@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import { useTrack, type TrackId } from "@/components/useTrack";
 
 const OPTIONS: { id: TrackId; emoji: string; label: string }[] = [
-  { id: "settlement", emoji: "🏁", label: "Settle" },
-  { id: "agents", emoji: "🤖", label: "Agents" },
-  { id: "fan", emoji: "🎉", label: "Fan" },
+  { id: "settlement", emoji: "", label: "Settle" },
+  { id: "agents", emoji: "", label: "Agents" },
+  { id: "fan", emoji: "", label: "Fan" },
 ];
 
 const spring = { type: "spring", stiffness: 380, damping: 30 } as const;

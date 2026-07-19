@@ -1,4 +1,4 @@
-# 🤖 Track 2 — Trading Tools & Agents
+# Track 2 — Trading Tools & Agents
 
 **What Nyx ships:** a **zero-custody autonomous agent** that prices in-play markets, sizes with half-Kelly, and bets *for* the user under a capped, expiring on-chain allowance — the user always owns the position and the winnings. Plus the pricing/liquidity core and trading tools around it.
 

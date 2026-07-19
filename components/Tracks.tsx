@@ -24,7 +24,7 @@ const BLINK_URL = "https://dial.to/?action=solana-action:" + encodeURIComponent(
 const TRACKS: Track[] = [
   {
     id: "settlement",
-    emoji: "🏁",
+    emoji: "",
     accent: "text-solana",
     ctaHref: "#feed",
     name: { en: "Prediction Markets & Settlement", ru: "Прогнозные рынки и расчёт", es: "Mercados de predicción y liquidación", pt: "Mercados de previsão e liquidação", fr: "Marchés de prédiction et règlement", de: "Prognosemärkte & Abwicklung", zh: "预测市场与结算" },
@@ -40,7 +40,7 @@ const TRACKS: Track[] = [
   },
   {
     id: "agents",
-    emoji: "🤖",
+    emoji: "",
     accent: "text-nyx",
     ctaHref: "#feed",
     name: { en: "Trading Tools & Agents", ru: "Торговые инструменты и агенты", es: "Herramientas de trading y agentes", pt: "Ferramentas de trading e agentes", fr: "Outils de trading et agents", de: "Trading-Tools & Agenten", zh: "交易工具与智能体" },
@@ -56,7 +56,7 @@ const TRACKS: Track[] = [
   },
   {
     id: "fan",
-    emoji: "🎉",
+    emoji: "",
     accent: "text-verify",
     ctaHref: BLINK_ACTION,
     name: { en: "Consumer & Fan Experiences", ru: "Потребительский и фан-опыт", es: "Experiencias para consumidores y fans", pt: "Experiências para consumidores e fãs", fr: "Expériences grand public et fans", de: "Consumer- & Fan-Erlebnisse", zh: "消费者与球迷体验" },

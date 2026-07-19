@@ -9,6 +9,7 @@ import PerTrackFaq from "@/components/PerTrackFaq";
 import Footer from "@/components/Footer";
 import TrackModal from "@/components/TrackModal";
 import CommandPalette from "@/components/CommandPalette";
+import CommandLauncher from "@/components/CommandLauncher";
 import PWA from "@/components/PWA";
 import Verify from "@/components/Verify";
 
@@ -67,10 +68,12 @@ export default function Page() {
       ) : null}
 
       <PerTrackFaq />
+      <LiveConstellation />
       <Footer />
 
       <TrackModal />
       <CommandPalette />
+      <CommandLauncher />
       <PWA />
     </>
   );
