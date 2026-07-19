@@ -77,7 +77,7 @@ export default function BetModal({ open, onClose, data }: { open: boolean; onClo
       setErr(null); setStatus("building");
       const url = "/api/actions/bet?match=" + encodeURIComponent(m.match) + "&market=" + active.market + "&odds=" + encodeURIComponent(String(active.odds)) + "&side=back&amount=" + encodeURIComponent(String(stake));
       const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ account: address }) });
-      if (!res.ok) throw new Error("HTTP " + res.status);
+      if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j && j.message ? j.message : ("HTTP " + res.status)); }
       const d = await res.json();
       const tx = Transaction.from(b64ToBytes(d.transaction));
       setStatus("signing");

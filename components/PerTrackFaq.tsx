@@ -75,7 +75,7 @@ export default function PerTrackFaq() {
                   onClick={() => setOpen(isOpen ? null : i)}
                   className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
                 >
-                  <span className="text-sm font-medium text-ink sm:text-base">
+                  <span className="text-sm font-medium sm: text-ink">
                     {pick(lang, f.q)}
                   </span>
                   <ChevronDown
