@@ -19,7 +19,7 @@ type Track = {
 };
 
 const BLINK_ACTION = "https://nyx-project-roan.vercel.app/api/actions/bet";
-const BLINK_URL = "https://dial.to/?action=solana-action:" + encodeURIComponent(BLINK_ACTION);
+const BLINK_URL = "https://dial.to/?action=solana-action:" + encodeURIComponent(BLINK_ACTION + (BLINK_ACTION.includes("?")?"&":"?") + "cb=" + (process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA||"dev"));
 
 const TRACKS: Track[] = [
   {
@@ -58,7 +58,7 @@ const TRACKS: Track[] = [
     id: "fan",
     emoji: "🎉",
     accent: "text-verify",
-    ctaHref: BLINK_URL,
+    ctaHref: BLINK_ACTION,
     name: { en: "Consumer & Fan Experiences", ru: "Потребительский и фан-опыт", es: "Experiencias para consumidores y fans", pt: "Experiências para consumidores e fãs", fr: "Expériences grand public et fans", de: "Consumer- & Fan-Erlebnisse", zh: "消费者与球迷体验" },
     tagline: { en: "Bet from any post. Creators earn automatically.", ru: "Ставь из любого поста. Авторы зарабатывают автоматически.", es: "Apuesta desde cualquier publicación. Los creadores ganan automáticamente.", pt: "Aposte a partir de qualquer post. Os criadores ganham automaticamente.", fr: "Pariez depuis n'importe quel post. Les créateurs gagnent automatiquement.", de: "Wette aus jedem Post. Creator verdienen automatisch.", zh: "从任意帖子下注。创作者自动获得收益。" },
     blurb: { en: "Turn any tweet or post into a bet with Solana Blinks. Fans stake in one tap, and the creators who drove them earn an automatic on-chain split — no dashboards, no manual payouts.", ru: "Преврати любой твит или пост в ставку с помощью Solana Blinks. Фанаты ставят в один тап, а приведшие их авторы получают автоматическую ончейн-долю — без дашбордов и ручных выплат.", es: "Convierte cualquier tweet o publicación en una apuesta con Solana Blinks. Los fans apuestan con un toque y los creadores que los atrajeron ganan un reparto on-chain automático: sin paneles, sin pagos manuales.", pt: "Transforme qualquer tweet ou post em uma aposta com Solana Blinks. Os fãs apostam com um toque e os criadores que os trouxeram ganham um repasse on-chain automático — sem painéis, sem pagamentos manuais.", fr: "Transformez n'importe quel tweet ou post en pari avec Solana Blinks. Les fans misent en un tap, et les créateurs qui les ont amenés touchent un partage on-chain automatique — sans tableaux de bord, sans paiements manuels.", de: "Verwandle jeden Tweet oder Post mit Solana Blinks in eine Wette. Fans setzen mit einem Tipp, und die Creator, die sie gebracht haben, erhalten einen automatischen On-Chain-Anteil — keine Dashboards, keine manuellen Auszahlungen.", zh: "用 Solana Blinks 把任意推文或帖子变成一次下注。球迷一键下注，带来他们的创作者自动获得链上分成——无需后台，无需手动结算。" },
@@ -127,7 +127,7 @@ export default function Tracks() {
                   </li>
                 ))}
               </ul>
-              <a href={active.ctaHref} target={active.ctaHref.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className="mt-6 inline-flex rounded-xl bg-gradient-to-r from-nyx to-solana px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90">
+              <a href={active.ctaHref} target={active.ctaHref.startsWith("http") ? "_blank" : undefined} rel="noreferrer" onClick={(e) => { if (active.ctaHref === BLINK_ACTION) { e.preventDefault(); if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("nyx-open-blink", { detail: { url: BLINK_ACTION } })); } }} className="mt-6 inline-flex rounded-xl bg-gradient-to-r from-nyx to-solana px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90">
                 {pick(lang, active.ctaLabel)} →
               </a>
             </motion.div>

@@ -16,6 +16,7 @@ export async function GET() {
   const body = {
     rules: [
       { pathPattern: "/bet", apiPath: "/api/actions/bet" },
+      { pathPattern: "/delegate", apiPath: "/api/actions/delegate" },
       { pathPattern: "/api/actions/**", apiPath: "/api/actions/**" },
     ],
   };

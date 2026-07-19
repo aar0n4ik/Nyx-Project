@@ -68,7 +68,7 @@ export default function LiveConstellation() {
       angle += 0.0016;
       const cx = w / 2;
       const cy = h / 2;
-      const scale = Math.min(w, h) * 0.36;
+      const scale = Math.min(w, h) * 0.42;
 
       const cosA = Math.cos(angle);
       const sinA = Math.sin(angle);
@@ -141,14 +141,12 @@ export default function LiveConstellation() {
   }, []);
 
   return (
-    <section id="live" className="relative overflow-hidden bg-base py-24 text-ink">
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div className="relative h-[420px] w-full max-w-content">
+    <section id="live" className="relative overflow-hidden bg-base py-20 text-ink sm:py-24">
+      <div className="mx-auto max-w-content px-6 text-center">
+        <div className="relative mx-auto h-[280px] w-[280px] sm:h-[340px] sm:w-[340px]">
           <canvas ref={canvasRef} className="h-full w-full" />
         </div>
-      </div>
-      <div className="relative mx-auto max-w-content px-6 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
+        <p className="mt-8 text-xs font-semibold uppercase tracking-[0.22em] text-muted">
           {pick(lang, { en: "Live on Solana", ru: "Вживую на Solana", es: "En vivo en Solana", pt: "Ao vivo na Solana", fr: "En direct sur Solana", de: "Live auf Solana", zh: "在 Solana 上实时运行" })}
         </p>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">

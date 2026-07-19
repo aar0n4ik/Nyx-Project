@@ -1,6 +1,6 @@
 # Nyx — by track
 
-Nyx is one vertically integrated stack that spans all three World Cup Hackathon tracks. Each folder below is a focused entry point: what Nyx ships for that track, which real files/programs implement it, the on-chain proofs, and how to run it yourself.
+Each track below is submitted as its own standalone product, built specifically for that track's criteria, on top of shared open-source Solana infrastructure. Each folder is a focused entry point: what that product ships, which real files/programs implement it, the on-chain proofs, and how to run it yourself.
 
 | Track | Folder |
 | --- | --- |

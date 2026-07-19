@@ -225,3 +225,15 @@ Not devnet-only: the on-chain Proof-of-Inference anchor runs on **Solana mainnet
 ## Business model & unit economics
 
 Nyx is infrastructure, not a book: about 99% gross margin, near-zero marginal cost, four revenue lines, zero-CAC distribution via Blinks. The affiliate revenue split is proven on-chain (a 5% cut lands in the creator wallet automatically). Full model in [BUSINESS.md](BUSINESS.md).
+
+## 🏆 World Cup Hackathon — Track Alignment
+
+> ⚠️ Rules: entering a second track requires a **separate, distinct submission** built for that track's criteria.
+
+| Track | Prize | Requirement | Nyx proof |
+|---|---|---|---|
+| **Prediction Markets & Settlement** | $18K | On-chain markets, resolution & settlement on verifiable WC data | `programs/nyx-settlement`, on-chain resolve (no admin key), PoI memo anchor, `ProofVerifier` |
+| **Trading Tools & Agents** | $16K | Autonomous agents ingesting live odds/scores, running strategies, executing without manual input | `AgentTerminal` (Data Oracle → Risk → Executor SSE), `/api/agent-run`, `/api/analyze-trade`, Nyx Edge |
+| **Consumer & Fan Experiences** | $16K | Fan-facing apps/games/bots on live match data, instant updates | Solana Blinks (bet from any post), affiliate split, `LiveStream` / `LiveFeed` |
+
+All tracks require **TxODDS / TxLINE** live World Cup data. Deadline: **19 Jul 2026, 23:59 UTC**.

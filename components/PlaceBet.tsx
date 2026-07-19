@@ -5,8 +5,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useLang, pick } from "@/lib/i18n";
 
 const BLINK_ACTION = "https://nyx-project-roan.vercel.app/api/actions/bet";
+function openBlink(e:any){ if(e&&e.preventDefault)e.preventDefault(); if(typeof window!=="undefined") window.dispatchEvent(new CustomEvent("nyx-open-blink",{detail:{url:BLINK_ACTION}})); }
+
 const BLINK_URL =
-  "https://dial.to/?action=solana-action:" + encodeURIComponent(BLINK_ACTION);
+  "https://dial.to/?action=solana-action:" + encodeURIComponent(BLINK_ACTION + (BLINK_ACTION.includes("?")?"&":"?") + "cb=" + (process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA||"dev"));
 
 const overlayV = {
   hidden: { opacity: 0 },
@@ -72,7 +74,7 @@ export default function PlaceBet() {
               </ol>
 
               <a
-                href={BLINK_URL}
+                href="#" onClick={openBlink}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-6 flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-nyx to-solana px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"

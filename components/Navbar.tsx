@@ -1,12 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Logo from "@/components/Logo";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeToggle from "@/components/ThemeToggle";
 import TrackNavSwitcher from "@/components/TrackNavSwitcher";
 import { useTrack, type TrackId } from "@/components/useTrack";
-import { useT, useLang, pick } from "@/lib/i18n";
+import { useLang, pick } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
+
+const WalletMultiButton = dynamic(
+  () => import("@solana/wallet-adapter-react-ui").then((m) => m.WalletMultiButton),
+  { ssr: false }
+);
 
 type L = Record<Lang, string>;
 type NavLink = { label: L; href: string };
@@ -14,28 +20,31 @@ type NavLink = { label: L; href: string };
 const MARKETS_L: L = { en: "Markets", ru: "Рынки", es: "Mercados", pt: "Mercados", fr: "Marchés", de: "Märkte", zh: "市场" };
 const EDGE_L: L = { en: "Nyx Edge", ru: "Nyx Edge", es: "Nyx Edge", pt: "Nyx Edge", fr: "Nyx Edge", de: "Nyx Edge", zh: "Nyx Edge" };
 const PROOF_L: L = { en: "Proof", ru: "Доказательство", es: "Prueba", pt: "Prova", fr: "Preuve", de: "Nachweis", zh: "验证" };
+const SDK_L: L = { en: "SDK", ru: "SDK", es: "SDK", pt: "SDK", fr: "SDK", de: "SDK", zh: "SDK" };
 const FAQ_L: L = { en: "FAQ", ru: "FAQ", es: "FAQ", pt: "FAQ", fr: "FAQ", de: "FAQ", zh: "常见问题" };
 
 const LINKS: Record<TrackId, NavLink[]> = {
   settlement: [
     { href: "#markets", label: MARKETS_L },
     { href: "#verify", label: PROOF_L },
+    { href: "/sdk", label: SDK_L },
     { href: "#faq", label: FAQ_L },
   ],
   agents: [
     { href: "#edge", label: EDGE_L },
     { href: "#verify", label: PROOF_L },
+    { href: "/sdk", label: SDK_L },
     { href: "#faq", label: FAQ_L },
   ],
   fan: [
     { href: "#markets", label: MARKETS_L },
     { href: "#verify", label: PROOF_L },
+    { href: "/sdk", label: SDK_L },
     { href: "#faq", label: FAQ_L },
   ],
 };
 
 export default function Navbar() {
-  const { t } = useT();
   const lang = useLang();
   const [track] = useTrack();
   const links = LINKS[track ?? "settlement"];
@@ -70,12 +79,7 @@ export default function Navbar() {
           </div>
           <LanguageSwitcher />
           <ThemeToggle />
-          <a
-            href="/app"
-            className="rounded-lg bg-gradient-to-r from-nyx to-verify px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
-          >
-            {t("cta.app")}
-          </a>
+          <WalletMultiButton />
         </div>
       </nav>
     </header>
