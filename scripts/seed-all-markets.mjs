@@ -14,7 +14,7 @@ const STABLE_MINT = new PublicKey(process.env.NYX_STABLE_MINT || "5GPxJkwceeP36R
 const KP_PATH = process.env.NYX_AUTHORITY_KEYPAIR || process.env.ANCHOR_WALLET || (process.env.HOME + "/.config/solana/id.json")
 
 // Keep these in sync with app/api/actions/bet/route.ts
-const MATCHES = ["17588232", "17588302", "17588389", "17926647", "17588390", "17588303"]
+const MATCHES = ["88008800","17588232","17588302","17588389","17926647","17588390","17588303"]
 const ALL_MARKETS = ["ou25", "ou15", "btts", "h", "d", "a", "nh", "na"]
 
 const [, , closeArg, filterArg] = process.argv
