@@ -10,6 +10,13 @@ import type { Lang } from "@/lib/i18n";
 type Loc = Partial<Record<Lang, string>> & { en: string };
 type Status = "idle" | "building" | "signing" | "confirming" | "done" | "error";
 
+const overlayShow = { opacity: 1 };
+const overlayHide = { opacity: 0 };
+const panelInit = { opacity: 0, scale: 0.94, y: 20 };
+const panelAnim = { opacity: 1, scale: 1, y: 0 };
+const panelTrans = { type: "spring" as const, stiffness: 260, damping: 24 };
+const crestShadow = { textShadow: "0 1px 2px rgba(0,0,0,.45)" };
+
 function b64ToBytes(b64: string) {
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
@@ -20,7 +27,7 @@ function b64ToBytes(b64: string) {
 function Crest({ code }: { code?: string }) {
   if (!code) return null;
   return (
-    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-nyx to-solana text-[10px] font-bold text-white ring-2 ring-white/10" style= textShadow: "0 1px 2px rgba(0,0,0,.45)" >
+    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-nyx to-solana text-[10px] font-bold text-white ring-2 ring-white/10" style={crestShadow}>
       {code}
     </span>
   );
@@ -53,7 +60,6 @@ export default function BetModal({
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
   }, [open, onClose]);
 
-  // Кэф стороны: ДА = как есть; НЕТ = обратный 1/(1-1/odds) (совпадает с бэкендовым otherOdds).
   const impl = odds > 1 ? 1 / odds : 0.5;
   const layOdds = impl < 1 ? 1 / (1 - impl) : odds;
   const sideOdds = side === "back" ? odds : layOdds;
@@ -67,7 +73,6 @@ export default function BetModal({
     try {
       setErr(null);
       setStatus("building");
-      // В запрос — ИСХОДНЫЙ back-кэф + side; бэкенд сам переворачивает на lay.
       const url = "/api/actions/bet?match=" + encodeURIComponent(match) + "&market=" + encodeURIComponent(market) + "&odds=" + encodeURIComponent(String(odds)) + "&side=" + side + "&amount=" + encodeURIComponent(String(stake));
       const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ account: publicKey.toBase58() }) });
       if (!res.ok) throw new Error("HTTP " + res.status);
@@ -94,16 +99,16 @@ export default function BetModal({
     error: { en: "Try again", ru: "Повторить" },
   };
   const cta = !publicKey ? t({ en: "Place bet", ru: "Сделать ставку" }) : t(statusLabel[status]);
+  const sideOddsLabel = (s: "back" | "lay") => (s === "back" ? odds : layOdds).toFixed(2);
 
   return (
     <AnimatePresence>
-      {open && (
-        <motion.div className="fixed inset-0 z-[60] flex items-center justify-center p-4" initial= opacity: 0  animate= opacity: 1  exit= opacity: 0 >
+      {open ? (
+        <motion.div className="fixed inset-0 z-[60] flex items-center justify-center p-4" initial={overlayHide} animate={overlayShow} exit={overlayHide}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             role="dialog" aria-modal="true"
-            initial= opacity: 0, scale: 0.94, y: 20  animate= opacity: 1, scale: 1, y: 0  exit= opacity: 0, scale: 0.94, y: 20NOTION_TWS[ ]NOTION_TWS
-            transition= type: "spring", stiffness: 260, damping: 24NOTION_TWS[ ]NOTION_TWS
+            initial={panelInit} animate={panelAnim} exit={panelInit} transition={panelTrans}
             className="relative z-10 w-full max-w-md rounded-2xl border border-hairline bg-base p-6 shadow-2xl"
           >
             <button onClick={onClose} aria-label="Close" className="absolute right-4 top-4 text-muted transition hover:text-ink">×</button>
@@ -133,7 +138,7 @@ export default function BetModal({
                   className={"rounded-xl border px-4 py-2.5 text-sm font-semibold transition " + (side === s ? "border-nyx bg-nyx/10 text-ink" : "border-hairline bg-subtle text-muted hover:text-ink")}
                 >
                   {s === "back" ? t({ en: "Back (YES)", ru: "За (ДА)" }) : t({ en: "Lay (NO)", ru: "Против (НЕТ)" })}
-                  <span className="ml-1.5 font-mono text-xs opacity-70">{(s === "back" ? odds : layOdds).toFixed(2)}×</span>
+                  <span className="ml-1.5 font-mono text-xs opacity-70">{sideOddsLabel(s)}×</span>
                 </button>
               ))}
             </div>
@@ -176,7 +181,7 @@ export default function BetModal({
             ) : null}
           </motion.div>
         </motion.div>
-      )}
+      ) : null}
     </AnimatePresence>
   );
 }

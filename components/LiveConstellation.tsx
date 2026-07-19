@@ -7,6 +7,7 @@ type Point = { x: number; y: number; z: number };
 
 const COUNT = 540;
 const TWO_PI = Math.PI * 2;
+const displayFont = { fontFamily: "var(--font-display)" };
 
 function sphere(n: number): Point[] {
   const pts: Point[] = [];
@@ -146,7 +147,7 @@ export default function LiveConstellation() {
         <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-muted">
           {pick(lang, { en: "Live on Solana", ru: "Вживую на Solana", es: "En vivo en Solana", pt: "Ao vivo na Solana", fr: "En direct sur Solana", de: "Live auf Solana", zh: "在 Solana 上实时运行" })}
         </span>
-        <h2 style= fontFamily: "var(--font-display)"  className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h2 style={displayFont} className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           {pick(lang, { en: "Every bet, settled in the open", ru: "Каждая ставка рассчитана открыто", es: "Cada apuesta, liquidada a la vista", pt: "Cada aposta, liquidada à vista de todos", fr: "Chaque pari, réglé au grand jour", de: "Jede Wette, offen abgerechnet", zh: "每一注都公开结算" })}
         </h2>
         <p className="mt-4 text-base leading-relaxed text-muted">

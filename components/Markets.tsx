@@ -14,6 +14,15 @@ const MARKET_L = { en: "Market", ru: "Рынок" };
 const ODDS_L = { en: "Odds", ru: "Кэф" };
 const IMPLIED = { en: "Implied", ru: "Вероятность" };
 
+const cardInit = { opacity: 0, y: 16 };
+const cardAnim = { opacity: 1, y: 0 };
+const once = { once: true };
+const barInit = { width: 0 };
+const cardTrans = (i: number) => ({ duration: 0.4, delay: i * 0.05 });
+const barAnim = (p: number) => ({ width: p + "%" });
+const barTrans = (i: number) => ({ duration: 0.8, delay: 0.15 + i * 0.05 });
+const crestStyle = (a: string, b: string) => ({ background: "linear-gradient(135deg, " + a + ", " + b + ")", textShadow: "0 1px 2px rgba(0,0,0,.45)" });
+
 const TEAM: Record<string, [string, string]> = {
   Argentina: ["#75aadb", "#4f8fd0"], Austria: ["#ef3340", "#c81e2a"],
   Ecuador: ["#ffd100", "#0072ce"], Germany: ["#dd0000", "#1a1a1a"],
@@ -24,19 +33,16 @@ const TEAM: Record<string, [string, string]> = {
 };
 
 function Crest({ name, code }: { name: string; code: string }) {
-  const [a, b] = TEAM[name] ?? ["#6d4aff", "#0bb5d6"];
+  const pair = TEAM[name] ?? ["#6d4aff", "#0bb5d6"];
   return (
     <span
       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[10px] font-bold tracking-wide text-white ring-2 ring-white/10"
-      style= background: "linear-gradient(135deg, " + a + ", " + b + ")", textShadow: "0 1px 2px rgba(0,0,0,.45)"NOTION_TWS[ ]NOTION_TWS
+      style={crestStyle(pair[0], pair[1])}
     >
       {code}
     </span>
   );
 }
-
-const cardInit = { opacity: 0, y: 16 } as const;
-const cardAnim = { opacity: 1, y: 0 } as const;
 
 export default function Markets() {
   const lang = useLang();
@@ -48,12 +54,10 @@ export default function Markets() {
       <div className="relative z-10">
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-muted">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="nyx-live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
-            </span>
+            <span className="nyx-live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
             {pick(lang, EYEBROW)}
           </span>
-          <h2 style= fontFamily: "var(--font-display)"  className="nyx-gradient-text mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h2 className="nyx-gradient-text mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
             {pick(lang, HEADING)}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-muted">{pick(lang, SUB)}</p>
@@ -67,8 +71,8 @@ export default function Markets() {
                 key={m.match + m.market}
                 initial={cardInit}
                 whileInView={cardAnim}
-                viewport= once: trueNOTION_TWS[ ]NOTION_TWS
-                transition= duration: 0.4, delay: i * 0.05NOTION_TWS[ ]NOTION_TWS
+                viewport={once}
+                transition={cardTrans(i)}
                 className="group relative flex flex-col overflow-hidden rounded-2xl border border-hairline bg-base p-5"
               >
                 <div className="flex items-center justify-between">
@@ -113,10 +117,10 @@ export default function Markets() {
                   </div>
                   <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-hairline">
                     <motion.div
-                      initial= width: 0NOTION_TWS[ ]NOTION_TWS
-                      whileInView= width: prob + "%"NOTION_TWS[ ]NOTION_TWS
-                      viewport= once: trueNOTION_TWS[ ]NOTION_TWS
-                      transition= duration: 0.8, delay: 0.15 + i * 0.05NOTION_TWS[ ]NOTION_TWS
+                      initial={barInit}
+                      whileInView={barAnim(prob)}
+                      viewport={once}
+                      transition={barTrans(i)}
                       className="h-full rounded-full bg-gradient-to-r from-nyx to-solana"
                     />
                   </div>
