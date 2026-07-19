@@ -3,7 +3,7 @@
 Verify **TxODDS TxLINE** sports data on **Solana** with a real on-chain CPI into
 `txoracle::validate_stat_v2`.
 
-> ⚠️ **Unofficial / community project.** Not affiliated with or endorsed by TxODDS.
+>  **Unofficial / community project.** Not affiliated with or endorsed by TxODDS.
 > The `txoracle` program, its IDL, and all data belong to TxODDS. This crate only
 > provides open-source Rust bindings + a CPI helper around their public program.
 

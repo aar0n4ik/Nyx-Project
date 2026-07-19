@@ -4,9 +4,9 @@ Each track below is submitted as its own standalone product, built specifically 
 
 | Track | Folder |
 | --- | --- |
-| 🏁 Prediction Markets & Settlement | [prediction-markets-settlement](prediction-markets-settlement/README.md) |
-| 🤖 Trading Tools & Agents | [trading-tools-agents](trading-tools-agents/README.md) |
-| 🎉 Consumer & Fan Experiences | [consumer-fan-experiences](consumer-fan-experiences/README.md) |
+| Prediction Markets & Settlement | [prediction-markets-settlement](prediction-markets-settlement/README.md) |
+| Trading Tools & Agents | [trading-tools-agents](trading-tools-agents/README.md) |
+| Consumer & Fan Experiences | [consumer-fan-experiences](consumer-fan-experiences/README.md) |
 
 The general overview that ties everything together is the [repo README](../README.md).
 

@@ -14,9 +14,9 @@ New here? Pick the track you care about — each folder has its own focused READ
 
 | Track | Guide |
 | --- | --- |
-| 🏁 Prediction Markets \& Settlement | [tracks/prediction-markets-settlement](tracks/prediction-markets-settlement/README.md) |
-| 🤖 Trading Tools \& Agents | [tracks/trading-tools-agents](tracks/trading-tools-agents/README.md) |
-| 🎉 Consumer \& Fan Experiences | [tracks/consumer-fan-experiences](tracks/consumer-fan-experiences/README.md) |
+| Prediction Markets \& Settlement | [tracks/prediction-markets-settlement](tracks/prediction-markets-settlement/README.md) |
+| Trading Tools \& Agents | [tracks/trading-tools-agents](tracks/trading-tools-agents/README.md) |
+| Consumer \& Fan Experiences | [tracks/consumer-fan-experiences](tracks/consumer-fan-experiences/README.md) |
 
 ---
 
@@ -34,10 +34,10 @@ Most "AI betting" is a chatbot with a custodial wallet. Nyx is the opposite:
 ## The zero-custody agent (flagship)
 
     user grants allowance (cap + expiry)  --on-chain-->  SubscriptionAuthority PDA
-              |                                                   |
+              | |
               v                                                   v
     agent prices market (pAMM + Poisson/Kelly)           place_bet_for(user) --> user owns Position
-              |                                                   |
+              | |
               v                                                   v
     market resolves (dispute-gated oracle)               user claims winnings in USD₮
               |
@@ -226,9 +226,9 @@ Not devnet-only: the on-chain Proof-of-Inference anchor runs on **Solana mainnet
 
 Nyx is infrastructure, not a book: about 99% gross margin, near-zero marginal cost, four revenue lines, zero-CAC distribution via Blinks. The affiliate revenue split is proven on-chain (a 5% cut lands in the creator wallet automatically). Full model in [BUSINESS.md](BUSINESS.md).
 
-## 🏆 World Cup Hackathon — Track Alignment
+## World Cup Hackathon — Track Alignment
 
-> ⚠️ Rules: entering a second track requires a **separate, distinct submission** built for that track's criteria.
+>  Rules: entering a second track requires a **separate, distinct submission** built for that track's criteria.
 
 | Track | Prize | Requirement | Nyx proof |
 |---|---|---|---|

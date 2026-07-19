@@ -1,4 +1,4 @@
-# 🎉 Track 3 — Consumer & Fan Experiences
+# Track 3 — Consumer & Fan Experiences
 
 **What Nyx ships:** betting where the fans already are. Stake or delegate straight from an X/Discord post via **Solana Blinks**, a **zero-CAC affiliate** split that pays creators automatically, and an offline-first, multilingual in-play trading UI.
 

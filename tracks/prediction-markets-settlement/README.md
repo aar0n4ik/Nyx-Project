@@ -1,4 +1,4 @@
-# 🏁 Track 1 — Prediction Markets & Settlement
+# Track 1 — Prediction Markets & Settlement
 
 **What Nyx ships:** trust-minimized, non-custodial markets whose outcomes are decided **on-chain, never by an admin key**. Every market is backed by two live settlement modes on Solana devnet.
 
