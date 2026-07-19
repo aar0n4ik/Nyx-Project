@@ -100,8 +100,8 @@ export default function SettlementReplay() {
           </div>
         ) : null}
 
-        {status === "match" ? <div className="mt-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-500">✓ {pick(lang, { en: "Verified — the on-chain outcome is exactly reproducible.", ru: "Проверено — ончейн-исход полностью воспроизводим." })}</div> : null}
-        {status === "mismatch" ? <div className="mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-500">✗ {pick(lang, { en: "Mismatch — data does not match the on-chain proof.", ru: "Несовпадение — данные не соответствуют ончейн-пруфу." })}</div> : null}
+        {status === "match" ? <div className="mt-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-500"> {pick(lang, { en: "Verified — the on-chain outcome is exactly reproducible.", ru: "Проверено — ончейн-исход полностью воспроизводим." })}</div> : null}
+        {status === "mismatch" ? <div className="mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-500"> {pick(lang, { en: "Mismatch — data does not match the on-chain proof.", ru: "Несовпадение — данные не соответствуют ончейн-пруфу." })}</div> : null}
         {status === "error" ? <div className="mt-4 text-sm text-muted">{msg}</div> : null}
       </div>
     </section>

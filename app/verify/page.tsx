@@ -115,8 +115,8 @@ export default function VerifyPage() {
 
         <div style={S.hero}>
           <div style={S.head}>
-            <h2 style={S.ctitle}>🔗 Trustless CPI Settlement</h2>
-            <span style={s.verified ? S.badge : S.badgeGray}>{s.verified ? "verified ✓" : "unverified"}</span>
+            <h2 style={S.ctitle}> Trustless CPI Settlement</h2>
+            <span style={s.verified ? S.badge : S.badgeGray}>{s.verified ? "verified " : "unverified"}</span>
           </div>
           <p style={S.cdesc}>Settlement runs through a real on-chain cross-program call from our nyx_verifier program into TxLINE&apos;s validate_stat_v2. The network verifies the match result against TxODDS&apos; Merkle root inside the transaction — if the proof fails, the CPI reverts and nothing is recorded.</p>
           <Row k="settle tx"><A kind="tx" v={s.tx} /></Row>
@@ -132,8 +132,8 @@ export default function VerifyPage() {
 
         <div style={S.card}>
           <div style={S.head}>
-            <h2 style={S.ctitle}>🧮 On-Chain Merkle Validation</h2>
-            <span style={validation ? S.badge : S.badgeGray}>{validation ? "checked ✓" : "loading…"}</span>
+            <h2 style={S.ctitle}> On-Chain Merkle Validation</h2>
+            <span style={validation ? S.badge : S.badgeGray}>{validation ? "checked " : "loading…"}</span>
           </div>
           <p style={S.cdesc}>Match statistics are proven on-chain against TxLINE&apos;s daily Merkle root — no trusted feed, the proof itself is checked by TxODDS&apos; program.</p>
           <Row k="TxLINE roots PDA"><A kind="address" v={validation?.pda} /></Row>
@@ -146,8 +146,8 @@ export default function VerifyPage() {
 
         <div style={S.card}>
           <div style={S.head}>
-            <h2 style={S.ctitle}>📈 TxLINE StablePrice Oracle</h2>
-            <span style={odds ? S.badge : S.badgeGray}>{odds ? "on-chain ✓" : "loading…"}</span>
+            <h2 style={S.ctitle}> TxLINE StablePrice Oracle</h2>
+            <span style={odds ? S.badge : S.badgeGray}>{odds ? "on-chain " : "loading…"}</span>
           </div>
           <p style={S.cdesc}>Fair, de-margined bookmaker consensus odds from TxODDS pushed straight onto Solana.</p>
           {odds?.bookmaker ? <Row k="source">{odds.bookmaker}</Row> : null}
@@ -160,8 +160,8 @@ export default function VerifyPage() {
 
         <div style={S.card}>
           <div style={S.head}>
-            <h2 style={S.ctitle}>⚡ Autonomous Live Agent (SSE)</h2>
-            <span style={live ? S.badge : S.badgeGray}>{live ? "streamed ✓" : "loading…"}</span>
+            <h2 style={S.ctitle}> Autonomous Live Agent (SSE)</h2>
+            <span style={live ? S.badge : S.badgeGray}>{live ? "streamed " : "loading…"}</span>
           </div>
           <p style={S.cdesc}>An agent subscribed to TxLINE&apos;s live feed and re-priced the on-chain oracle in real time, with no human in the loop.</p>
           {bps.length ? <Row k="oracle path">{bps[0]} → {bps[bps.length - 1]} bps</Row> : null}

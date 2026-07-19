@@ -13,7 +13,7 @@ console.log(`Sender : ${st.address}`);
 console.log(`Paying : ${amount} USD₮ -> ${to}`);
 const res = await wallet.settle({ to, amount, memo: "nyx-demo-payout" });
 if (res.settled) {
-  console.log("PAID ✅  tx:", res.hash);
+  console.log("PAID   tx:", res.hash);
   console.log("Explorer:", "https://explorer.solana.com/tx/" + res.hash + "?cluster=devnet");
 } else { console.error("NOT settled:", res.reason); }
 await wallet.dispose();

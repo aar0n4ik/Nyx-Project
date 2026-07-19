@@ -51,7 +51,7 @@ export default function TrackNavSwitcher() {
                   <button type="button" onClick={() => choose(id)} className={"flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-ink/5 " + (isOn ? "bg-ink/5" : "")}>
                     <span className={isOn ? "text-nyx" : "text-muted"}><TrackIcon id={id} className="h-4 w-4" /></span>
                     <span className="flex-1 text-sm font-medium text-ink">{pick(lang, o.name)}</span>
-                    {isOn ? <span className="text-nyx">✓</span> : null}
+                    {isOn ? <span className="text-nyx"></span> : null}
                   </button>
                 </li>
               );
