@@ -18,6 +18,7 @@ const LINES = [
   "market resolved YES - payouts streaming",
 ];
 
+const MARKET_LABELS: Record<string, string> = { ou25: "Over 2.5 goals", ou15: "Over 1.5 goals", btts: "Both teams score", h: "Home win", d: "Draw", a: "Away win" };
 const MARKETS = ["ou25", "ou15", "btts", "h", "d", "a"];
 
 type Line = { text: string; cls: string };

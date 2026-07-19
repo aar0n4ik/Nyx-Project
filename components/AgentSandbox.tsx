@@ -5,6 +5,7 @@ import { Connection, Transaction } from "@solana/web3.js";
 
 const DEMO_ACCOUNT = "DDLyynBSATRkb5svSXjZRLYGPrf2Trvudbrv7HKoaraE";
 const DEVNET_RPC = "https://api.devnet.solana.com";
+const MARKET_LABELS: Record<string, string> = { ou25: "Over 2.5 goals", ou15: "Over 1.5 goals", btts: "Both teams score", h: "Home win", d: "Draw", a: "Away win" };
 const MARKETS = ["ou25", "ou15", "btts", "h", "d", "a"];
 
 type Preset = { id: string; name: string; blurb: string; riskAppetite: number; oracleTrust: number; stake: number; execMode: "unsigned" | "delegated" };
