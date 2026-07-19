@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLang, pick } from "@/lib/i18n";
+import receipts from "@/lib/poi-receipts.json";
 
 const RPC = "https://api.devnet.solana.com";
 const MEMO_PROGRAM = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
@@ -41,7 +42,7 @@ type Status = "idle" | "running" | "match" | "mismatch" | "error";
 
 export default function SettlementReplay() {
   const lang = useLang();
-  const [sig, setSig] = useState("");
+  const [sig, setSig] = useState("https://explorer.solana.com/tx/5vHC9Zfv2QNL9cF2hEWHEv6WJpNyDydiWfmvpaQq8eTf73J2yLhXeAo3gA6bXAGmkPoNRN3vjKmndCMMCTnRT6Ca?cluster=devnet");
   const [raw, setRaw] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [local, setLocal] = useState("");
@@ -51,10 +52,13 @@ export default function SettlementReplay() {
   async function run() {
     setStatus("running"); setMsg("");
     try {
-      const data = JSON.parse(raw) as Record<string, unknown>;
+      const sigClean = (sig.trim().match(/[1-9A-HJ-NP-Za-km-z]{80,120}/) || [sig.trim()])[0];
+      let data: Record<string, unknown> | null = raw.trim() ? (JSON.parse(raw) as Record<string, unknown>) : null;
+      if (!data) { const hit = (receipts as unknown as Array<{ sig: string; body: Record<string, unknown> }>).find((r) => r.sig === sigClean); data = hit ? hit.body : null; }
+      if (!data) { setStatus("error"); setMsg(pick(lang, { en: "Paste the final-data JSON, or use an explorer link from a Nyx receipt.", ru: "Вставь JSON финальных данных или ссылку на чек Nyx из эксплорера." })); return; }
       const digest = await sha256Hex(canonicalize(data));
       setLocal(digest);
-      const memo = await fetchOnChainMemo(sig.trim());
+      const memo = await fetchOnChainMemo(sigClean);
       if (!memo) { setStatus("error"); setMsg(pick(lang, { en: "No memo found on that transaction.", ru: "В этой транзакции нет memo." })); return; }
       setChain(memo);
       const ok = memo.includes(digest);
@@ -75,12 +79,12 @@ export default function SettlementReplay() {
           {pick(lang, { en: "Don't trust our settlement. Recompute it.", ru: "Не верь нашему расчёту. Пересчитай его." })}
         </h2>
         <p className="mt-3 max-w-2xl text-sm text-muted">
-          {pick(lang, { en: "Paste a settlement signature and the signed TxLINE final data. We recompute the Proof-of-Inference digest in your browser and verify it against the on-chain memo — bit for bit.", ru: "Вставь подпись сеттлмента и подписанные финальные данные TxLINE. Мы пересчитаем PoI-дайджест прямо в браузере и сверим его с memo в блокчейне — бит в бит." })}
+          {pick(lang, { en: "Paste the explorer link of a Nyx settlement; we pull the signed data automatically. We recompute the Proof-of-Inference digest in your browser and verify it against the on-chain memo — bit for bit.", ru: "Вставь ссылку на сеттлмент Nyx из эксплорера; данные подтянутся сами. Мы пересчитаем PoI-дайджест прямо в браузере и сверим его с memo в блокчейне — бит в бит." })}
         </p>
 
         <div className="mt-6 grid gap-3">
           <input value={sig} onChange={(e) => setSig(e.target.value)}
-            placeholder={pick(lang, { en: "Settlement tx signature", ru: "Подпись транзакции расчёта" })}
+            placeholder={pick(lang, { en: "Explorer link (or tx signature)", ru: "Ссылка из эксплорера (или подпись)" })}
             className="w-full rounded-xl border border-hairline bg-base px-4 py-3 font-mono text-sm text-ink placeholder:text-muted" />
           <textarea value={raw} onChange={(e) => setRaw(e.target.value)} rows={5}
             placeholder='{"match":"BRA-ARG","final":"2-1","ts":1737158400}'
