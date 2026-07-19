@@ -1,17 +1,16 @@
 "use client";
 
+import "@solana/wallet-adapter-react-ui/styles.css";
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Activity, Zap, Sparkles, ExternalLink } from "lucide-react";
 import { Connection, Transaction } from "@solana/web3.js";
+import { ConnectionProvider, WalletProvider, useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { WalletModalProvider, WalletMultiButton, useWalletModal } from "@solana/wallet-adapter-react-ui";
 import Logo from "@/components/Logo";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useLang } from "@/lib/i18n";
-
-declare global {
-  interface Window { phantom?: any; solflare?: any; backpack?: any; solana?: any }
-}
 
 const RPC = "https://api.devnet.solana.com";
 const EXPLORER = (sig: string) => "https://explorer.solana.com/tx/" + sig + "?cluster=devnet";
@@ -32,21 +31,6 @@ const SETTLEMENTS = [
   "q9yZGMJbHgfSqKmrqWyhHJZ6PRNW89b2ZEJG6icVV2dEGDHRdAzYxnheS9aix9c14CEzBTERqYrPgvSjbMfWAkQ",
 ];
 
-type WalletId = "phantom" | "solflare" | "backpack";
-const WALLETS: { id: WalletId; name: string; install: string }[] = [
-  { id: "phantom", name: "Phantom", install: "https://phantom.app/download" },
-  { id: "solflare", name: "Solflare", install: "https://solflare.com/download" },
-  { id: "backpack", name: "Backpack", install: "https://backpack.app/download" },
-];
-
-function getProvider(id: WalletId): any | null {
-  if (typeof window === "undefined") return null;
-  if (id === "phantom") return window.phantom?.solana ?? (window.solana?.isPhantom ? window.solana : null);
-  if (id === "solflare") return window.solflare?.isSolflare ? window.solflare : null;
-  if (id === "backpack") return window.backpack?.isBackpack ? window.backpack : null;
-  return null;
-}
-
 function b64ToBytes(b64: string): Uint8Array {
   const bin = atob(b64);
   const out = new Uint8Array(bin.length);
@@ -60,61 +44,28 @@ const exitV = { opacity: 0, y: -10 } as const;
 const panelTrans = { duration: 0.22, ease: "easeOut" } as const;
 const tabSpring = { type: "spring", stiffness: 420, damping: 34 } as const;
 
-export default function AppShell() {
+function AppInner() {
   const lang = useLang();
   const t = (en: string, ru: string) => (lang === "ru" ? ru : en);
+  const { connection } = useConnection();
+  const { publicKey, sendTransaction } = useWallet();
+  const { setVisible } = useWalletModal();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const [tab, setTab] = useState<"bet" | "live" | "edge">("bet");
   const [sel, setSel] = useState<Market>(MARKETS[0]);
   const [stake, setStake] = useState<number>(25);
-
-  const [provider, setProvider] = useState<any>(null);
-  const [pubkey, setPubkey] = useState<string>("");
-  const [modal, setModal] = useState(false);
-  const [detected, setDetected] = useState<Record<string, boolean>>({});
-
   const [status, setStatus] = useState<"idle" | "building" | "signing" | "confirming" | "done" | "error">("idle");
   const [sig, setSig] = useState<string>("");
   const [err, setErr] = useState<string>("");
 
-  useEffect(() => {
-    const d: Record<string, boolean> = {};
-    for (const w of WALLETS) d[w.id] = !!getProvider(w.id);
-    setDetected(d);
-  }, [modal]);
-
   const payout = useMemo(() => (stake > 0 ? stake * sel.odds : 0), [stake, sel]);
   const profit = Math.max(0, payout - stake);
-  const short = pubkey ? pubkey.slice(0, 4) + "…" + pubkey.slice(-4) : "";
-
-  async function connect(id: WalletId) {
-    const p = getProvider(id);
-    if (!p) {
-      const w = WALLETS.find((x) => x.id === id);
-      if (w) window.open(w.install, "_blank", "noopener");
-      return;
-    }
-    try {
-      const res = await p.connect();
-      const pk = (res?.publicKey ?? p.publicKey)?.toString?.() ?? "";
-      setProvider(p);
-      setPubkey(pk);
-      setModal(false);
-    } catch (e: any) {
-      setErr(e?.message ?? "Wallet connection rejected");
-    }
-  }
-
-  async function disconnect() {
-    try { await provider?.disconnect?.(); } catch {}
-    setProvider(null);
-    setPubkey("");
-    setStatus("idle");
-    setSig("");
-  }
 
   async function placeBet() {
-    if (!pubkey) { setModal(true); return; }
+    if (!publicKey) { setVisible(true); return; }
     if (!(stake > 0)) return;
     setErr(""); setSig("");
     try {
@@ -123,24 +74,16 @@ export default function AppShell() {
       const r = await fetch("/api/actions/bet?" + qs, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ account: pubkey }),
+        body: JSON.stringify({ account: publicKey.toBase58() }),
       });
       const j = await r.json();
       if (!j?.transaction) throw new Error(j?.message || "Backend did not return a transaction");
       const tx = Transaction.from(b64ToBytes(j.transaction));
-      const conn = new Connection(RPC, "confirmed");
       setStatus("signing");
-      let signature = "";
-      if (typeof provider.signAndSendTransaction === "function") {
-        const res = await provider.signAndSendTransaction(tx);
-        signature = res?.signature ?? res;
-      } else {
-        const signed = await provider.signTransaction(tx);
-        signature = await conn.sendRawTransaction(signed.serialize());
-      }
+      const signature = await sendTransaction(tx, connection);
       setSig(signature);
       setStatus("confirming");
-      await conn.confirmTransaction(signature, "confirmed");
+      await connection.confirmTransaction(signature, "confirmed");
       setStatus("done");
     } catch (e: any) {
       setErr(e?.message ?? String(e));
@@ -157,6 +100,8 @@ export default function AppShell() {
     return "";
   };
 
+  const busy = status === "building" || status === "signing" || status === "confirming";
+
   const TABS = [
     { id: "bet", Icon: Zap, label: t("Bet", "Ставка") },
     { id: "live", Icon: Activity, label: t("Live", "Лайв") },
@@ -168,18 +113,9 @@ export default function AppShell() {
       <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-hairline bg-base/80 px-4 py-3 backdrop-blur">
         <a href="/" className="shrink-0"><Logo /></a>
         <div className="flex items-center gap-1.5">
-          <span className="hidden rounded-full border border-hairline px-2 py-1 text-[11px] text-muted xs:inline">Devnet</span>
           <LanguageSwitcher />
           <ThemeToggle />
-          {pubkey ? (
-            <button onClick={disconnect} className="rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-ink transition hover:bg-subtle">
-              {short}
-            </button>
-          ) : (
-            <button onClick={() => setModal(true)} className="rounded-lg bg-gradient-to-r from-nyx to-verify px-3 py-1.5 text-xs font-semibold text-white transition hover:opacity-90">
-              {t("Connect", "Подключить")}
-            </button>
-          )}
+          {mounted ? <WalletMultiButton style={{ height: 36, lineHeight: "36px", padding: "0 14px", fontSize: 13, borderRadius: 12 }} /> : null}
         </div>
       </header>
 
@@ -228,9 +164,7 @@ export default function AppShell() {
                   />
                   <div className="mt-2 flex gap-2">
                     {[5, 25, 100].map((v) => (
-                      <button key={v} onClick={() => setStake(v)} className="flex-1 rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-ink transition hover:bg-subtle">
-                        {v}
-                      </button>
+                      <button key={v} onClick={() => setStake(v)} className="flex-1 rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-ink transition hover:bg-subtle">{v}</button>
                     ))}
                   </div>
 
@@ -247,15 +181,15 @@ export default function AppShell() {
 
                   <button
                     onClick={placeBet}
-                    disabled={status === "building" || status === "signing" || status === "confirming"}
+                    disabled={busy}
                     className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-nyx to-verify px-5 py-3 text-base font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
                   >
                     <Zap className="h-5 w-5" />
-                    {pubkey ? t("Place bet", "Сделать ставку") : t("Connect wallet to bet", "Подключить кошелёк")}
+                    {publicKey ? t("Place bet", "Сделать ставку") : t("Connect wallet to bet", "Подключить кошелёк")}
                   </button>
 
                   {status !== "idle" ? (
-                    <div className={"mt-3 rounded-xl px-4 py-3 text-sm " + (status === "error" ? "bg-subtle text-ink" : "bg-subtle text-muted")}>
+                    <div className="mt-3 rounded-xl bg-subtle px-4 py-3 text-sm text-muted">
                       <div>{statusLine()}</div>
                       {sig ? (
                         <a href={EXPLORER(sig)} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-nyx hover:underline">
@@ -334,48 +268,19 @@ export default function AppShell() {
           );
         })}
       </nav>
-
-      <AnimatePresence>
-        {modal ? (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4"
-            onClick={() => setModal(false)}
-          >
-            <motion.div
-              initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} transition={panelTrans}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-t-3xl border border-hairline bg-base p-5 sm:rounded-3xl"
-            >
-              <div className="flex items-center justify-between">
-                <div className="text-lg font-semibold text-ink">{t("Choose a wallet", "Выбери кошелёк")}</div>
-                <button onClick={() => setModal(false)} className="text-muted transition hover:text-ink">✕</button>
-              </div>
-              <p className="mt-1 text-sm text-muted">{t("Pick a Solana wallet to continue.", "Выбери Solana-кошелёк, чтобы продолжить.")}</p>
-              <div className="mt-4 space-y-2">
-                {WALLETS.map((w) => {
-                  const has = detected[w.id];
-                  return (
-                    <button
-                      key={w.id}
-                      onClick={() => connect(w.id)}
-                      className="flex w-full items-center justify-between rounded-2xl border border-hairline px-4 py-3 text-left transition hover:bg-subtle"
-                    >
-                      <span className="text-sm font-medium text-ink">{w.name}</span>
-                      <span className={"text-xs " + (has ? "text-payout" : "text-muted")}>
-                        {has ? t("Detected", "Обнаружен") : t("Not installed — install", "Не установлен — поставить")}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="mt-4 text-xs text-muted">
-                {t("No wallet? Install one of the extensions above, then reopen this window.", "Нет кошелька? Установи одно из расширений выше и открой это окно снова.")}
-              </p>
-            </motion.div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
     </div>
+  );
+}
+
+export default function AppShell() {
+  const wallets = useMemo(() => [], []);
+  return (
+    <ConnectionProvider endpoint={RPC}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>
+          <AppInner />
+        </WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
   );
 }
