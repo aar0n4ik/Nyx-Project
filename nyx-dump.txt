@@ -1,0 +1,814 @@
+]633;E;for f in $(grep -rl "living map\\|Every bet, settled\\|new WebSocket\\|Listening for on-chain\\|--fixture\\|agent-run\\|Globe" --include=*.tsx app components lib 2> /dev/null | sort -u);615ebff5-4cfd-443b-b852-2b245b631c05]633;C==================== components/AgentSandbox.tsx ====================
+"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
+import { Connection, Transaction } from "@solana/web3.js";
+
+const DEMO_ACCOUNT = "DDLyynBSATRkb5svSXjZRLYGPrf2Trvudbrv7HKoaraE";
+const DEVNET_RPC = "https://api.devnet.solana.com";
+const MARKETS = ["ou25", "ou15", "btts", "h", "d", "a"];
+
+type Preset = { id: string; name: string; blurb: string; riskAppetite: number; oracleTrust: number; stake: number; execMode: "unsigned" | "delegated" };
+const PRESETS: Preset[] = [
+  { id: "degen", name: "Aggressive Degen", blurb: "Thin edge, big size, auto-fires within allowance", riskAppetite: 0.92, oracleTrust: 0.25, stake: 80, execMode: "delegated" },
+  { id: "quant", name: "Conservative Risk Manager", blurb: "Needs a fat edge, small size, human signs", riskAppetite: 0.15, oracleTrust: 0.85, stake: 10, execMode: "unsigned" },
+  { id: "analyst", name: "Insider Analyst", blurb: "Balanced; leans on its own model read", riskAppetite: 0.6, oracleTrust: 0.4, stake: 30, execMode: "unsigned" },
+];
+
+type Line = { text: string; cls: string };
+type Plan = { unsignedTxBase64: string; mode: string } | null;
+
+function pct(n: any): string { const v = Number(n); return Number.isFinite(v) ? (v * 100).toFixed(1) + "c" : "-"; }
+function clsFor(kind: string, text: string): string {
+  if (kind === "final" || text.startsWith("\u2714") || text.startsWith("\u26d3")) return "text-emerald-400";
+  if (kind === "error" || text.startsWith("\u2717")) return "text-rose-400";
+  if (text.startsWith("$")) return "text-white";
+  if (text.startsWith("[A]")) return "text-sky-400";
+  if (text.startsWith("[B]")) return "text-amber-400";
+  if (text.startsWith("[C]")) return "text-violet-400";
+  if (text.startsWith("[policy]")) return "text-fuchsia-400";
+  return "text-white/60";
+}
+function b64ToBytes(b64: string): Uint8Array {
+  const bin = atob(b64); const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+export default function AgentSandbox() {
+  const [presetId, setPresetId] = useState("analyst");
+  const preset = PRESETS.find((p) => p.id === presetId)!;
+  const [riskAppetite, setRiskAppetite] = useState(preset.riskAppetite);
+  const [oracleTrust, setOracleTrust] = useState(preset.oracleTrust);
+  const [stake, setStake] = useState(preset.stake);
+  const [execMode, setExecMode] = useState<"unsigned" | "delegated">(preset.execMode);
+  const [fixtureId, setFixtureId] = useState("17588232");
+  const [market, setMarket] = useState("ou25");
+
+  const [lines, setLines] = useState<Line[]>([]);
+  const [running, setRunning] = useState(false);
+  const [stage, setStage] = useState(0); // 0 idle,1 A,2 B,3 C
+  const [plan, setPlan] = useState<Plan>(null);
+  const [proof, setProof] = useState<{ digest: string; url?: string } | null>(null);
+  const [wallet, setWallet] = useState<string | null>(null);
+  const [txSig, setTxSig] = useState<string | null>(null);
+  const [txStatus, setTxStatus] = useState("");
+
+  function applyPreset(id: string) {
+    const p = PRESETS.find((x) => x.id === id)!;
+    setPresetId(id); setRiskAppetite(p.riskAppetite); setOracleTrust(p.oracleTrust); setStake(p.stake); setExecMode(p.execMode);
+  }
+  async function connectWallet() {
+    const p = (window as any).solana;
+    if (!p) { setTxStatus("no wallet (install Phantom/Backpack)"); return; }
+    try { const res = await p.connect(); setWallet(res.publicKey.toString()); } catch { setTxStatus("connect rejected"); }
+  }
+
+  function render(ev: any, push: (t: string, k?: string) => void) {
+    switch (ev.type) {
+      case "tool_call": setStage(ev.agent === "A" ? 1 : ev.agent === "B" ? 2 : 3); push("[" + ev.agent + "] \u2192 " + ev.name + "()", ev.type); break;
+      case "tool_result": push("[" + ev.agent + "] \u2190 " + ev.name + (ev.result && ev.result.error ? " err" : " ok"), ev.type); break;
+      case "state": { setStage(1); const s = ev.state || {}; push("[A] fair P(yes)=" + pct(s.modelProbYes) + " price=" + pct(s.lmsrPriceYes) + " txlineSeq=" + (s.txlineSeq ?? "-"), "state"); break; }
+      case "persona": push("[policy] " + ev.persona + " \u00b7 edge=" + (ev.edgeBps / 100).toFixed(2) + "% floor=" + (ev.requiredEdgeBps / 100).toFixed(2) + "% \u2192 " + (ev.approve ? "APPROVE" : "REJECT"), "policy"); break;
+      case "verdict": { setStage(2); const v = ev.verdict || {}; push("[B] " + (v.approve ? "APPROVE" : "REJECT") + " edge=" + ((Number(v.edgeBps) || 0) / 100).toFixed(2) + "% maxStake=" + v.maxStake + " kelly=" + v.kellyFraction, "verdict"); (v.reasons || []).slice(-2).forEach((r: string) => push("   \u00b7 " + r, "")); break; }
+      case "proof": setProof({ digest: ev.digest, url: ev.url }); push("\u26d3 Proof-of-Reasoning anchored: " + String(ev.digest || "").slice(0, 12) + "\u2026" + (ev.url ? "" : " (local: " + (ev.error || "no agent key") + ")"), "final"); break;
+      case "final": { setStage(3); push("[C] tx built (" + (ev.plan && ev.plan.mode) + ") side=" + (ev.plan && ev.plan.sideYes ? "YES" : "NO") + " amount=" + (ev.plan && ev.plan.amount), "final"); push("\u2714 consensus \u2014 ready to sign", "final"); break; }
+      case "abort": push("\u2717 risk manager vetoed \u2014 no trade", "error"); break;
+      case "error": push("error: " + ev.message, "error"); break;
+      default: break;
+    }
+  }
+
+  async function runLive() {
+    if (running) return;
+    setRunning(true); setPlan(null); setProof(null); setTxSig(null); setTxStatus(""); setStage(0);
+    const first: Line = { text: "$ nyx sandbox --persona " + preset.name + " --risk " + riskAppetite.toFixed(2) + " --oracleTrust " + oracleTrust.toFixed(2) + " --stake " + stake, cls: "text-white" };
+    setLines([first]);
+    const push = (text: string, kind = "") => setLines((prev) => [...prev, { text, cls: clsFor(kind, text) }]);
+    try {
+      const acct = wallet || DEMO_ACCOUNT;
+      const res = await fetch("/api/agent-run", {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ account: acct, fixtureId, market, desiredStake: Number(stake) || 1, allowanceRemaining: Math.max(100, (Number(stake) || 1) * 4), execMode, persona: preset.name, riskAppetite, oracleTrust }),
+      });
+      if (!res.body) { push("stream unavailable", "error"); return; }
+      const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = "";
+      for (;;) {
+        const { value, done } = await reader.read(); if (done) break;
+        buf += dec.decode(value, { stream: true });
+        const parts = buf.split("\n\n"); buf = parts.pop() || "";
+        for (const part of parts) {
+          const dataLine = part.split("\n").find((x) => x.startsWith("data:"));
+          if (!dataLine) continue;
+          let ev: any = {}; try { ev = JSON.parse(dataLine.slice(5).trim()); } catch { continue; }
+          render(ev, push);
+          if (ev.type === "final" && ev.plan) setPlan({ unsignedTxBase64: ev.plan.unsignedTxBase64, mode: ev.plan.mode });
+        }
+      }
+    } catch (e: any) { push("error: " + String((e && e.message) || e), "error"); }
+    finally { setRunning(false); }
+  }
+
+  async function signSend() {
+    const p = (window as any).solana;
+    if (!p || !wallet) { await connectWallet(); return; }
+    if (!plan || !plan.unsignedTxBase64) return;
+    try {
+      setTxStatus("signing\u2026");
+      const tx = Transaction.from(b64ToBytes(plan.unsignedTxBase64));
+      const signed = await p.signTransaction(tx);
+      const conn = new Connection(DEVNET_RPC, "confirmed");
+      setTxStatus("sending\u2026");
+      const sig = await conn.sendRawTransaction(signed.serialize());
+      setTxSig(sig); setTxStatus("confirming\u2026");
+      await conn.confirmTransaction(sig, "confirmed"); setTxStatus("confirmed");
+    } catch (e: any) { setTxStatus("error: " + String((e && e.message) || e)); }
+  }
+
+  const input = "rounded-md border border-white/10 bg-[#0B0B14] px-2 py-1 font-mono text-xs text-white outline-none focus:border-violet-500";
+  const node = (n: number, label: string, color: string) => (
+    <div className={"flex-1 rounded-md border px-3 py-2 text-center text-xs font-mono transition " + (stage >= n ? color + " border-transparent text-white" : "border-white/10 text-white/40")}>{label}</div>
+  );
+
+  return (
+    <div className="grid gap-4 md:grid-cols-[320px_1fr]">
+      {/* Left: builder */}
+      <div className="space-y-4 rounded-xl border border-white/10 bg-[#0B0B14] p-4">
+        <div className="text-xs uppercase tracking-wide text-white/40">Agent persona</div>
+        <div className="grid gap-2">
+          {PRESETS.map((p) => (
+            <button key={p.id} onClick={() => applyPreset(p.id)} className={"rounded-lg border px-3 py-2 text-left transition " + (presetId === p.id ? "border-violet-500 bg-violet-500/10" : "border-white/10 hover:border-white/25")}>
+              <div className="text-sm font-medium text-white">{p.name}</div>
+              <div className="text-[11px] text-white/50">{p.blurb}</div>
+            </button>
+          ))}
+        </div>
+        <label className="block text-xs text-white/60">Risk appetite <span className="text-white/40">({riskAppetite.toFixed(2)})</span>
+          <input type="range" min={0} max={1} step={0.01} value={riskAppetite} onChange={(e) => setRiskAppetite(Number(e.target.value))} className="mt-1 w-full accent-violet-500" />
+        </label>
+        <label className="block text-xs text-white/60">Oracle trust <span className="text-white/40">({oracleTrust.toFixed(2)})</span>
+          <input type="range" min={0} max={1} step={0.01} value={oracleTrust} onChange={(e) => setOracleTrust(Number(e.target.value))} className="mt-1 w-full accent-violet-500" />
+        </label>
+        <div className="flex gap-2">
+          <input value={fixtureId} onChange={(e) => setFixtureId(e.target.value)} className={input + " w-full"} placeholder="fixtureId" />
+          <select value={market} onChange={(e) => setMarket(e.target.value)} className={input}>{MARKETS.map((m) => <option key={m} value={m}>{m}</option>)}</select>
+        </div>
+        <div className="flex items-center gap-2">
+          <input type="number" value={stake} onChange={(e) => setStake(Number(e.target.value))} className={input + " w-24"} placeholder="stake" />
+          <select value={execMode} onChange={(e) => setExecMode(e.target.value as any)} className={input}><option value="unsigned">unsigned</option><option value="delegated">delegated</option></select>
+          <button onClick={connectWallet} className={input + " ml-auto"}>{wallet ? wallet.slice(0, 4) + "\u2026" + wallet.slice(-4) : "connect"}</button>
+        </div>
+        <button onClick={runLive} disabled={running} className="w-full rounded-md bg-violet-600 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-50">{running ? "running\u2026" : "\u25b6 Launch agent"}</button>
+      </div>
+
+      {/* Right: arena */}
+      <div className="space-y-3">
+        <div className="flex gap-2">{node(1, "Data Oracle (A)", "bg-sky-600")}{node(2, "Risk Manager (B)", "bg-amber-600")}{node(3, "Executor (C)", "bg-violet-600")}</div>
+        <div className="h-[360px] overflow-auto rounded-xl border border-white/10 bg-black/60 p-3 font-mono text-xs leading-relaxed">
+          {lines.length === 0 ? <div className="text-white/30">Pick a persona, move the sliders, and launch. Watch the approve boundary, stake and side change live.</div> : lines.map((ln, i) => <div key={i} className={ln.cls}>{ln.text}</div>)}
+          {running && <span className="animate-pulse text-white/40">\u2588</span>}
+        </div>
+        {proof && (
+          <div className="rounded-lg border border-white/10 bg-[#0B0B14] p-3 text-xs">
+            <span className="text-white/60">Chain-of-Thought digest: </span><span className="font-mono text-emerald-400">{proof.digest.slice(0, 24)}\u2026</span>
+            {proof.url && <a href={proof.url} target="_blank" rel="noreferrer" className="ml-2 text-violet-400 underline">verify on-chain \u2197</a>}
+          </div>
+        )}
+        {plan && plan.mode === "unsigned" && (
+          <div className="flex items-center gap-3">
+            <button onClick={signSend} className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500">Sign & send bet</button>
+            {txStatus && <span className="text-xs text-white/60">{txStatus}</span>}
+            {txSig && <a href={"https://explorer.solana.com/tx/" + txSig + "?cluster=devnet"} target="_blank" rel="noreferrer" className="text-xs text-violet-400 underline">explorer \u2197</a>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+==================== components/AgentTerminal.tsx ====================
+"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useRef, useState } from "react";
+import { Connection, Transaction } from "@solana/web3.js";
+import Reveal from "@/components/Reveal";
+import { useLang, pick } from "@/lib/i18n";
+
+const DEMO_ACCOUNT = "DDLyynBSATRkb5svSXjZRLYGPrf2Trvudbrv7HKoaraE";
+const DEVNET_RPC = "https://api.devnet.solana.com";
+
+const LINES = [
+  "$ nyx agent resolve --market btc-80k",
+  "-> fetching oracle state (txoracle.validate_stat_v2)",
+  "-> verifying ed25519 proof ... valid",
+  "-> running inference in the Nyx agent runtime (Qwen3-4B)",
+  "-> digest 38d667dd...e8310c written to Solana Memo",
+  "-> settle_verified CPI ... confirmed",
+  "market resolved YES - payouts streaming",
+];
+
+const MARKETS = ["ou25", "ou15", "btts", "h", "d", "a"];
+
+type Line = { text: string; cls: string };
+type Plan = { unsignedTxBase64: string; mode: string } | null;
+
+function clsFor(kind: string, text: string): string {
+  if (kind === "final" || text.startsWith("market") || text.startsWith("\u2714") || text.includes("APPROVE")) return "text-payout";
+  if (kind === "error" || text.startsWith("\u2717") || text.includes("REJECT")) return "text-[#FF5F57]";
+  if (text.startsWith("$")) return "text-white";
+  if (text.startsWith("[A]")) return "text-verify";
+  if (text.startsWith("[B]")) return "text-[#FEBC2E]";
+  if (text.startsWith("[C]")) return "text-nyx";
+  return "text-white/70";
+}
+
+function pct(n: any): string { const v = Number(n); return Number.isFinite(v) ? (v * 100).toFixed(1) + "c" : "-"; }
+
+function b64ToBytes(b64: string): Uint8Array {
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+function renderEvent(ev: any, push: (t: string, k?: string) => void) {
+  switch (ev.type) {
+    case "start": break;
+    case "tool_call": push("[" + ev.agent + "] \u2192 " + ev.name + "()", ev.type); break;
+    case "tool_result": push("[" + ev.agent + "] \u2190 " + ev.name + (ev.result && ev.result.error ? " err" : " ok"), ev.type); break;
+    case "state": {
+      const s = ev.state || {};
+      push("[A] fair P(yes)=" + pct(s.modelProbYes) + "  price=" + pct(s.lmsrPriceYes) + "  txlineSeq=" + (s.txlineSeq ?? "-"), "state");
+      break;
+    }
+    case "verdict": {
+      const v = ev.verdict || {};
+      push("[B] " + (v.approve ? "APPROVE" : "REJECT") + "  edge=" + ((Number(v.edgeBps) || 0) / 100).toFixed(2) + "%  maxStake=" + v.maxStake + "  riskBps=" + v.riskBps, "verdict");
+      (v.reasons || []).slice(0, 2).forEach((r: string) => push("    \u00b7 " + r, ""));
+      break;
+    }
+    case "final": {
+      push("[C] tx built (" + (ev.plan && ev.plan.mode) + ")  cot=" + String(ev.cotDigest || "").slice(0, 10) + "\u2026", "final");
+      push("\u2714 consensus reached \u2014 ready to sign", "final");
+      break;
+    }
+    case "abort": push("\u2717 risk manager vetoed \u2014 no trade  cot=" + String(ev.cotDigest || "").slice(0, 10) + "\u2026", "error"); break;
+    case "error": push("error: " + ev.message, "error"); break;
+    case "done": break;
+    default: break;
+  }
+}
+
+export default function AgentTerminal() {
+  const lang = useLang();
+  const [visible, setVisible] = useState(0);
+  const [run, setRun] = useState(false);
+  const [live, setLive] = useState<Line[]>([]);
+  const [running, setRunning] = useState(false);
+  const [wallet, setWallet] = useState<string | null>(null);
+  const [fixtureId, setFixtureId] = useState("17588232");
+  const [market, setMarket] = useState("ou25");
+  const [stake, setStake] = useState(25);
+  const [plan, setPlan] = useState<Plan>(null);
+  const [txSig, setTxSig] = useState<string | null>(null);
+  const [txStatus, setTxStatus] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const p = typeof window !== "undefined" ? (window as any).solana : null;
+    if (p && p.publicKey) setWallet(p.publicKey.toString());
+  }, []);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setRun(true), { threshold: 0.4 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!run || live.length || visible >= LINES.length) return;
+    const id = setTimeout(() => setVisible((v) => v + 1), 700);
+    return () => clearTimeout(id);
+  }, [run, visible, live.length]);
+
+  async function connectWallet() {
+    const p = (window as any).solana;
+    if (!p) { setTxStatus("no wallet found (install Phantom/Backpack)"); return; }
+    try { const res = await p.connect(); setWallet(res.publicKey.toString()); } catch (e: any) { setTxStatus("connect rejected"); }
+  }
+
+  async function runLive() {
+    if (running) return;
+    setRunning(true);
+    setPlan(null); setTxSig(null); setTxStatus("");
+    setLive([{ text: "$ nyx agent-run --fixture " + fixtureId + " --market " + market + " --stake " + stake, cls: "text-white" }]);
+    const push = (text: string, kind = "") => setLive((prev) => [...prev, { text, cls: clsFor(kind, text) }]);
+    try {
+      const acct = wallet || DEMO_ACCOUNT;
+      const res = await fetch("/api/agent-run", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ account: acct, fixtureId, market, desiredStake: Number(stake) || 1, allowanceRemaining: Math.max(100, (Number(stake) || 1) * 4), execMode: "unsigned" }),
+      });
+      if (!res.body) { push("stream unavailable", "error"); return; }
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buf = "";
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        const parts = buf.split("\n\n");
+        buf = parts.pop() || "";
+        for (const part of parts) {
+          const dataLine = part.split("\n").find((x) => x.startsWith("data:"));
+          if (!dataLine) continue;
+          let ev: any = {};
+          try { ev = JSON.parse(dataLine.slice(5).trim()); } catch { continue; }
+          renderEvent(ev, push);
+          if (ev.type === "final" && ev.plan) setPlan({ unsignedTxBase64: ev.plan.unsignedTxBase64, mode: ev.plan.mode });
+        }
+      }
+    } catch (e: any) {
+      push("error: " + String((e && e.message) || e), "error");
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  async function signSend() {
+    const p = (window as any).solana;
+    if (!p) { await connectWallet(); return; }
+    if (!wallet) { await connectWallet(); return; }
+    if (!plan || !plan.unsignedTxBase64) return;
+    try {
+      setTxStatus("signing\u2026");
+      const tx = Transaction.from(b64ToBytes(plan.unsignedTxBase64));
+      const signed = await p.signTransaction(tx);
+      const conn = new Connection(DEVNET_RPC, "confirmed");
+      setTxStatus("sending\u2026");
+      const sig = await conn.sendRawTransaction(signed.serialize());
+      setTxSig(sig);
+      setTxStatus("confirming\u2026");
+      await conn.confirmTransaction(sig, "confirmed");
+      setTxStatus("confirmed");
+    } catch (e: any) {
+      setTxStatus("error: " + String((e && e.message) || e));
+    }
+  }
+
+  const body: Line[] = live.length ? live : LINES.slice(0, visible).map((l) => ({ text: l, cls: clsFor("", l) }));
+  const showCursor = live.length ? running : visible < LINES.length;
+  const inputCls = "rounded-md border border-hairline bg-[#0B0B14] px-2 py-1 font-mono text-xs text-white outline-none focus:border-nyx";
+
+  return (
+    <section className="mx-auto max-w-content px-6 py-24">
+      <Reveal>
+        <div className="mb-3 text-center text-xs font-mono uppercase tracking-widest text-nyx">{pick(lang, { en: "Autonomous resolution", ru: "Автономное разрешение исходов", es: "Resolución autónoma", pt: "Resolução autônoma", fr: "Résolution autonome", de: "Autonome Auflösung", zh: "自主判定结算" })}</div>
+        <h2 className="text-center font-display text-3xl font-bold text-ink md:text-5xl">{pick(lang, { en: "Watch the agents reach consensus", ru: "Смотри, как агенты приходят к консенсусу", es: "Mira a los agentes llegar a consenso", pt: "Veja os agentes chegarem a consenso", fr: "Regardez les agents atteindre un consensus", de: "Sieh zu, wie die Agenten Konsens erreichen", zh: "观看智能体达成共识" })}</h2>
+        <p className="mx-auto mt-3 max-w-xl text-center text-sm text-muted">{pick(lang, { en: "Data Oracle → Risk Manager → Executor. Live, on real oracle data, then sign the tx on devnet.", ru: "Data Oracle → Risk Manager → Executor. Вживую, на реальных данных оракула, затем подпись tx на девнете.", es: "Data Oracle → Risk Manager → Executor. En vivo y firma la tx en devnet.", pt: "Data Oracle → Risk Manager → Executor. Ao vivo e assine a tx na devnet.", fr: "Data Oracle → Risk Manager → Executor. En direct, puis signez la tx sur devnet.", de: "Data Oracle → Risk Manager → Executor. Live, dann Tx auf Devnet signieren.", zh: "数据预言机 → 风险管理 → 执行器。实时运行，并在 devnet 上签名交易。" })}</p>
+      </Reveal>
+
+      <div className="mx-auto mt-8 flex max-w-2xl flex-wrap items-center justify-center gap-2">
+        <input value={fixtureId} onChange={(e) => setFixtureId(e.target.value)} className={inputCls} placeholder="fixtureId" />
+        <select value={market} onChange={(e) => setMarket(e.target.value)} className={inputCls}>
+          {MARKETS.map((m) => (<option key={m} value={m}>{m}</option>))}
+        </select>
+        <input type="number" value={stake} onChange={(e) => setStake(Number(e.target.value))} className={inputCls + " w-24"} placeholder="stake" />
+        <button onClick={wallet ? undefined : connectWallet} className="rounded-md border border-hairline px-2 py-1 font-mono text-xs text-white/80 hover:text-white">
+          {wallet ? wallet.slice(0, 4) + "\u2026" + wallet.slice(-4) : pick(lang, { en: "connect", ru: "коннект", es: "conectar", pt: "conectar", fr: "connexion", de: "verbinden", zh: "连接" })}
+        </button>
+      </div>
+
+      <div ref={ref} className="mx-auto mt-6 max-w-2xl overflow-hidden rounded-2xl border border-hairline bg-[#0B0B14] shadow-xl">
+        <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
+          <span className="h-3 w-3 rounded-full bg-[#FF5F57]" />
+          <span className="h-3 w-3 rounded-full bg-[#FEBC2E]" />
+          <span className="h-3 w-3 rounded-full bg-[#28C840]" />
+          <span className="ml-3 font-mono text-xs text-white/40">nyx-agent · A→B→C</span>
+          <button onClick={runLive} disabled={running} className="ml-auto rounded-md border border-white/15 px-2 py-1 font-mono text-[11px] text-white/70 transition hover:text-white disabled:opacity-40">
+            {running ? pick(lang, { en: "running…", ru: "идёт…", es: "en curso…", pt: "rodando…", fr: "en cours…", de: "läuft…", zh: "运行中…" }) : pick(lang, { en: "▶ run live", ru: "▶ запустить", es: "▶ ejecutar", pt: "▶ executar", fr: "▶ lancer", de: "▶ starten", zh: "▶ 运行" })}
+          </button>
+        </div>
+        <div className="max-h-80 space-y-1.5 overflow-y-auto p-5 font-mono text-sm">
+          {body.map((ln, i) => (<div key={i} className={ln.cls}>{ln.text}</div>))}
+          {showCursor && <span className="inline-block h-4 w-2 animate-blink bg-verify align-middle" />}
+        </div>
+        {plan && plan.mode === "unsigned" && (
+          <div className="flex flex-wrap items-center gap-3 border-t border-white/10 px-5 py-3 font-mono text-xs">
+            <button onClick={signSend} className="rounded-md bg-nyx px-3 py-1.5 font-semibold text-white transition hover:opacity-90">
+              {pick(lang, { en: "Sign & send", ru: "Подписать и отправить", es: "Firmar y enviar", pt: "Assinar e enviar", fr: "Signer et envoyer", de: "Signieren & senden", zh: "签名并发送" })}
+            </button>
+            {txStatus && <span className={txStatus.startsWith("error") ? "text-[#FF5F57]" : txStatus === "confirmed" ? "text-payout" : "text-white/60"}>{txStatus}</span>}
+            {txSig && (<a href={"https://explorer.solana.com/tx/" + txSig + "?cluster=devnet"} target="_blank" rel="noreferrer" className="text-nyx underline">explorer \u2197</a>)}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+==================== components/LiveConstellation.tsx ====================
+"use client";
+
+import { useEffect, useRef } from "react";
+import { useLang, pick } from "@/lib/i18n";
+
+type Point = { x: number; y: number; z: number };
+
+const COUNT = 540;
+const TWO_PI = Math.PI * 2;
+const displayFont = { fontFamily: "var(--font-display)" };
+
+function sphere(n: number): Point[] {
+  const pts: Point[] = [];
+  const inc = Math.PI * (3 - Math.sqrt(5));
+  const off = 2 / n;
+  for (let i = 0; i < n; i++) {
+    const y = i * off - 1 + off / 2;
+    const r = Math.sqrt(Math.max(0, 1 - y * y));
+    const phi = i * inc;
+    pts.push({ x: Math.cos(phi) * r, y, z: Math.sin(phi) * r });
+  }
+  return pts;
+}
+
+export default function LiveConstellation() {
+  const lang = useLang();
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const points = sphere(COUNT);
+    let raf = 0;
+    let w = 0;
+    let h = 0;
+    let dpr = 1;
+
+    const resize = () => {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = parent.clientWidth;
+      h = parent.clientHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const pulses = Array.from({ length: 5 }, () => ({
+      i: Math.floor(Math.random() * COUNT),
+      t: Math.random(),
+      speed: 0.004 + Math.random() * 0.006,
+    }));
+
+    let angle = 0;
+
+    const frame = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      const baseR = isDark ? 168 : 120;
+      const baseG = isDark ? 174 : 128;
+      const baseB = isDark ? 194 : 150;
+
+      ctx.clearRect(0, 0, w, h);
+      angle += 0.0016;
+      const cx = w / 2;
+      const cy = h / 2;
+      const scale = Math.min(w, h) * 0.42;
+
+      const cosA = Math.cos(angle);
+      const sinA = Math.sin(angle);
+      const tilt = 0.42;
+      const cosT = Math.cos(tilt);
+      const sinT = Math.sin(tilt);
+
+      const projected: Array<{ sx: number; sy: number; depth: number }> = [];
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        const rx = p.x * cosA - p.z * sinA;
+        const rz = p.x * sinA + p.z * cosA;
+        const ry = p.y * cosT - rz * sinT;
+        const rzz = p.y * sinT + rz * cosT;
+        const depth = (rzz + 1) / 2;
+        projected.push({ sx: cx + rx * scale, sy: cy + ry * scale, depth });
+      }
+
+      projected.sort((a, b) => a.depth - b.depth);
+
+      for (let k = 0; k < projected.length; k++) {
+        const pr = projected[k];
+        const alpha = 0.15 + pr.depth * 0.7;
+        const size = 0.6 + pr.depth * 1.8;
+        const mix = Math.min(1, Math.max(0, (pr.sx - (cx - scale)) / (scale * 2)));
+        const r = Math.round(baseR + (mix - 0.5) * 40);
+        const g = Math.round(baseG + mix * 20);
+        const b = Math.round(baseB + (1 - mix) * 30);
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + alpha.toFixed(3) + ")";
+        ctx.arc(pr.sx, pr.sy, size, 0, TWO_PI);
+        ctx.fill();
+      }
+
+      for (let pI = 0; pI < pulses.length; pI++) {
+        const pu = pulses[pI];
+        pu.t += pu.speed;
+        if (pu.t > 1) {
+          pu.t = 0;
+          pu.i = Math.floor(Math.random() * COUNT);
+        }
+        const p = points[pu.i];
+        const rx = p.x * cosA - p.z * sinA;
+        const rz = p.x * sinA + p.z * cosA;
+        const ry = p.y * cosT - rz * sinT;
+        const sx = cx + rx * scale;
+        const sy = cy + ry * scale;
+        const ringR = 2 + pu.t * 22;
+        const ringA = (1 - pu.t) * 0.6;
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(153,69,255," + ringA.toFixed(3) + ")";
+        ctx.lineWidth = 1.2;
+        ctx.arc(sx, sy, ringR, 0, TWO_PI);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(11,181,214," + Math.min(1, ringA + 0.3).toFixed(3) + ")";
+        ctx.arc(sx, sy, 2.2, 0, TWO_PI);
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(frame);
+    };
+
+    raf = requestAnimationFrame(frame);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <section id="live" className="relative mx-auto w-full max-w-content px-6 py-28">
+      <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-muted">
+          {pick(lang, { en: "Live on Solana", ru: "Вживую на Solana", es: "En vivo en Solana", pt: "Ao vivo na Solana", fr: "En direct sur Solana", de: "Live auf Solana", zh: "在 Solana 上实时运行" })}
+        </span>
+        <h2 style={displayFont} className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          {pick(lang, { en: "Every bet, settled in the open", ru: "Каждая ставка рассчитана открыто", es: "Cada apuesta, liquidada a la vista", pt: "Cada aposta, liquidada à vista de todos", fr: "Chaque pari, réglé au grand jour", de: "Jede Wette, offen abgerechnet", zh: "每一注都公开结算" })}
+        </h2>
+        <p className="mt-4 text-base leading-relaxed text-muted">
+          {pick(lang, { en: "A living map of on-chain activity — each pulse is a real transaction you can verify block by block.", ru: "Живая карта ончейн-активности — каждый импульс это реальная транзакция, которую можно проверить блок за блоком.", es: "Un mapa vivo de la actividad on-chain: cada pulso es una transacción real que puedes verificar bloque a bloque.", pt: "Um mapa vivo da atividade on-chain — cada pulso é uma transação real que você pode verificar bloco a bloco.", fr: "Une carte vivante de l'activité on-chain — chaque impulsion est une vraie transaction que vous pouvez vérifier bloc par bloc.", de: "Eine lebendige Karte der On-chain-Aktivität — jeder Puls ist eine echte Transaktion, die du Block für Block überprüfen kannst.", zh: "链上活动的动态地图——每一次脉冲都是一笔可逐块验证的真实交易。" })}
+        </p>
+      </div>
+      <div className="relative mx-auto mt-12 aspect-square w-full max-w-[560px]">
+        <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
+      </div>
+    </section>
+  );
+}
+==================== components/LiveStream.tsx ====================
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Radio, ExternalLink } from "lucide-react";
+import { useLang, pick } from "@/lib/i18n";
+import type { Lang } from "@/lib/i18n";
+
+const WS_DEVNET = "wss://api.devnet.solana.com";
+
+type L = Record<Lang, string>;
+type Prog = { id: string; label: L };
+
+const PROGRAMS: Prog[] = [
+  { id: "AmMSLCCtJPCU3EJHEyxwAUTXQuzcAHVEVkCFJv6JrrW3", label: { en: "Settlement", ru: "Расчёты", es: "Liquidación", pt: "Liquidação", fr: "Règlement", de: "Settlement", zh: "结算" } },
+  { id: "8hxh836KRG4H6poU7oZ161AV71gpTLKKE1mYrEsuwpW3", label: { en: "pAMM", ru: "pAMM", es: "pAMM", pt: "pAMM", fr: "pAMM", de: "pAMM", zh: "pAMM" } },
+  { id: "BiJaXJ7kEXy8cohxf7NxfyqS2sLbxZSa3Fx4JjEZS9bk", label: { en: "Oracle bridge", ru: "Оракул-мост", es: "Puente de oráculo", pt: "Ponte de oráculo", fr: "Pont oracle", de: "Oracle-Bridge", zh: "预言机桥" } },
+];
+
+type Status = "connecting" | "live" | "closed" | "error";
+
+const STATUS: Record<Status, L> = {
+  connecting: { en: "connecting", ru: "подключение", es: "conectando", pt: "conectando", fr: "connexion", de: "verbinde…", zh: "连接中" },
+  live: { en: "live", ru: "в эфире", es: "en vivo", pt: "ao vivo", fr: "en direct", de: "live", zh: "实时" },
+  closed: { en: "closed", ru: "закрыто", es: "cerrado", pt: "fechado", fr: "fermé", de: "geschlossen", zh: "已关闭" },
+  error: { en: "error", ru: "ошибка", es: "error", pt: "erro", fr: "erreur", de: "Fehler", zh: "错误" },
+};
+
+type Evt = {
+  sig: string;
+  err: boolean;
+  line: string;
+  at: number;
+};
+
+const itemHidden = { opacity: 0, x: -12 } as const;
+const itemShown = { opacity: 1, x: 0 } as const;
+const itemTrans = { duration: 0.2, ease: "easeOut" } as const;
+
+function shorten(s: string) {
+  if (s.length <= 14) return s;
+  return s.slice(0, 7) + "…" + s.slice(-7);
+}
+
+function pickLine(logs: string[]) {
+  for (const l of logs) if (l.indexOf("Instruction:") >= 0) return l.trim();
+  for (const l of logs) if (l.indexOf("Program log:") >= 0) return l.trim();
+  return (logs[0] || "").trim();
+}
+
+export default function LiveStream() {
+  const lang = useLang();
+  const [prog, setProg] = useState<Prog>(PROGRAMS[0]);
+  const [status, setStatus] = useState<Status>("connecting");
+  const [events, setEvents] = useState<Evt[]>([]);
+  const wsRef = useRef<WebSocket | null>(null);
+
+  useEffect(() => {
+    let closedByUs = false;
+    let retry: ReturnType<typeof setTimeout> | null = null;
+    setEvents([]);
+    setStatus("connecting");
+
+    const connect = () => {
+      let ws: WebSocket;
+      try {
+        ws = new WebSocket(WS_DEVNET);
+      } catch (e) {
+        setStatus("error");
+        return;
+      }
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        setStatus("live");
+        ws.send(
+          JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "logsSubscribe",
+            params: [
+              { mentions: [prog.id] },
+              { commitment: "confirmed" },
+            ],
+          })
+        );
+      };
+
+      ws.onmessage = (ev) => {
+        try {
+          const msg = JSON.parse(ev.data as string) as {
+            method?: string;
+            params?: {
+              result?: {
+                value?: { signature?: string; err?: unknown; logs?: string[] };
+              };
+            };
+          };
+          if (msg.method !== "logsNotification") return;
+          const v = msg.params?.result?.value;
+          if (!v || !v.signature) return;
+          const evt: Evt = {
+            sig: v.signature,
+            err: v.err != null,
+            line: pickLine(v.logs || []),
+            at: Date.now(),
+          };
+          setEvents((prev) => {
+            if (prev.length && prev[0].sig === evt.sig) return prev;
+            return [evt, ...prev].slice(0, 40);
+          });
+        } catch (e) {
+          // ignore malformed frame
+        }
+      };
+
+      ws.onerror = () => setStatus("error");
+
+      ws.onclose = () => {
+        if (closedByUs) return;
+        setStatus("closed");
+        retry = setTimeout(connect, 3000);
+      };
+    };
+
+    connect();
+
+    return () => {
+      closedByUs = true;
+      if (retry) clearTimeout(retry);
+      if (wsRef.current) wsRef.current.close();
+    };
+  }, [prog]);
+
+  const dot =
+    status === "live"
+      ? "bg-payout"
+      : status === "connecting"
+        ? "bg-amber-500"
+        : "bg-red-500";
+
+  return (
+    <section id="stream" className="mx-auto max-w-content px-6 py-24">
+      <div className="mx-auto max-w-2xl text-center">
+        <div className="inline-flex items-center gap-2 rounded-full border border-hairline px-3 py-1 text-xs text-muted">
+          <Radio className="h-3.5 w-3.5 text-verify" />
+          {pick(lang, { en: "Live WebSocket · logsSubscribe", ru: "Живой WebSocket · logsSubscribe", es: "WebSocket en vivo · logsSubscribe", pt: "WebSocket ao vivo · logsSubscribe", fr: "WebSocket en direct · logsSubscribe", de: "Live-WebSocket · logsSubscribe", zh: "实时 WebSocket · logsSubscribe" })}
+        </div>
+        <h2 className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          {pick(lang, { en: "On-chain events, as they land", ru: "Ончейн-события в момент появления", es: "Eventos on-chain, en cuanto ocurren", pt: "Eventos on-chain, assim que acontecem", fr: "Événements on-chain, dès qu'ils arrivent", de: "On-Chain-Events, sobald sie eintreffen", zh: "链上事件，实时到达" })}
+        </h2>
+        <p className="mt-3 text-muted">
+          {pick(lang, { en: "A real subscription to Solana devnet. Every confirmed transaction that touches the program streams straight into this panel — no polling, no middleman. Quiet periods mean the chain is quiet.", ru: "Настоящая подписка на Solana devnet. Каждая подтверждённая транзакция, затрагивающая программу, попадает прямо в эту панель — без опроса и посредников. Тишина здесь означает тишину в сети.", es: "Una suscripción real a Solana devnet. Cada transacción confirmada que toca el programa llega directo a este panel: sin sondeo, sin intermediarios. Los periodos de silencio significan que la cadena está tranquila.", pt: "Uma inscrição real na Solana devnet. Cada transação confirmada que toca o programa chega direto a este painel — sem polling, sem intermediário. Períodos de silêncio significam que a rede está calma.", fr: "Un véritable abonnement à Solana devnet. Chaque transaction confirmée touchant le programme arrive directement dans ce panneau — sans polling, sans intermédiaire. Les périodes calmes signifient que la chaîne est calme.", de: "Ein echtes Abo auf Solana devnet. Jede bestätigte Transaktion, die das Programm berührt, landet direkt in diesem Panel — kein Polling, kein Mittelsmann. Ruhige Phasen bedeuten, dass die Chain ruhig ist.", zh: "对 Solana devnet 的真实订阅。每一笔触及该程序的已确认交易都会直接推送到此面板——无轮询、无中间人。安静时段说明链上本就安静。" })}
+        </p>
+      </div>
+
+      <div className="mx-auto mt-10 max-w-2xl rounded-3xl border border-hairline bg-subtle p-5 sm:p-6">
+        <div className="flex flex-wrap items-center gap-2">
+          {PROGRAMS.map((p) => {
+            const active = p.id === prog.id;
+            return (
+              <button
+                key={p.id}
+                onClick={() => setProg(p)}
+                className={
+                  "rounded-full border px-3 py-1.5 text-xs transition " +
+                  (active
+                    ? "border-nyx bg-nyx text-white"
+                    : "border-hairline text-muted hover:text-ink")
+                }
+              >
+                {pick(lang, p.label)}
+              </button>
+            );
+          })}
+          <div className="ml-auto flex items-center gap-2 text-xs text-muted">
+            <span className={"h-2 w-2 rounded-full " + dot} />
+            {pick(lang, STATUS[status])}
+          </div>
+        </div>
+
+        <div className="mt-4 max-h-96 space-y-2 overflow-y-auto">
+          {events.length === 0 ? (
+            <div className="flex items-center justify-center gap-2 py-12 text-sm text-muted">
+              <span className={"h-2 w-2 animate-pulse rounded-full " + dot} />
+              {pick(lang, { en: "Listening for on-chain activity…", ru: "Ждём ончейн-активность…", es: "Escuchando actividad on-chain…", pt: "Ouvindo atividade on-chain…", fr: "À l'écoute de l'activité on-chain…", de: "Warte auf On-Chain-Aktivität…", zh: "正在监听链上活动…" })}
+            </div>
+          ) : (
+            <AnimatePresence initial={false}>
+              {events.map((e) => (
+                <motion.div
+                  key={e.sig + String(e.at)}
+                  initial={itemHidden}
+                  animate={itemShown}
+                  exit={itemHidden}
+                  transition={itemTrans}
+                  className="rounded-xl border border-hairline bg-base px-3 py-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={
+                        "rounded px-1.5 py-0.5 text-[10px] font-medium " +
+                        (e.err
+                          ? "bg-red-500/10 text-red-500"
+                          : "bg-payout/10 text-payout")
+                      }
+                    >
+                      {e.err
+                        ? pick(lang, { en: "reverted", ru: "откат", es: "revertido", pt: "revertido", fr: "annulée", de: "zurückgesetzt", zh: "已回滚" })
+                        : pick(lang, { en: "confirmed", ru: "подтверждено", es: "confirmado", pt: "confirmado", fr: "confirmée", de: "bestätigt", zh: "已确认" })}
+                    </span>
+                    <a
+                      href={
+                        "https://explorer.solana.com/tx/" +
+                        e.sig +
+                        "?cluster=devnet"
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 font-mono text-xs text-verify hover:underline"
+                    >
+                      {shorten(e.sig)}
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <span className="ml-auto font-mono text-[11px] text-muted">
+                      {new Date(e.at).toLocaleTimeString()}
+                    </span>
+                  </div>
+                  {e.line ? (
+                    <div className="mt-1 truncate font-mono text-[11px] text-muted">
+                      {e.line}
+                    </div>
+                  ) : null}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
