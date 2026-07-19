@@ -141,7 +141,7 @@ export default function LiveConstellation() {
   }, []);
 
   return (
-    <section id="live" className="relative flex min-h-[560px] items-center justify-center overflow-hidden bg-base py-24 text-ink">
+    <section id="live" className="relative flex h-[560px] items-center justify-center overflow-hidden bg-base text-ink">
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
         <div className="relative h-[420px] w-full max-w-content">
           <canvas ref={canvasRef} className="h-full w-full" />
