@@ -141,20 +141,20 @@ export default function LiveConstellation() {
   }, []);
 
   return (
-    <section id="live" className="relative overflow-hidden bg-base py-20 text-ink sm:py-24">
-      <div className="mx-auto max-w-content px-6 text-center">
-        <div className="relative mx-auto h-[280px] w-[280px] sm:h-[340px] sm:w-[340px]">
-          <canvas ref={canvasRef} className="h-full w-full" />
-        </div>
-        <p className="mt-8 text-xs font-semibold uppercase tracking-[0.22em] text-muted">
+    <section id="live" className="relative mx-auto w-full max-w-content px-6 py-28">
+      <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-muted">
           {pick(lang, { en: "Live on Solana", ru: "Вживую на Solana", es: "En vivo en Solana", pt: "Ao vivo na Solana", fr: "En direct sur Solana", de: "Live auf Solana", zh: "在 Solana 上实时运行" })}
-        </p>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+        </span>
+        <h2 style= fontFamily: "var(--font-display)"  className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           {pick(lang, { en: "Every bet, settled in the open", ru: "Каждая ставка рассчитана открыто", es: "Cada apuesta, liquidada a la vista", pt: "Cada aposta, liquidada à vista de todos", fr: "Chaque pari, réglé au grand jour", de: "Jede Wette, offen abgerechnet", zh: "每一注都公开结算" })}
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-base text-muted">
+        <p className="mt-4 text-base leading-relaxed text-muted">
           {pick(lang, { en: "A living map of on-chain activity — each pulse is a real transaction you can verify block by block.", ru: "Живая карта ончейн-активности — каждый импульс это реальная транзакция, которую можно проверить блок за блоком.", es: "Un mapa vivo de la actividad on-chain: cada pulso es una transacción real que puedes verificar bloque a bloque.", pt: "Um mapa vivo da atividade on-chain — cada pulso é uma transação real que você pode verificar bloco a bloco.", fr: "Une carte vivante de l'activité on-chain — chaque impulsion est une vraie transaction que vous pouvez vérifier bloc par bloc.", de: "Eine lebendige Karte der On-chain-Aktivität — jeder Puls ist eine echte Transaktion, die du Block für Block überprüfen kannst.", zh: "链上活动的动态地图——每一次脉冲都是一笔可逐块验证的真实交易。" })}
         </p>
+      </div>
+      <div className="relative mx-auto mt-12 aspect-square w-full max-w-[560px]">
+        <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
       </div>
     </section>
   );

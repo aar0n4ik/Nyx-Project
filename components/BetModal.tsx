@@ -46,8 +46,9 @@ export default function BetModal({ open, onClose, match, market, odds, title }: 
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
   }, [open, onClose]);
 
-  const payout = (stake * odds).toFixed(2);
-  const profit = (stake * odds - stake).toFixed(2);
+  const sideOdds = side === "back" ? odds : odds / (odds - 1);
+  const payout = (stake * sideOdds).toFixed(2);
+  const profit = (stake * sideOdds - stake).toFixed(2);
   const busy = status === "building" || status === "signing" || status === "confirming";
 
   const placeBet = async () => {
@@ -55,7 +56,7 @@ export default function BetModal({ open, onClose, match, market, odds, title }: 
     try {
       setErr(null);
       setStatus("building");
-      const url = "/api/actions/bet?match=" + encodeURIComponent(match) + "&market=" + encodeURIComponent(market) + "&odds=" + encodeURIComponent(String(odds)) + "&side=" + side + "&amount=" + encodeURIComponent(String(stake));
+      const url = "/api/actions/bet?match=" + encodeURIComponent(match) + "&market=" + encodeURIComponent(market) + "&odds=" + encodeURIComponent(String(sideOdds)) + "&side=" + side + "&amount=" + encodeURIComponent(String(stake));
       const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ account: publicKey.toBase58() }) });
       if (!res.ok) throw new Error("HTTP " + res.status);
       const data = await res.json();
@@ -107,7 +108,7 @@ export default function BetModal({ open, onClose, match, market, odds, title }: 
             </div>
 
             <div className="mt-4 rounded-xl bg-subtle p-4">
-              <div className="flex justify-between text-sm"><span className="text-muted">{t({ en: "Odds", ru: "Кэф" })}</span><span className="font-mono font-semibold text-ink">{odds.toFixed(2)}×</span></div>
+              <div className="flex justify-between text-sm"><span className="text-muted">{t({ en: "Odds", ru: "Кэф" })}</span><span className="font-mono font-semibold text-ink">{sideOdds.toFixed(2)}×</span></div>
               <div className="mt-1 flex justify-between text-sm"><span className="text-muted">{t({ en: "Potential payout", ru: "Потенц. выплата" })}</span><span className="font-mono font-bold text-payout">{payout} USD₮</span></div>
               <div className="mt-1 flex justify-between text-sm"><span className="text-muted">{t({ en: "Net profit", ru: "Чистая прибыль" })}</span><span className="font-mono font-semibold text-ink">+{profit} USD₮</span></div>
             </div>

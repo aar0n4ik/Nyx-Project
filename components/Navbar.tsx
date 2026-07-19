@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
 import Logo from "@/components/Logo";
+import ConnectWallet from "@/components/ConnectWallet";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeToggle from "@/components/ThemeToggle";
 import TrackNavSwitcher from "@/components/TrackNavSwitcher";
@@ -9,10 +9,7 @@ import { useTrack, type TrackId } from "@/components/useTrack";
 import { useLang, pick } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
 
-const WalletMultiButton = dynamic(
-  () => import("@solana/wallet-adapter-react-ui").then((m) => m.WalletMultiButton),
-  { ssr: false }
-);
+const WalletMultiButton = ConnectWallet;
 
 type L = Record<Lang, string>;
 type NavLink = { label: L; href: string };
