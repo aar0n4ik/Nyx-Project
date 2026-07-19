@@ -78,7 +78,7 @@ export default function AgentTerminal() {
   const [live, setLive] = useState<Line[]>([]);
   const [running, setRunning] = useState(false);
   const [wallet, setWallet] = useState<string | null>(null);
-  const [fixtureId, setFixtureId] = useState("17588232");
+  const [fixtureId, setFixtureId] = useState("88008802");
   const [market, setMarket] = useState("ou25");
   const [stake, setStake] = useState(25);
   const [plan, setPlan] = useState<Plan>(null);

@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   const input: RunInput = {
     sessionId: String(body.sessionId || Date.now()),
     account: String(body.account || ""),
-    fixtureId: String(body.fixtureId || "17588232"),
+    fixtureId: String(body.fixtureId || "88008802"),
     market: String(body.market || "ou25"),
     cryptoSymbol: body.cryptoSymbol ? String(body.cryptoSymbol) : undefined,
     desiredStake: Number(body.desiredStake || 25),

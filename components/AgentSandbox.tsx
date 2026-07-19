@@ -42,7 +42,7 @@ export default function AgentSandbox() {
   const [oracleTrust, setOracleTrust] = useState(preset.oracleTrust);
   const [stake, setStake] = useState(preset.stake);
   const [execMode, setExecMode] = useState<"unsigned" | "delegated">(preset.execMode);
-  const [fixtureId, setFixtureId] = useState("17588232");
+  const [fixtureId, setFixtureId] = useState("88008802");
   const [market, setMarket] = useState("ou25");
 
   const [lines, setLines] = useState<Line[]>([]);
