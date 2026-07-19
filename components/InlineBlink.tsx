@@ -13,8 +13,8 @@ type ActionItem = { type?: string; label: string; href: string; parameters?: Act
 type ActionMeta = { icon: string; title: string; label: string; description: string; links?: { actions?: ActionItem[] } };
 type Status = "idle" | "building" | "signing" | "confirming" | "done" | "error";
 
-const cardV = { hidden: { opacity: 0, y: 24, scale: 0.98 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], staggerChildren: 0.07, delayChildren: 0.08 } } };
-const itemV = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } } };
+const cardV = { hidden: { opacity: 0, y: 24, scale: 0.98 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut", staggerChildren: 0.07, delayChildren: 0.08 } } } as const;
+const itemV = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } } } as const;
 
 export default function InlineBlink({ url }: { url: string }) {
   const lang = useLang();
