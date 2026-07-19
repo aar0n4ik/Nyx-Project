@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Transaction, VersionedTransaction } from "@solana/web3.js";
 import { useAppKit, useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
 import { useAppKitConnection, type Provider } from "@reown/appkit-adapter-solana/react";
@@ -41,6 +41,14 @@ export default function InlineBlink({ url }: { url: string }) {
   const [status, setStatus] = useState<Status>("idle");
   const [sig, setSig] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+
+  const host = useMemo(() => {
+    try {
+      return new URL(url, typeof window !== "undefined" ? window.location.origin : "https://x").hostname;
+    } catch {
+      return "";
+    }
+  }, [url]);
 
   useEffect(() => {
     let alive = true;
@@ -85,9 +93,10 @@ export default function InlineBlink({ url }: { url: string }) {
     }
   }
 
+  // ---- states ----
   if (loadErr) {
     return (
-      <div className="rounded-3xl border border-hairline bg-base p-6 text-sm text-muted">
+      <div className="mx-auto max-w-[420px] rounded-2xl border border-white/10 bg-[#16171b] p-6 text-sm text-zinc-400">
         {t({ en: "Could not load the Blink.", ru: "Не удалось загрузить блинк." })}
       </div>
     );
@@ -95,15 +104,18 @@ export default function InlineBlink({ url }: { url: string }) {
 
   if (!meta) {
     return (
-      <div className="animate-pulse rounded-3xl border border-hairline bg-base p-6">
-        <div className="h-3 w-24 rounded bg-subtle" />
-        <div className="mt-4 h-5 w-2/3 rounded bg-subtle" />
-        <div className="mt-3 h-4 w-full rounded bg-subtle" />
-        <div className="mt-2 h-4 w-4/5 rounded bg-subtle" />
-        <div className="mt-6 grid grid-cols-3 gap-2">
-          <div className="h-10 rounded-xl bg-subtle" />
-          <div className="h-10 rounded-xl bg-subtle" />
-          <div className="h-10 rounded-xl bg-subtle" />
+      <div className="mx-auto max-w-[420px] animate-pulse overflow-hidden rounded-2xl border border-white/10 bg-[#16171b]">
+        <div className="h-40 bg-white/5" />
+        <div className="space-y-3 p-4">
+          <div className="h-3 w-24 rounded bg-white/10" />
+          <div className="h-5 w-2/3 rounded bg-white/10" />
+          <div className="h-4 w-full rounded bg-white/10" />
+          <div className="grid grid-cols-3 gap-2 pt-1">
+            <div className="h-9 rounded-lg bg-white/10" />
+            <div className="h-9 rounded-lg bg-white/10" />
+            <div className="h-9 rounded-lg bg-white/10" />
+          </div>
+          <div className="h-11 rounded-full bg-white/10" />
         </div>
       </div>
     );
@@ -112,90 +124,106 @@ export default function InlineBlink({ url }: { url: string }) {
   const actions = meta.links?.actions ?? [];
   const quick = actions.filter((a) => !a.parameters || a.parameters.length === 0);
   const custom = actions.find((a) => a.parameters && a.parameters.length > 0);
+  const matchName = meta.title.replace(/^.*·\s*/, "").trim() || meta.title;
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-hairline bg-base p-6 shadow-2xl">
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-nyx">
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-solana" />
-        Solana Blink · Devnet
+    <div className="mx-auto max-w-[420px] overflow-hidden rounded-2xl border border-white/10 bg-[#16171b] font-sans text-white shadow-2xl">
+      {/* Banner (no moon) */}
+      <div className="relative flex h-40 flex-col justify-end bg-gradient-to-br from-zinc-700 via-zinc-800 to-zinc-900 p-4">
+        <span className="absolute right-3 top-3 rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-medium text-zinc-200 ring-1 ring-white/10">
+          ◎ Solana · Devnet
+        </span>
+        <div className="text-[11px] font-medium uppercase tracking-widest text-zinc-400">Match</div>
+        <div className="text-xl font-extrabold leading-tight text-white">{matchName}</div>
       </div>
 
-      <h3 className="mt-2 text-lg font-bold text-ink">{meta.title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-muted">{meta.description}</p>
-
-      {status === "done" ? (
-        <div className="mt-5 rounded-xl border border-hairline bg-subtle px-4 py-3 text-sm font-semibold text-ink">
-          ✓ {t({ en: "Position opened successfully", ru: "Сделка успешно открыта" })}
-          {sig ? (
-            <a
-              href={"https://explorer.solana.com/tx/" + sig + "?cluster=devnet"}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-1 block text-xs font-normal text-nyx underline"
-            >
-              {t({ en: "View on Explorer →", ru: "Открыть в Explorer →" })}
-            </a>
-          ) : null}
+      <div className="p-4">
+        {/* Domain line (Blink signature) */}
+        <div className="flex items-center gap-1 text-[12px] text-zinc-500">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="opacity-70">
+            <path d="M9 17H7A5 5 0 0 1 7 7h2M15 7h2a5 5 0 0 1 0 10h-2M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          {host}
         </div>
-      ) : (
-        <>
-          {quick.length ? (
-            <div className="mt-5 grid grid-cols-3 gap-2">
-              {quick.map((a) => (
-                <button
-                  key={a.href}
-                  onClick={() => execute(a.href)}
-                  disabled={busy}
-                  className="rounded-xl bg-gradient-to-r from-nyx to-solana px-2 py-2.5 text-sm font-semibold text-white shadow-lg shadow-nyx/20 transition hover:brightness-110 active:scale-95 disabled:opacity-60"
-                >
-                  {a.label}
-                </button>
-              ))}
-            </div>
-          ) : null}
 
-          {custom ? (
-            <div className="mt-3 flex gap-2">
-              <input
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                type="number"
-                min={1}
-                placeholder={custom.parameters?.[0]?.label || "Amount"}
-                className="w-full rounded-xl border border-hairline bg-subtle px-3 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-nyx/60 focus:ring-2 focus:ring-nyx/20"
-              />
-              <button
-                onClick={() => { const v = Number(amount); if (!v || v <= 0) return; execute(custom.href.replace("{amount}", String(v))); }}
-                disabled={busy || !amount}
-                className="whitespace-nowrap rounded-xl border border-nyx bg-nyx/10 px-4 py-2.5 text-sm font-semibold text-nyx transition hover:bg-nyx/20 active:scale-95 disabled:opacity-60"
+        <h3 className="mt-1 text-[15px] font-bold text-white">{meta.title}</h3>
+        <p className="mt-1 text-[13px] leading-relaxed text-zinc-400">{meta.description}</p>
+
+        {status === "done" ? (
+          <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-300">
+            ✓ {t({ en: "Position opened successfully", ru: "Сделка успешно открыта" })}
+            {sig ? (
+              <a
+                href={"https://explorer.solana.com/tx/" + sig + "?cluster=devnet"}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 block text-xs font-normal text-emerald-200 underline"
               >
-                {custom.label}
-              </button>
-            </div>
-          ) : null}
-
-          <div className="mt-4 flex items-center gap-2 text-xs text-muted">
-            {busy ? (
-              <>
-                <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-nyx border-t-transparent" />
-                {status === "building"
-                  ? t({ en: "Building…", ru: "Собираю…" })
-                  : status === "signing"
-                    ? t({ en: "Sign in wallet…", ru: "Подпиши в кошельке…" })
-                    : t({ en: "Confirming…", ru: "Подтверждаю…" })}
-              </>
-            ) : isConnected ? (
-              t({ en: "Program-escrowed. No admin key can touch your stake.", ru: "Эскроу программой. Ни один админ-ключ не тронет ставку." })
-            ) : (
-              t({ en: "Pick an amount — you'll connect your wallet to sign.", ru: "Выбери сумму — подключишь кошелёк для подписи." })
-            )}
+                {t({ en: "View on Explorer →", ru: "Открыть в Explorer →" })}
+              </a>
+            ) : null}
           </div>
+        ) : (
+          <>
+            {quick.length ? (
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                {quick.map((a) => (
+                  <button
+                    key={a.href}
+                    onClick={() => execute(a.href)}
+                    disabled={busy}
+                    className="rounded-lg border border-white/15 bg-white/5 px-2 py-2 text-[13px] font-semibold text-white transition hover:bg-white/10 active:scale-95 disabled:opacity-50"
+                  >
+                    {a.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
 
-          {status === "error" && err ? (
-            <div className="mt-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-400">{err}</div>
-          ) : null}
-        </>
-      )}
+            {custom ? (
+              <div className="mt-3 flex overflow-hidden rounded-full border border-white/15 bg-white/5 focus-within:border-white/30">
+                <input
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  type="number"
+                  min={1}
+                  placeholder={custom.parameters?.[0]?.label || "Amount"}
+                  className="w-full bg-transparent px-4 py-2.5 text-[13px] text-white outline-none placeholder:text-zinc-500"
+                />
+                <button
+                  onClick={() => { const v = Number(amount); if (!v || v <= 0) return; execute(custom.href.replace("{amount}", String(v))); }}
+                  disabled={busy || !amount}
+                  className="m-1 whitespace-nowrap rounded-full bg-white px-5 text-[13px] font-bold text-black transition hover:bg-zinc-200 active:scale-95 disabled:opacity-50"
+                >
+                  {isConnected ? custom.label : t({ en: "Connect", ru: "Подключить" })}
+                </button>
+              </div>
+            ) : null}
+
+            <div className="mt-3 flex items-center gap-1.5 text-[11px] text-zinc-500">
+              {busy ? (
+                <>
+                  <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  {status === "building"
+                    ? t({ en: "Building transaction…", ru: "Собираю транзакцию…" })
+                    : status === "signing"
+                      ? t({ en: "Sign in your wallet…", ru: "Подпиши в кошельке…" })
+                      : t({ en: "Confirming on-chain…", ru: "Подтверждаю ончейн…" })}
+                </>
+              ) : (
+                <>
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  {t({ en: "Program-escrowed · no admin key can touch your stake", ru: "Эскроу программой · ни один админ-ключ не тронет ставку" })}
+                </>
+              )}
+            </div>
+
+            {status === "error" && err ? (
+              <div className="mt-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">{err}</div>
+            ) : null}
+          </>
+        )}
+      </div>
     </div>
   );
 }
