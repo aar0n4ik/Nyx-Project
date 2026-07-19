@@ -3,154 +3,93 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import BetModal from "@/components/BetModal";
 import { useLang, pick } from "@/lib/i18n";
-import { useMarkets, type Market } from "@/components/useMarkets";
+import { useMarkets, type Market, type Pick } from "@/components/useMarkets";
+import { Flag, Ball, TEAMS } from "@/components/Football";
 
-const EYEBROW = { en: "Live markets · World Cup", ru: "Живые рынки · ЧМ" };
-const HEADING = { en: "Pick a match. Sign one transaction.", ru: "Выбери матч. Подпиши одну транзакцию." };
-const SUB = { en: "Real fixtures, real on-chain bets on Solana devnet. Your stake is escrowed by the program — no admin key can touch it. Choose YES or NO inside the ticket.", ru: "Реальные матчи, реальные ончейн-ставки на Solana devnet. Ставка эскроу-ится программой — ни один админ-ключ её не тронет. ДА или НЕТ выбираешь внутри тикета." };
-const VOL = { en: "Vol", ru: "Объём" };
-const BET = { en: "Bet", ru: "Ставка" };
-const MARKET_L = { en: "Market", ru: "Рынок" };
-const ODDS_L = { en: "Odds", ru: "Кэф" };
-const IMPLIED = { en: "Implied", ru: "Вероятность" };
-
-const cardInit = { opacity: 0, y: 16 };
-const cardAnim = { opacity: 1, y: 0 };
+const cardInit = { opacity: 0, y: 18 };
+const cardShow = { opacity: 1, y: 0 };
 const once = { once: true };
-const barInit = { width: 0 };
-const cardTrans = (i: number) => ({ duration: 0.4, delay: i * 0.05 });
-const barAnim = (p: number) => ({ width: p + "%" });
-const barTrans = (i: number) => ({ duration: 0.8, delay: 0.15 + i * 0.05 });
-const crestStyle = (a: string, b: string) => ({ background: "linear-gradient(135deg, " + a + ", " + b + ")", textShadow: "0 1px 2px rgba(0,0,0,.45)" });
+const trans = (i: number) => ({ duration: 0.45, delay: i * 0.05 });
+const kit = (a: string, b: string) => ({ background: "linear-gradient(90deg, " + a + " 50%, " + b + " 50%)" });
 
-const TEAM: Record<string, [string, string]> = {
-  Argentina: ["#75aadb", "#4f8fd0"], Austria: ["#ef3340", "#c81e2a"],
-  Ecuador: ["#ffd100", "#0072ce"], Germany: ["#dd0000", "#1a1a1a"],
-  France: ["#0055a4", "#ef4135"], Iraq: ["#007a3d", "#ce1126"],
-  Spain: ["#aa151b", "#f1bf00"], "Saudi Arabia": ["#006c35", "#00a86b"],
-  Switzerland: ["#d52b1e", "#8f1a12"], Canada: ["#ff2b2b", "#c8102e"],
-  Belgium: ["#f0c419", "#ef3340"], Iran: ["#239f40", "#da0000"],
-};
-
-function Crest({ name, code }: { name: string; code: string }) {
-  const pair = TEAM[name] ?? ["#6d4aff", "#0bb5d6"];
-  return (
-    <span
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[10px] font-bold tracking-wide text-white ring-2 ring-white/10"
-      style={crestStyle(pair[0], pair[1])}
-    >
-      {code}
-    </span>
-  );
-}
+const EYEBROW = { en: "Live markets", ru: "Живые рынки" };
+const HEADING = { en: "Pick a side. Sign one transaction.", ru: "Выбери исход. Подпиши одну транзакцию." };
+const SUB = { en: "Real World Cup fixtures with full 1X2 odds. Every stake is escrowed by the program on Solana devnet — no admin key can touch it.", ru: "Реальные матчи ЧМ с полными кэфами 1X2. Каждая ставка эскроу-ится программой на Solana devnet — ни один админ-ключ её не тронет." };
+const VOL = { en: "Vol", ru: "Объём" };
+const HOME = { en: "1", ru: "П1" };
+const DRAW = { en: "X", ru: "X" };
+const AWAY = { en: "2", ru: "П2" };
 
 export default function Markets() {
   const lang = useLang();
   const { markets } = useMarkets();
-  const [active, setActive] = useState<Market | null>(null);
+  const [active, setActive] = useState<{ m: Market; pick: Pick } | null>(null);
+  const openBet = (m: Market, market: "h" | "d" | "a", odds: number, label: string) => setActive({ m, pick: { market, odds, label } });
 
   return (
-    <section id="markets" className="relative mx-auto max-w-content px-6 py-24 nyx-pitch">
-      <div className="relative z-10">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-muted">
-            <span className="nyx-live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
-            {pick(lang, EYEBROW)}
-          </span>
-          <h2 className="nyx-gradient-text mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
-            {pick(lang, HEADING)}
-          </h2>
-          <p className="mt-4 text-base leading-relaxed text-muted">{pick(lang, SUB)}</p>
-        </div>
+    <section id="markets" className="relative mx-auto max-w-content px-6 py-24">
+      <div className="mx-auto max-w-2xl text-center">
+        <span className="inline-flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-muted">
+          <span className="nyx-live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
+          {pick(lang, EYEBROW)}
+        </span>
+        <h2 className="nyx-gradient-text mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{pick(lang, HEADING)}</h2>
+        <p className="mt-4 text-base leading-relaxed text-muted">{pick(lang, SUB)}</p>
+      </div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {markets.map((m, i) => {
-            const prob = Math.min(99, Math.max(1, Math.round(100 / m.odds)));
-            return (
-              <motion.article
-                key={m.match + m.market}
-                initial={cardInit}
-                whileInView={cardAnim}
-                viewport={once}
-                transition={cardTrans(i)}
-                className="group relative flex flex-col overflow-hidden rounded-2xl border border-hairline bg-base p-5"
-              >
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {markets.map((m, i) => {
+          const hc = TEAMS[m.home]?.colors ?? ["#6d4aff", "#0bb5d6"];
+          const ac = TEAMS[m.away]?.colors ?? ["#0bb5d6", "#6d4aff"];
+          return (
+            <motion.article key={m.match} initial={cardInit} whileInView={cardShow} viewport={once} transition={trans(i)} className="nyx-pitch group relative overflow-hidden rounded-2xl border border-hairline bg-base p-4">
+              <div className="relative z-10">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{m.competition}</span>
+                  <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-muted"><Ball size={14} />{m.competition}</span>
                   {m.live ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-red-500/12 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-red-500">
-                      <span className="nyx-live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
-                      LIVE{m.minute != null ? " " + m.minute + "'" : ""}
-                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-bold uppercase text-red-500"><span className="nyx-live-dot h-1.5 w-1.5 rounded-full bg-red-500" />LIVE{m.minute != null ? " " + m.minute + "'" : ""}</span>
                   ) : (
-                    <span className="font-mono text-[10px] uppercase tracking-wide text-muted">{pick(lang, VOL)} {m.vol}</span>
+                    <span className="font-mono text-[10px] uppercase text-muted">{pick(lang, VOL)} {m.vol}</span>
                   )}
                 </div>
 
                 <div className="mt-4 flex items-center justify-between gap-2">
-                  <div className="flex flex-1 items-center gap-2.5">
-                    <Crest name={m.home} code={m.homeCode} />
-                    <span className="text-sm font-medium text-ink">{m.home}</span>
+                  <div className="flex flex-1 flex-col items-center gap-1.5 text-center">
+                    <Flag name={m.home} />
+                    <span className="text-xs font-semibold text-ink">{m.home}</span>
+                    <span className="nyx-kit w-8" style={kit(hc[0], hc[1])} />
                   </div>
-                  <span className="font-mono text-xs font-semibold text-muted">{m.score ?? "VS"}</span>
-                  <div className="flex flex-1 items-center justify-end gap-2.5 text-right">
-                    <span className="text-sm font-medium text-ink">{m.away}</span>
-                    <Crest name={m.away} code={m.awayCode} />
+                  <div className="flex flex-col items-center px-1">
+                    <span className="font-mono text-lg font-bold text-ink">{m.score ?? "vs"}</span>
                   </div>
-                </div>
-
-                <div className="mt-5 flex items-center justify-between rounded-xl border border-hairline bg-subtle px-3.5 py-3">
-                  <div>
-                    <div className="text-[10px] uppercase tracking-wide text-muted">{pick(lang, MARKET_L)}</div>
-                    <div className="text-sm font-medium text-ink">{pick(lang, m.pick)}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-[10px] uppercase tracking-wide text-muted">{pick(lang, ODDS_L)}</div>
-                    <div className="font-mono text-lg font-bold text-ink">{m.odds.toFixed(2)}×</div>
+                  <div className="flex flex-1 flex-col items-center gap-1.5 text-center">
+                    <Flag name={m.away} />
+                    <span className="text-xs font-semibold text-ink">{m.away}</span>
+                    <span className="nyx-kit w-8" style={kit(ac[0], ac[1])} />
                   </div>
                 </div>
 
-                <div className="mt-3">
-                  <div className="flex justify-between text-[11px] text-muted">
-                    <span>{pick(lang, IMPLIED)}</span>
-                    <span className="font-mono">{prob}%</span>
-                  </div>
-                  <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-hairline">
-                    <motion.div
-                      initial={barInit}
-                      whileInView={barAnim(prob)}
-                      viewport={once}
-                      transition={barTrans(i)}
-                      className="h-full rounded-full bg-gradient-to-r from-nyx to-solana"
-                    />
-                  </div>
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  <button onClick={() => openBet(m, "h", m.odds.h, pick(lang, HOME))} className="nyx-odd rounded-xl border border-hairline bg-subtle px-2 py-2 text-center hover:border-nyx">
+                    <div className="text-[10px] uppercase tracking-wide text-muted">{pick(lang, HOME)}</div>
+                    <div className="font-mono text-sm font-bold text-ink">{m.odds.h.toFixed(2)}</div>
+                  </button>
+                  <button onClick={() => openBet(m, "d", m.odds.d, pick(lang, DRAW))} className="nyx-odd rounded-xl border border-hairline bg-subtle px-2 py-2 text-center hover:border-nyx">
+                    <div className="text-[10px] uppercase tracking-wide text-muted">{pick(lang, DRAW)}</div>
+                    <div className="font-mono text-sm font-bold text-ink">{m.odds.d.toFixed(2)}</div>
+                  </button>
+                  <button onClick={() => openBet(m, "a", m.odds.a, pick(lang, AWAY))} className="nyx-odd rounded-xl border border-hairline bg-subtle px-2 py-2 text-center hover:border-nyx">
+                    <div className="text-[10px] uppercase tracking-wide text-muted">{pick(lang, AWAY)}</div>
+                    <div className="font-mono text-sm font-bold text-ink">{m.odds.a.toFixed(2)}</div>
+                  </button>
                 </div>
-
-                <button
-                  onClick={() => setActive(m)}
-                  className="mt-5 w-full rounded-xl bg-gradient-to-r from-nyx to-solana px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-nyx/25 transition hover:brightness-110"
-                >
-                  {pick(lang, BET)} · {m.odds.toFixed(2)}×
-                </button>
-              </motion.article>
-            );
-          })}
-        </div>
+              </div>
+            </motion.article>
+          );
+        })}
       </div>
 
-      <BetModal
-        open={!!active}
-        onClose={() => setActive(null)}
-        match={active?.match ?? ""}
-        market={active?.market ?? ""}
-        odds={active?.odds ?? 2}
-        title={active ? active.home + " vs " + active.away : ""}
-        home={active?.home}
-        away={active?.away}
-        homeCode={active?.homeCode}
-        awayCode={active?.awayCode}
-        pick={active ? pick(lang, active.pick) : ""}
-      />
+      <BetModal open={!!active} onClose={() => setActive(null)} data={active} />
     </section>
   );
 }

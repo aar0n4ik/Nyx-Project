@@ -1,34 +1,24 @@
 "use client";
-import { useMemo } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { useLang, pick } from "@/lib/i18n";
 
-function shorten(a: string) {
-  return a.slice(0, 4) + "…" + a.slice(-4);
-}
+function short(a: string) { return a.slice(0, 4) + "…" + a.slice(-4); }
 
-export default function ConnectWallet() {
-  const lang = useLang();
-  const { publicKey, connecting, disconnect } = useWallet();
-  const { setVisible } = useWalletModal();
-  const addr = useMemo(() => (publicKey ? shorten(publicKey.toBase58()) : null), [publicKey]);
+export default function ConnectWallet({ className }: { className?: string }) {
+  const { publicKey, disconnect, connecting } = useWallet();
+  const base = "inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition ";
+  const open = () => window.dispatchEvent(new CustomEvent("nyx-open-wallet"));
 
-  const label = connecting
-    ? pick(lang, { en: "Connecting…", ru: "Подключение…", es: "Conectando…", pt: "Conectando…", fr: "Connexion…", de: "Verbinde…", zh: "连接中…" })
-    : addr
-    ? addr
-    : pick(lang, { en: "Connect wallet", ru: "Подключить кошелёк", es: "Conectar wallet", pt: "Conectar carteira", fr: "Connecter le wallet", de: "Wallet verbinden", zh: "连接钱包" });
-
-  const onClick = () => { if (addr) disconnect(); else setVisible(true); };
-
+  if (publicKey) {
+    return (
+      <button onClick={() => disconnect()} className={base + "border border-hairline bg-subtle text-ink hover:border-nyx " + (className || "")}>
+        <span className="mr-2 h-2 w-2 rounded-full bg-green-500" />
+        {short(publicKey.toBase58())}
+      </button>
+    );
+  }
   return (
-    <button
-      onClick={onClick}
-      className="inline-flex h-9 items-center gap-2 rounded-xl bg-gradient-to-r from-nyx to-solana px-4 text-sm font-semibold text-white shadow-lg shadow-nyx/25 transition hover:brightness-110"
-    >
-      <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
-      {label}
+    <button onClick={open} className={base + "bg-gradient-to-r from-nyx to-solana text-white shadow-lg shadow-nyx/25 hover:brightness-110 " + (className || "")}>
+      {connecting ? "Connecting…" : "Connect Wallet"}
     </button>
   );
 }
