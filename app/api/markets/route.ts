@@ -7,11 +7,11 @@ type Market = {
   match: string; home: string; away: string; competition: string;
   odds: Odds; vol: number; live: boolean; minute: number | null;
   score: string | null; status: "upcoming" | "live" | "finished";
-  result?: "h" | "d" | "a"; kickoff?: string;
+  result?: "h" | "d" | "a"; kickoff?: string; demo?: boolean;
 };
 
 const BASE: Market[] = [
-  { match: "88008800", home: "Spain", away: "Argentina", competition: "Exhibition · Always open", odds: { h: 2.1, d: 3.3, a: 3.4 }, vol: 1250000, live: false, minute: null, score: null, status: "upcoming", kickoff: "2026-12-31T20:00:00Z" },
+  { match: "88008800", home: "Nyx", away: "Demo", competition: "Exhibition", odds: { h: 2.0, d: 3.0, a: 3.5 }, vol: 0, live: false, minute: null, score: null, status: "upcoming", demo: true },
   { match: "17588232", home: "Spain", away: "Argentina", competition: "World Cup · Final", odds: { h: 2.35, d: 3.2, a: 3.05 }, vol: 4820000, live: false, minute: null, score: null, status: "upcoming", kickoff: "2026-07-19T19:00:00Z" },
   { match: "17588302", home: "England", away: "France", competition: "World Cup · Third place", odds: { h: 2.2, d: 3.6, a: 3.1 }, vol: 1650000, live: false, minute: null, score: "6 - 4", status: "finished", result: "h" },
   { match: "17588389", home: "Spain", away: "France", competition: "World Cup · Semi-final", odds: { h: 2.05, d: 3.3, a: 3.7 }, vol: 2740000, live: false, minute: null, score: "2 - 0", status: "finished", result: "h" },

@@ -1,7 +1,7 @@
 "use client";
 import { createAppKit } from "@reown/appkit/react";
 import { SolanaAdapter } from "@reown/appkit-adapter-solana/react";
-import { solana, solanaDevnet, solanaTestnet } from "@reown/appkit/networks";
+import { solanaDevnet } from "@reown/appkit/networks";
 import type { ReactNode } from "react";
 
 const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID || "";
@@ -11,7 +11,7 @@ const solanaAdapter = new SolanaAdapter();
 if (projectId) {
   createAppKit({
     adapters: [solanaAdapter],
-    networks: [solanaDevnet, solana, solanaTestnet],
+    networks: [solanaDevnet],
     defaultNetwork: solanaDevnet,
     projectId,
     metadata: {

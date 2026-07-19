@@ -29,6 +29,8 @@ const L = {
   confirming: { en: "Confirming…", ru: "Подтверждаю…" }, done: { en: "Bet placed on-chain", ru: "Ставка размещена ончейн" },
   retry: { en: "Try again", ru: "Повторить" }, explorer: { en: "View on Explorer →", ru: "Открыть в Explorer →" },
   hint: { en: "Program-escrowed. No admin key can touch your stake.", ru: "Эскроу программой. Ни один админ-ключ не тронет ставку." },
+  demoTitle: { en: "Nyx demo market", ru: "Демо-рынок Nyx" },
+  demoSub: { en: "Always open · not a real match", ru: "Вечный · не реальный матч" },
 };
 
 export default function BetModal({ open, onClose, data }: { open: boolean; onClose: () => void; data: Data }) {
@@ -106,23 +108,31 @@ export default function BetModal({ open, onClose, data }: { open: boolean; onClo
           <motion.div role="dialog" aria-modal="true" initial={panelInit} animate={panelShow} exit={panelInit} transition={panelTrans} className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-hairline bg-base shadow-2xl">
             <div className="nyx-pitch relative px-6 pb-5 pt-6">
               <button onClick={onClose} aria-label="Close" className="absolute right-4 top-4 z-10 text-muted transition hover:text-ink">×</button>
-              <div className="relative z-10 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted"><Ball size={14} />{m.competition}</div>
-              <div className="relative z-10 mt-4 flex items-center justify-between gap-3">
-                <div className="flex flex-1 flex-col items-center gap-2 text-center">
-                  <Flag name={m.home} className="!h-8 !w-11" />
-                  <span className="text-sm font-semibold text-ink">{m.home}</span>
-                  <span className="nyx-kit w-10" style={kit(hc[0], hc[1])} />
+              <div className="relative z-10 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted"><Ball size={14} />{m.demo ? "Nyx" : m.competition}</div>
+              {m.demo ? (
+                <div className="relative z-10 mt-4 flex flex-col items-center gap-2 text-center">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-nyx/10"><Ball size={30} /></span>
+                  <span className="text-lg font-bold text-ink">{t(L.demoTitle)}</span>
+                  <span className="rounded-full bg-nyx/15 px-2.5 py-0.5 text-[10px] font-bold text-nyx">{t(L.demoSub)}</span>
                 </div>
-                <div className="flex flex-col items-center">
-                  <span className="font-mono text-2xl font-bold text-ink">{m.score ?? "vs"}</span>
-                  {m.live ? <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-bold text-red-500"><span className="nyx-live-dot h-1.5 w-1.5 rounded-full bg-red-500" />LIVE{m.minute != null ? " " + m.minute + "'" : ""}</span> : null}
+              ) : (
+                <div className="relative z-10 mt-4 flex items-center justify-between gap-3">
+                  <div className="flex flex-1 flex-col items-center gap-2 text-center">
+                    <Flag name={m.home} className="!h-8 !w-11" />
+                    <span className="text-sm font-semibold text-ink">{m.home}</span>
+                    <span className="nyx-kit w-10" style={kit(hc[0], hc[1])} />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="font-mono text-2xl font-bold text-ink">{m.score || "vs"}</span>
+                    {m.live ? <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-bold text-red-500"><span className="nyx-live-dot h-1.5 w-1.5 rounded-full bg-red-500" />LIVE</span> : null}
+                  </div>
+                  <div className="flex flex-1 flex-col items-center gap-2 text-center">
+                    <Flag name={m.away} className="!h-8 !w-11" />
+                    <span className="text-sm font-semibold text-ink">{m.away}</span>
+                    <span className="nyx-kit w-10" style={kit(ac[0], ac[1])} />
+                  </div>
                 </div>
-                <div className="flex flex-1 flex-col items-center gap-2 text-center">
-                  <Flag name={m.away} className="!h-8 !w-11" />
-                  <span className="text-sm font-semibold text-ink">{m.away}</span>
-                  <span className="nyx-kit w-10" style={kit(ac[0], ac[1])} />
-                </div>
-              </div>
+              )}
             </div>
 
             <div className="px-6 pb-6">
