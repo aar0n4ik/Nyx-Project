@@ -8,13 +8,13 @@ type L = Record<Lang, string>;
 type Tx = { label: L; sig: string; net: "devnet" | "mainnet-beta" };
 
 const TXS: Tx[] = [
-  { label: { en: "Proof-gated CPI settle", ru: "Расчёт через CPI с проверкой пруфа", es: "Liquidación CPI con prueba", pt: "Liquidação CPI com prova", fr: "Règlement CPI vérifié par preuve", de: "Proof-geprüftes CPI-Settlement", zh: "带证明校验的 CPI 结算" }, sig: "65r1Whd_REPLACE_aMXfV9v", net: "devnet" },
-  { label: { en: "Dispute resolve PDA", ru: "Разрешение спора через PDA", es: "Resolución de disputa PDA", pt: "Resolução de disputa PDA", fr: "Résolution de litige PDA", de: "Streit-Auflösung per PDA", zh: "PDA 争议裁决" }, sig: "q9yZGM_REPLACE_fwAkQ", net: "devnet" },
-  { label: { en: "Arbitrated & slashed", ru: "Арбитраж и слэшинг", es: "Arbitrado y penalizado", pt: "Arbitrado e penalizado", fr: "Arbitré et pénalisé (slash)", de: "Arbitriert & geslasht", zh: "仲裁并罚没" }, sig: "KDsynE_REPLACE_dB2vPFm", net: "devnet" },
-  { label: { en: "First payout", ru: "Первая выплата", es: "Primer pago", pt: "Primeiro pagamento", fr: "Premier paiement", de: "Erste Auszahlung", zh: "首次赔付" }, sig: "2xXK_REPLACE_soga", net: "devnet" },
-  { label: { en: "PoI devnet", ru: "PoI в devnet", es: "PoI en devnet", pt: "PoI na devnet", fr: "PoI sur devnet", de: "PoI im devnet", zh: "PoI（devnet）" }, sig: "4cHmiwce_REPLACE_ESdMUeR", net: "devnet" },
-  { label: { en: "PoI mainnet", ru: "PoI в mainnet", es: "PoI en mainnet", pt: "PoI na mainnet", fr: "PoI sur mainnet", de: "PoI im mainnet", zh: "PoI（mainnet）" }, sig: "2SDKgy1A_REPLACE_TaaH7Vn", net: "mainnet-beta" },
-  { label: { en: "Affiliate split", ru: "Партнёрская выплата", es: "Reparto de afiliado", pt: "Divisão de afiliado", fr: "Partage d'affiliation", de: "Affiliate-Anteil", zh: "推广分成" }, sig: "29zHMJ9A_REPLACE_MLNqRS", net: "devnet" },
+  { label: { en: "Proof-gated CPI settle", ru: "Расчёт через CPI с проверкой пруфа", es: "Liquidación CPI con prueba", pt: "Liquidação CPI com prova", fr: "Règlement CPI vérifié par preuve", de: "Proof-geprüftes CPI-Settlement", zh: "带证明校验的 CPI 结算" }, sig: "65r1WhdDMuyU479caqWLjEskBrTGbZedNP6rDbgBh259MnRQo7PzCgcC1aPbVhsRNZji1FfPTD8AY7VBGaMXfV9v", net: "devnet" },
+  { label: { en: "Dispute resolve PDA", ru: "Разрешение спора через PDA", es: "Resolución de disputa PDA", pt: "Resolução de disputa PDA", fr: "Résolution de litige PDA", de: "Streit-Auflösung per PDA", zh: "PDA 争议裁决" }, sig: "q9yZGMJbHgfSqKmrqWyhHJZ6PRNW89b2ZEJG6icVV2dEGDHRdAzYxnheS9aix9c14CEzBTERqYrPgvSjbMfWAkQ", net: "devnet" },
+  { label: { en: "Arbitrated & slashed", ru: "Арбитраж и слэшинг", es: "Arbitrado y penalizado", pt: "Arbitrado e penalizado", fr: "Arbitré et pénalisé (slash)", de: "Arbitriert & geslasht", zh: "仲裁并罚没" }, sig: "KDsynE3WonhsfXYPKCKhM13RqEyiKGDMYrSuXF74yNog1ccdZf55TqTD3aHa8Kjx5HL8EL14E8H2GFqqdB2vPFm", net: "devnet" },
+  { label: { en: "First payout", ru: "Первая выплата", es: "Primer pago", pt: "Primeiro pagamento", fr: "Premier paiement", de: "Erste Auszahlung", zh: "首次赔付" }, sig: "2xXK1VMqU2YtYEQ8zwERgfh8P872B8FTxZffFtxpx1DgnADSc4uAMhmGyfEDTWMkVfEmW2X8axSTQJvY67bBsogA", net: "devnet" },
+  { label: { en: "PoI devnet", ru: "PoI в devnet", es: "PoI en devnet", pt: "PoI na devnet", fr: "PoI sur devnet", de: "PoI im devnet", zh: "PoI（devnet）" }, sig: "4cHmiwceMJ4DbNQsHupQVUdyL4EwA5SEv425M3yFkfksVLCT128ieutsVpeChNiRuRuZyfMYhmhinEnm8ESdMUeR", net: "devnet" },
+  { label: { en: "PoI mainnet", ru: "PoI в mainnet", es: "PoI en mainnet", pt: "PoI na mainnet", fr: "PoI sur mainnet", de: "PoI im mainnet", zh: "PoI（mainnet）" }, sig: "2SDKgy1AGbosRkXbvDitxLLsyysbDY32RsA7wJsX2Bs4Tcc4iZMkADmqKDzxYGkAzPiWbQmPE3W2zoXD9TaaH7Vn", net: "mainnet-beta" },
+  { label: { en: "Affiliate split", ru: "Партнёрская выплата", es: "Reparto de afiliado", pt: "Divisão de afiliado", fr: "Partage d'affiliation", de: "Affiliate-Anteil", zh: "推广分成" }, sig: "29zHMJ9AA4dH1zWMzDAERWCXedG5JurPrtimWfRX37E7SFu9CeTmib2LhisSfPSQc7ro8przE5SYpp9LQrMLNqRS", net: "devnet" },
 ];
 
 const HOST = "explorer" + ".solana.com";

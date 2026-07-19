@@ -28,7 +28,7 @@ const REF_BPS_CAP = 500 // mirrors on-chain require!(ref_bps <= 500)
 const USDT = "USD\u20AE"
 const DOT = "\u00b7"
 
-const MATCHES: Record<string, string> = { "17588232": "Spain vs Saudi Arabia", "17588302": "Ecuador vs Germany", "17588389": "Argentina vs Austria", "17926647": "France vs Iraq", "17588390": "Belgium vs Iran", "17588303": "Switzerland vs Canada" }
+const MATCHES: Record<string, string> = { "17588232": "Spain vs Argentina", "17588302": "England vs France", "17588389": "Spain vs France", "17926647": "Argentina vs England", "17588390": "Argentina vs Switzerland", "17588303": "France vs Morocco" }
 const MARKETS: Record<string, string> = { ou25: "Over 2.5 goals", ou15: "Over 1.5 goals", btts: "Both teams to score", h: "Home win", d: "Draw", a: "Away win", nh: "Next goal: Home", na: "Next goal: Away" }
 const OPPOSITE: Record<string, string> = { ou25: "Under 2.5 goals", ou15: "Under 1.5 goals", btts: "At least one team fails to score", h: "Home does NOT win", d: "Not a draw", a: "Away does NOT win", nh: "Next goal: NOT Home", na: "Next goal: NOT Away" }
 

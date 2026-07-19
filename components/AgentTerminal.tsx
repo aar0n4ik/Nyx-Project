@@ -12,7 +12,7 @@ const LINES = [
   "$ nyx agent resolve --market btc-80k",
   "-> fetching oracle state (txoracle.validate_stat_v2)",
   "-> verifying ed25519 proof ... valid",
-  "-> running inference in the Nyx agent runtime (Qwen3-4B)",
+  "-> running inference inside Tether QVAC (Qwen3-4B)",
   "-> digest 38d667dd...e8310c written to Solana Memo",
   "-> settle_verified CPI ... confirmed",
   "market resolved YES - payouts streaming",

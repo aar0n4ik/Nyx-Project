@@ -26,7 +26,7 @@ export default function Hero() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
           </span>
-          {pick(lang, { en: "Live on Solana Devnet · PoI on Solana Devnet", ru: "Вживую на Solana Devnet · PoI заякорен на Mainnet", es: "En vivo en Solana Devnet · PoI anclado en Mainnet", pt: "Ao vivo na Solana Devnet · PoI ancorado na Mainnet", fr: "En direct sur Solana Devnet · PoI ancré sur Mainnet", de: "Live auf Solana Devnet · PoI auf Mainnet verankert", zh: "在 Solana Devnet 上实时运行 · PoI 锚定于 Mainnet" })}
+          {pick(lang, { en: "Live on Solana Devnet · PoI anchored on Mainnet", ru: "Вживую на Solana Devnet · PoI заякорен на Mainnet", es: "En vivo en Solana Devnet · PoI anclado en Mainnet", pt: "Ao vivo na Solana Devnet · PoI ancorado na Mainnet", fr: "En direct sur Solana Devnet · PoI ancré sur Mainnet", de: "Live auf Solana Devnet · PoI auf Mainnet verankert", zh: "在 Solana Devnet 上实时运行 · PoI 锚定于 Mainnet" })}
         </motion.div>
 
         <motion.p variants={itemV} className="mx-auto mt-8 font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-muted">
