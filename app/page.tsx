@@ -68,7 +68,6 @@ export default function Page() {
       ) : null}
 
       <PerTrackFaq />
-      <LiveConstellation />
       <Footer />
 
       <TrackModal />

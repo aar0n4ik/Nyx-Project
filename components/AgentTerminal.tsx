@@ -181,11 +181,11 @@ export default function AgentTerminal() {
       </Reveal>
 
       <div className="mx-auto mt-8 flex max-w-2xl flex-wrap items-center justify-center gap-2">
-        <input value={fixtureId} onChange={(e) => setFixtureId(e.target.value)} className={inputCls} placeholder="fixtureId" />
+        <input value={fixtureId} onChange={(e) => setFixtureId(e.target.value)} className={inputCls} placeholder="Match ID" />
         <select value={market} onChange={(e) => setMarket(e.target.value)} className={inputCls}>
-          {MARKETS.map((m) => (<option key={m} value={m}>{m}</option>))}
+          {MARKETS.map((m) => (<option key={m} value={m}>{MARKET_LABELS[m] || m}</option>))}
         </select>
-        <input type="number" value={stake} onChange={(e) => setStake(Number(e.target.value))} className={inputCls + " w-24"} placeholder="stake" />
+        <input type="number" value={stake} onChange={(e) => setStake(Number(e.target.value))} className={inputCls + " w-24"} placeholder="Stake" />
         <button onClick={wallet ? undefined : connectWallet} className="rounded-md border border-hairline px-2 py-1 font-mono text-xs text-white/80 hover:text-white">
           {wallet ? wallet.slice(0, 4) + "\u2026" + wallet.slice(-4) : pick(lang, { en: "connect", ru: "коннект", es: "conectar", pt: "conectar", fr: "connexion", de: "verbinden", zh: "连接" })}
         </button>

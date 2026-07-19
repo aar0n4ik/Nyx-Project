@@ -48,7 +48,7 @@ export default function PerTrackFaq() {
   const [open, setOpen] = useState<number | null>(0);
 
   useEffect(() => {
-    setOpen(0);
+    setOpen(null);
   }, [track]);
 
   const items = FAQS[track];

@@ -149,11 +149,11 @@ export default function AgentSandbox() {
           <input type="range" min={0} max={1} step={0.01} value={oracleTrust} onChange={(e) => setOracleTrust(Number(e.target.value))} className="mt-1 w-full accent-violet-500" />
         </label>
         <div className="flex gap-2">
-          <input value={fixtureId} onChange={(e) => setFixtureId(e.target.value)} className={input + " w-full"} placeholder="fixtureId" />
-          <select value={market} onChange={(e) => setMarket(e.target.value)} className={input}>{MARKETS.map((m) => <option key={m} value={m}>{m}</option>)}</select>
+          <input value={fixtureId} onChange={(e) => setFixtureId(e.target.value)} className={input + " w-full"} placeholder="Match ID" />
+          <select value={market} onChange={(e) => setMarket(e.target.value)} className={input}>{MARKETS.map((m) => <option key={m} value={m}>{MARKET_LABELS[m] || m}</option>)}</select>
         </div>
         <div className="flex items-center gap-2">
-          <input type="number" value={stake} onChange={(e) => setStake(Number(e.target.value))} className={input + " w-24"} placeholder="stake" />
+          <input type="number" value={stake} onChange={(e) => setStake(Number(e.target.value))} className={input + " w-24"} placeholder="Stake" />
           <select value={execMode} onChange={(e) => setExecMode(e.target.value as any)} className={input}><option value="unsigned">unsigned</option><option value="delegated">delegated</option></select>
           <button onClick={connectWallet} className={input + " ml-auto"}>{wallet ? wallet.slice(0, 4) + "\u2026" + wallet.slice(-4) : "connect"}</button>
         </div>

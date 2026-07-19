@@ -15,6 +15,7 @@ export const TEAMS: Record<string, TeamInfo> = {
 
 export function Flag({ name, className }: { name: string; className?: string }) {
   const info = TEAMS[name];
+  if (!info) return <Ball size={16} />;
   const iso = info ? info.iso : "eu";
   return <span className={"fi fi-" + iso + " nyx-flag " + (className || "")} aria-hidden />;
 }
