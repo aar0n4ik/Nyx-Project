@@ -34,9 +34,10 @@ export default function NyxEdge() {
   const ensureEngine = async () => {
     if (engineRef.current) return engineRef.current;
     const webllm = await import("@mlc-ai/web-llm");
-    const engine = await webllm.CreateMLCEngine(MODEL, {
+    const engine = new webllm.MLCEngine({
       initProgressCallback: (p: { text: string }) => setProgress(p.text),
     });
+    await engine.reload(MODEL);
     engineRef.current = engine;
     return engine;
   };
