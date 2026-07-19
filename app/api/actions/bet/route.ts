@@ -67,7 +67,7 @@ export async function GET(req: Request) {
     + (ref ? " (Referred link - your stake is unchanged.)" : "")
   const mkAmt = (a: string | number) => base + "&amount=" + a
   const payload = {
-    type: "action", icon: url.origin + "/nyx/icon-512.png", title, label, description,
+    type: "action", title, label, description,
     links: { actions: [
       { type: "transaction", label: "Stake 5 " + USDT, href: mkAmt(5) },
       { type: "transaction", label: "Stake 25 " + USDT, href: mkAmt(25) },
