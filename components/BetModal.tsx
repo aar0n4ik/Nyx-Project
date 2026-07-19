@@ -168,7 +168,11 @@ export default function BetModal({ open, onClose, data }: { open: boolean; onClo
                 <div className="flex justify-between"><span className="text-muted">{t(L.profit)}</span><span className="font-mono text-green-500">+{profit} USD₮</span></div>
               </div>
 
-              <button onClick={placeBet} disabled={busy} className="mt-5 w-full rounded-xl bg-gradient-to-r from-nyx to-solana px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-nyx/25 transition hover:brightness-110 disabled:opacity-60">{cta}</button>
+              {status === "done" ? (
+                <p className="mt-5 w-full rounded-xl bg-green-500/10 py-3 text-center text-sm font-semibold text-green-500">{cta}</p>
+              ) : (
+                <button onClick={placeBet} disabled={busy} className="mt-5 w-full rounded-xl bg-gradient-to-r from-nyx to-solana px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-nyx/25 transition hover:brightness-110 disabled:opacity-60">{cta}</button>
+              )}
 
               {status === "done" && sig ? (
                 <a href={"https://explorer.solana.com/tx/" + sig + "?cluster=devnet"} target="_blank" rel="noreferrer" className="mt-3 block text-center text-sm font-medium text-solana hover:underline">{t(L.explorer)}</a>
