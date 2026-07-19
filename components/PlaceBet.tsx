@@ -74,7 +74,7 @@ export default function PlaceBet() {
               </ol>
 
               <a
-                href="#" onClick={openBlink}
+                href={BLINK_URL}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-6 flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-nyx to-solana px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"

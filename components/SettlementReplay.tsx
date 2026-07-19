@@ -43,7 +43,6 @@ type Status = "idle" | "running" | "match" | "mismatch" | "error";
 export default function SettlementReplay() {
   const lang = useLang();
   const [sig, setSig] = useState("https://explorer.solana.com/tx/5vHC9Zfv2QNL9cF2hEWHEv6WJpNyDydiWfmvpaQq8eTf73J2yLhXeAo3gA6bXAGmkPoNRN3vjKmndCMMCTnRT6Ca?cluster=devnet");
-  const [raw, setRaw] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [local, setLocal] = useState("");
   const [chain, setChain] = useState("");
@@ -53,9 +52,9 @@ export default function SettlementReplay() {
     setStatus("running"); setMsg("");
     try {
       const sigClean = (sig.trim().match(/[1-9A-HJ-NP-Za-km-z]{80,120}/) || [sig.trim()])[0];
-      let data: Record<string, unknown> | null = raw.trim() ? (JSON.parse(raw) as Record<string, unknown>) : null;
-      if (!data) { const hit = (receipts as unknown as Array<{ sig: string; body: Record<string, unknown> }>).find((r) => r.sig === sigClean); data = hit ? hit.body : null; }
-      if (!data) { setStatus("error"); setMsg(pick(lang, { en: "Paste the final-data JSON, or use an explorer link from a Nyx receipt.", ru: "Вставь JSON финальных данных или ссылку на чек Nyx из эксплорера." })); return; }
+      const hit = (receipts as unknown as Array<{ sig: string; body: Record<string, unknown> }>).find((r) => r.sig === sigClean);
+      const data = hit ? hit.body : null;
+      if (!data) { setStatus("error"); setMsg(pick(lang, { en: "Use an explorer link from a Nyx settlement receipt.", ru: "Вставь ссылку из эксплорера на чек сеттлмента Nyx." })); return; }
       const digest = await sha256Hex(canonicalize(data));
       setLocal(digest);
       const memo = await fetchOnChainMemo(sigClean);
@@ -65,7 +64,7 @@ export default function SettlementReplay() {
       setStatus(ok ? "match" : "mismatch");
     } catch (e) {
       setStatus("error");
-      setMsg(pick(lang, { en: "Invalid JSON or RPC error.", ru: "Неверный JSON или ошибка RPC." }));
+      setMsg(pick(lang, { en: "RPC error — try again.", ru: "Ошибка RPC — попробуй ещё раз." }));
     }
   }
 
@@ -86,10 +85,7 @@ export default function SettlementReplay() {
           <input value={sig} onChange={(e) => setSig(e.target.value)}
             placeholder={pick(lang, { en: "Explorer link (or tx signature)", ru: "Ссылка из эксплорера (или подпись)" })}
             className="w-full rounded-xl border border-hairline bg-base px-4 py-3 font-mono text-sm text-ink placeholder:text-muted" />
-          <textarea value={raw} onChange={(e) => setRaw(e.target.value)} rows={5}
-            placeholder='{"match":"BRA-ARG","final":"2-1","ts":1737158400}'
-            className="w-full rounded-xl border border-hairline bg-base px-4 py-3 font-mono text-xs text-ink placeholder:text-muted" />
-          <button onClick={run} disabled={!sig || !raw || status === "running"}
+          <button onClick={run} disabled={!sig || status === "running"}
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-nyx px-5 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50">
             {status === "running"
               ? pick(lang, { en: "Recomputing…", ru: "Пересчитываю…" })
