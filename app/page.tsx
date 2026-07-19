@@ -12,6 +12,7 @@ import CommandPalette from "@/components/CommandPalette";
 import CommandLauncher from "@/components/CommandLauncher";
 import PWA from "@/components/PWA";
 import Verify from "@/components/Verify";
+import LiveBlink from "@/components/LiveBlink";
 
 import Markets from "@/components/Markets";
 import Settlement from "@/components/Settlement";
@@ -67,6 +68,7 @@ export default function Page() {
         </>
       ) : null}
 
+      <LiveBlink />
       <PerTrackFaq />
       <Footer />
 
