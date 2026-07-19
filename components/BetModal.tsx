@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Transaction } from "@solana/web3.js";
+import { useAppKit, useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
+import { useAppKitConnection, type Provider } from "@reown/appkit-adapter-solana/react";
 import { useLang, pick } from "@/lib/i18n";
 import { Flag, Ball, TEAMS } from "@/components/Football";
 import type { Market, Pick } from "@/components/useMarkets";
@@ -33,8 +34,10 @@ const L = {
 export default function BetModal({ open, onClose, data }: { open: boolean; onClose: () => void; data: Data }) {
   const lang = useLang();
   const t = (o: { en: string }) => pick(lang, o);
-  const { connection } = useConnection();
-  const { publicKey, sendTransaction } = useWallet();
+  const { open: openWallet } = useAppKit();
+  const { address, isConnected } = useAppKitAccount();
+  const { connection } = useAppKitConnection();
+  const { walletProvider } = useAppKitProvider<Provider>("solana");
   const [stake, setStake] = useState(10);
   const [sel, setSel] = useState<Pick | null>(null);
   const [status, setStatus] = useState<Status>("idle");
@@ -66,23 +69,24 @@ export default function BetModal({ open, onClose, data }: { open: boolean; onClo
 
   const placeBet = async () => {
     if (!m || !active) return;
-    if (!publicKey) { window.dispatchEvent(new CustomEvent("nyx-open-wallet")); return; }
+    if (!isConnected || !address) { openWallet(); return; }
+    if (!connection || !walletProvider) { setErr("Wallet not ready"); setStatus("error"); return; }
     try {
       setErr(null); setStatus("building");
       const url = "/api/actions/bet?match=" + encodeURIComponent(m.match) + "&market=" + active.market + "&odds=" + encodeURIComponent(String(active.odds)) + "&side=back&amount=" + encodeURIComponent(String(stake));
-      const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ account: publicKey.toBase58() }) });
+      const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ account: address }) });
       if (!res.ok) throw new Error("HTTP " + res.status);
       const d = await res.json();
       const tx = Transaction.from(b64ToBytes(d.transaction));
       setStatus("signing");
-      const signature = await sendTransaction(tx, connection);
+      const signature = await walletProvider.sendTransaction(tx, connection);
       setSig(signature); setStatus("confirming");
       await connection.confirmTransaction(signature, "confirmed");
       setStatus("done");
     } catch (e) { setErr(e instanceof Error ? e.message : String(e)); setStatus("error"); }
   };
 
-  const cta = !publicKey ? t(L.connect)
+  const cta = !isConnected ? t(L.connect)
     : status === "idle" ? t(L.place)
     : status === "building" ? t(L.building)
     : status === "signing" ? t(L.signing)
