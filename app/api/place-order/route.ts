@@ -24,7 +24,7 @@ const CORS = {
 }
 const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr")
 const RPC = process.env.SOLANA_RPC || ("https:" + "//api.devnet.solana.com")
-const STABLE_MINT = new PublicKey(process.env.NYX_STABLE_MINT || "5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS")
+const STABLE_MINT = new PublicKey(process.env.NYX_STABLE_MINT || "GP5fTCrphXRf38JfvqryvhaJz7wYh9bsgAgKJDx8ZETN")
 const STABLE_DECIMALS = Number(process.env.NYX_STABLE_DECIMALS || 6)
 const TREASURY = new PublicKey(process.env.NYX_TREASURY || "DDLyynBSATRkb5svSXjZRLYGPrf2Trvudbrv7HKoaraE")
 const REF_BPS_DEFAULT = Number(process.env.NYX_REF_BPS || 500)

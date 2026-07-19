@@ -20,7 +20,7 @@ const ACTIONS_CORS = {
 
 const RPC = process.env.SOLANA_RPC || ("https:" + "//api.devnet.solana.com")
 const ALLOWANCE_PROGRAM = new PublicKey("De1egAFMkMWZSN5rYXRj9CAdheBamobVNubTsi9avR44")
-const MINT = new PublicKey(process.env.NYX_ALLOWANCE_MINT || "5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS")
+const MINT = new PublicKey(process.env.NYX_ALLOWANCE_MINT || "GP5fTCrphXRf38JfvqryvhaJz7wYh9bsgAgKJDx8ZETN")
 const DECIMALS = Number(process.env.NYX_STABLE_DECIMALS || 6)
 const AGENT = new PublicKey(process.env.NYX_AGENT || "5Ybj5JBMzoEp7UVQV1xWQQ5V7RVgBWarBfBdNuXShKBU")
 const TOKEN_PROGRAM = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")

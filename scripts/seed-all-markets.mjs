@@ -10,7 +10,7 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
 
 const RPC = process.env.SOLANA_RPC || "https://api.devnet.solana.com"
 const PROGRAM_ID = new PublicKey(process.env.NYX_SETTLEMENT_PROGRAM_ID || "5givnWMR71eqWPEFDfh1mdBuhZUCSpnj3MuHUuKhzoYb")
-const STABLE_MINT = new PublicKey(process.env.NYX_STABLE_MINT || "5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS")
+const STABLE_MINT = new PublicKey(process.env.NYX_STABLE_MINT || "GP5fTCrphXRf38JfvqryvhaJz7wYh9bsgAgKJDx8ZETN")
 const KP_PATH = process.env.NYX_AUTHORITY_KEYPAIR || process.env.ANCHOR_WALLET || (process.env.HOME + "/.config/solana/id.json")
 
 // Keep these in sync with app/api/actions/bet/route.ts

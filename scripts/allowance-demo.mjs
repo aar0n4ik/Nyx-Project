@@ -8,7 +8,7 @@ const PROGRAM_ID = new PublicKey("De1egAFMkMWZSN5rYXRj9CAdheBamobVNubTsi9avR44")
 const TOKEN      = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
 const ASSOC      = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 const SYS        = SystemProgram.programId;
-const MINT       = new PublicKey("5GPxJkwceeP36RwghtTpMJtwaYTqmbG9JdqFBTUpSDLS");
+const MINT       = new PublicKey("GP5fTCrphXRf38JfvqryvhaJz7wYh9bsgAgKJDx8ZETN");
 const ONE = 1000000;
 const CAP = 5 * ONE, DRAW = 2 * ONE;
 
