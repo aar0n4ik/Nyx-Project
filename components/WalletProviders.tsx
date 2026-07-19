@@ -1,18 +1,7 @@
 "use client";
-import { useMemo, type ReactNode } from "react";
-import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
-import { clusterApiUrl } from "@solana/web3.js";
-import WalletPicker from "@/components/WalletPicker";
+import type { ReactNode } from "react";
+import AppKitProvider from "@/components/appkit";
 
 export default function WalletProviders({ children }: { children: ReactNode }) {
-  const endpoint = useMemo(() => process.env.NEXT_PUBLIC_SOLANA_RPC || clusterApiUrl("devnet"), []);
-  const wallets = useMemo(() => [], []);
-  return (
-    <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
-        {children}
-        <WalletPicker />
-      </WalletProvider>
-    </ConnectionProvider>
-  );
+  return <AppKitProvider>{children}</AppKitProvider>;
 }
