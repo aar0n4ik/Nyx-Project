@@ -91,8 +91,13 @@ export default function CommandPalette() {
         setOpen((v) => !v);
       }
     };
+    const onOpen = () => setOpen(true);
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("nyx-open-command", onOpen);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("nyx-open-command", onOpen);
+    };
   }, []);
 
   useEffect(() => {
