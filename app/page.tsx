@@ -5,27 +5,22 @@ import { useTrack } from "@/components/useTrack";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import TrackSpotlight from "@/components/TrackSpotlight";
+import PerTrackFaq from "@/components/PerTrackFaq";
+import Footer from "@/components/Footer";
 import TrackModal from "@/components/TrackModal";
 import CommandPalette from "@/components/CommandPalette";
 import PWA from "@/components/PWA";
-import LiveConstellation from "@/components/LiveConstellation";
-import NetworkStats from "@/components/NetworkStats";
-import LiveStats from "@/components/LiveStats";
-import LiveFeed from "@/components/LiveFeed";
-import Roadmap from "@/components/Roadmap";
-import Founder from "@/components/Founder";
-import PerTrackFaq from "@/components/PerTrackFaq";
-import Footer from "@/components/Footer";
+import Verify from "@/components/Verify";
 
 import Markets from "@/components/Markets";
-import AmmVisualizer from "@/components/AmmVisualizer";
-import PredictionAMM from "@/components/PredictionAMM";
 import Settlement from "@/components/Settlement";
-import Verify from "@/components/Verify";
 import SettlementReplay from "@/components/SettlementReplay";
+import LiveConstellation from "@/components/LiveConstellation";
 
 import AgentTerminal from "@/components/AgentTerminal";
 import NyxEdge from "@/components/NyxEdge";
+import AmmVisualizer from "@/components/AmmVisualizer";
+import PredictionAMM from "@/components/PredictionAMM";
 import ProofOfInference from "@/components/ProofOfInference";
 
 import LiveStream from "@/components/LiveStream";
@@ -44,11 +39,10 @@ export default function Page() {
       {active === "settlement" ? (
         <>
           <Markets />
-          <AmmVisualizer />
-          <PredictionAMM />
           <Settlement />
-          <Verify />
           <SettlementReplay />
+          <LiveConstellation />
+          <Verify />
         </>
       ) : null}
 
@@ -56,6 +50,8 @@ export default function Page() {
         <>
           <AgentTerminal />
           <NyxEdge />
+          <AmmVisualizer />
+          <PredictionAMM />
           <ProofOfInference />
           <Verify />
         </>
@@ -70,13 +66,7 @@ export default function Page() {
         </>
       ) : null}
 
-      <NetworkStats />
-      <LiveFeed />
-      <LiveStats />
-      <Roadmap />
-      <Founder />
       <PerTrackFaq />
-      <LiveConstellation />
       <Footer />
 
       <TrackModal />
